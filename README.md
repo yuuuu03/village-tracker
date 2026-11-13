@@ -30,7 +30,7 @@ At this point the site already works on its own, saving data in the browser.
 2. **SQL Editor → New query** → paste `supabase/schema.sql` → **Run**.
 3. **Authentication → URL Configuration**: set **Site URL** to your GitHub Pages address, and add the same address under **Redirect URLs**.
 4. **Authentication → Providers → Email**: on, which is the default. Sign-in is by emailed link, with no passwords.
-5. **Project Settings → API**: copy the **Project URL** and the **anon public** key into `public/config.js`.
+5. **Project Settings → API**: copy the **Project URL** and the **Publishable key** (`sb_publishable_…`, or the legacy anon key on older projects) into `public/config.js`.
 
 The anon key is meant to be public. Row Level Security in `schema.sql` stops users seeing each other's data.
 
@@ -47,14 +47,14 @@ The free plan's database holds 500 MB. Four villages use well under 1 MB, and th
 
 On your computer:
 
-```bash
-npx web-push generate-vapid-keys
-```
+Open `https://YOUR-USERNAME.github.io/village-tracker/keys.html` and tap **Make my keys** (nothing to install). Or, with Node: `npx web-push generate-vapid-keys`.
 
 - Put the **Public Key** into `public/config.js` as `vapidPublicKey`.
 - Keep the **Private Key** for step 4. Never commit it.
 
 ## 4 · Deploy the three server functions
+
+No installs needed: **Edge Functions → Deploy a new function → Via Editor**, paste each `index.ts`, and add the secrets under **Edge Functions → Secrets**. Turn **off** JWT verification for `send-reminders` and `calendar` (check again after every redeploy). The CLI route below does the same thing.
 
 ```bash
 npx supabase login
