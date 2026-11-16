@@ -1133,6 +1133,12 @@ body.gated>*:not(#gateWrap):not(#ground):not(.grain):not(#toast){visibility:hidd
 .night-c div{display:grid;gap:3px;font-size:13px;color:var(--ink-2)}
 .night-c b{color:var(--ink)}
 .nc-tip{color:var(--muted);font-size:12.5px}
+.advacc{margin:0 0 14px}
+.advtabs{position:sticky;top:64px;z-index:20;display:flex;gap:4px;margin:0 0 18px;padding:4px;border-radius:14px;background:color-mix(in srgb,var(--bg) 88%,transparent);box-shadow:inset 0 0 0 1px var(--line-2);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.advtabs button{flex:1;display:inline-flex;justify-content:center;align-items:center;gap:6px;border:0;background:transparent;color:var(--ink-2);font:inherit;font-weight:700;font-size:13.5px;padding:10px 8px;border-radius:10px;cursor:pointer}
+.advtabs button[aria-selected=true]{background:var(--ink);color:var(--bg)}
+.advtabs small{font-size:10.5px;padding:1px 6px;border-radius:999px;background:color-mix(in srgb,var(--gold) 22%,transparent);color:var(--gold)}
+.advtabs button[aria-selected=true] small{background:color-mix(in srgb,var(--bg) 25%,transparent);color:var(--bg)}
 .advls{display:block;font-size:10.5px;color:var(--muted);margin-top:2px}
 .tgts{display:flex;flex-wrap:wrap;gap:6px}
 .tgt{display:grid;justify-items:center;gap:1px;min-width:44px;padding:6px 6px 5px;border-radius:10px;border:0;background:var(--chip,rgba(127,127,127,.12));color:var(--ink);cursor:pointer;font:inherit;box-shadow:inset 0 0 0 1px var(--line-2)}
@@ -4294,13 +4300,15 @@ const mapScale=()=>{ const D=SHOT&&((SHOT.an&&SHOT.an.ok&&SHOT.an.D)||(SHOT.D0&&
 function clip(cx,cy,side){ const c=document.createElement("canvas"); c.width=c.height=TPL_N; const g=c.getContext("2d",{willReadFrequently:true});
   g.drawImage(SHOT.img,cx-side/2,cy-side/2,side,side,0,0,TPL_N,TPL_N); const d=g.getImageData(0,0,TPL_N,TPL_N).data, out=new Array(TPL_N*TPL_N*3);
   for(let i=0,j=0;i<d.length;i+=4){ out[j++]=d[i]; out[j++]=d[i+1]; out[j++]=d[i+2]; } return out; }
-function learnTpl(m){
+function learnTpl(m,neg=false){
   if(m.t==="wall") return; const W=mapScale(); if(!W) return; const side=W*.065;
   const px=clip(m.x*SHOT.w,m.y*SHOT.h,side), mean=px.reduce((a,b)=>a+b,0)/px.length, sd=Math.sqrt(px.reduce((a,b)=>a+(b-mean)**2,0)/px.length);
   if(sd<8) return; // flat patch: nothing to learn
-  TPL.push({t:m.t,d:btoa(String.fromCharCode(...px))});
-  const kinds={}; TPL=TPL.reverse().filter(q=>(kinds[q.t]=(kinds[q.t]||0)+1)<=TPL_PER).reverse(); tplSave();
+  TPL.push(neg?{t:m.t,d:btoa(String.fromCharCode(...px)),neg:1}:{t:m.t,d:btoa(String.fromCharCode(...px))});
+  const kinds={}; TPL=TPL.reverse().filter(q=>{ const k=q.t+(q.neg?"-":""); kinds[k]=(kinds[k]||0)+1; return kinds[k]<=(q.neg?6:TPL_PER); }).reverse(); tplSave();
 }
+// markers the page placed that you kept are right: learn them when you move on to the plan
+function learnConfirmed(){ if(!SHOT) return; let n=0; for(const m of SHOT.marks) if(m.auto&&!m.learned){ m.learned=true; learnTpl(m); n++; } if(n) SHOT.kept=(SHOT.kept||0)+n; }
 async function autoFind(){
   const D=SHOT.D0; if(!TPL.length||!D||!D.ok) return;
   SHOT.finding=true; rerAdv(); await new Promise(r=>setTimeout(r,30));
@@ -4314,15 +4322,17 @@ async function autoFind(){
   for(let y=0;y<H;y++){ let r1=0,r2=0; for(let x=0;x<W;x++){ const o=(y*W+x)*3, v=rgb[o]+rgb[o+1]+rgb[o+2], q=rgb[o]*rgb[o]+rgb[o+1]*rgb[o+1]+rgb[o+2]*rgb[o+2]; r1+=v; r2+=q; S1[(y+1)*(W+1)+x+1]=S1[y*(W+1)+x+1]+r1; S2[(y+1)*(W+1)+x+1]=S2[y*(W+1)+x+1]+r2; } }
   const box=(A,x,y)=>A[(y+TPL_N)*(W+1)+x+TPL_N]-A[y*(W+1)+x+TPL_N]-A[(y+TPL_N)*(W+1)+x]+A[y*(W+1)+x];
   const n=TPL_N*TPL_N*3;
-  const tp=TPL.map(q=>{ const b=atob(q.d), v=new Float32Array(n); let m=0; for(let i=0;i<n;i++){ v[i]=b.charCodeAt(i); m+=v[i]; } m/=n; let ss=0; for(let i=0;i<n;i++){ v[i]-=m; ss+=v[i]*v[i]; } return {t:q.t,v,nrm:Math.sqrt(ss)}; }).filter(q=>q.nrm>1);
+  const tp=TPL.map(q=>{ const b=atob(q.d), v=new Float32Array(n); let m=0; for(let i=0;i<n;i++){ v[i]=b.charCodeAt(i); m+=v[i]; } m/=n; let ss=0; for(let i=0;i<n;i++){ v[i]-=m; ss+=v[i]*v[i]; } return {t:q.t,neg:!!q.neg,v,nrm:Math.sqrt(ss)}; }).filter(q=>q.nrm>1);
+  if(!tp.some(q=>!q.neg)){ SHOT.finding=false; return; }
   const hits=[];
   for(let y=0;y<=H-TPL_N;y+=2){
     for(let x=0;x<=W-TPL_N;x+=2){
       const cxN=(x0+(x+TPL_N/2)/sc)/K, cyN=(y0+(y+TPL_N/2)/sc)/K; if(Math.abs(cxN-D.mx)/D.hx+Math.abs(cyN-D.my)/D.hy>1.02) continue;
       const s1=box(S1,x,y), s2=box(S2,x,y), wn=Math.sqrt(Math.max(1e-6,s2-s1*s1/n)); if(wn<40) continue;
-      let best=-1, bt=null;
-      for(const q of tp){ let dot=0, k=0; const v=q.v; for(let r=0;r<TPL_N;r++){ let o=((y+r)*W+x)*3; for(let cI=0;cI<TPL_N*3;cI++) dot+=rgb[o++]*v[k++]; } const sc2=dot/(wn*q.nrm); if(sc2>best){ best=sc2; bt=q.t; } }
-      if(best>.62) hits.push({x,y,s:best,t:bt});
+      let best=-1, bt=null; const negB={};
+      for(const q of tp){ let dot=0, k=0; const v=q.v; for(let r=0;r<TPL_N;r++){ let o=((y+r)*W+x)*3; for(let cI=0;cI<TPL_N*3;cI++) dot+=rgb[o++]*v[k++]; } const sc2=dot/(wn*q.nrm);
+        if(q.neg){ if(sc2>(negB[q.t]||-1)) negB[q.t]=sc2; } else if(sc2>best){ best=sc2; bt=q.t; } }
+      if(best>.62&&best>(negB[bt]||-1)+.03) hits.push({x,y,s:best,t:bt});   // looks like a known example, and more like it than like a past mistake
     }
     if(y%16===0) await new Promise(r=>setTimeout(r,0));
   }
@@ -4496,7 +4506,7 @@ function shotBox(){
   return `<div class="advshot open">
     <div class="shotbar">${SHOT_T.map(([k,l,n,c])=>`<button type="button" class="shotk" data-shotk="${k}" aria-pressed="${SHOT.mode===k}" style="--c:${c}"><i></i>${l}<small class="mono">${cnt(k)}/${n}</small></button>`).join("")}
       <span class="shotsp"></span>${SHOT.view==="sim"?`<span id="simstate" class="mono simst"></span><button type="button" class="glink" data-sim="pause">Pause</button><button type="button" class="glink" data-sim="speed">1×</button><button type="button" class="shotview on" data-sim="stop">Stop</button>`:""}${an&&SHOT.view!=="sim"?`<button type="button" class="shotview ${SHOT.view==="plan"?"on":""}" data-shotx="view">${SHOT.view==="plan"?"Back to tapping":"Show the plan"}</button>`:""}<button type="button" class="glink" data-shotx="zoom">${SHOT.zoom?"Zoom out":"Zoom in"}</button><button type="button" class="glink" data-shotx="undo">Undo</button><button type="button" class="glink" data-shotx="close">Remove picture</button></div>
-    ${SHOT.finding?`<p class="note shothint">Looking for buildings from your saved examples…</p>`:SHOT.found!=null?`<p class="note shothint">${SHOT.found?`Found ${SHOT.found} building${SHOT.found>1?"s":""} from your saved examples (dashed markers). Tap any wrong one with its kind selected to remove it.`:"No buildings matched your saved examples on this picture. Tap them in; the page learns from every tap."}</p>`:""}
+    ${SHOT.finding?`<p class="note shothint">Looking for buildings from your saved examples…</p>`:SHOT.found!=null?`<p class="note shothint">${SHOT.found?`Found ${SHOT.found} building${SHOT.found>1?"s":""} from your saved examples (dashed markers). Remove any wrong one (tap it with its kind selected): the page learns from that too.${SHOT.kept||SHOT.fixed?` Learned: ${SHOT.kept||0} kept, ${SHOT.fixed||0} corrected.`:""}`:`No buildings matched your saved examples on this picture. Tap them in; the page learns from every tap. (${TPL.filter(q=>!q.neg).length} examples saved, ${TPL.filter(q=>q.neg).length} "not this")`}</p>`:""}
     <p class="note shothint">${SHOT.mode==="wall"?"Tap one or two wall pieces (different wall levels have different colours). Found walls show in green; the page remembers the colours for your next screenshots.":SHOT.mode==="sweep"?"Tap an Air Sweeper to place it. Tap it again to turn the way it faces (the shaded cone).":an?(SHOT.view==="plan"?"The plan for the best army below. Tap the picture or a building type to go back to tapping.":"Tap more buildings to sharpen it, then press Show the plan. Tapping a marker of the selected kind removes it."):`Tap the <b>${esc(SHT[SHOT.mode].l)}</b> on the picture. Town Hall plus two more is enough to start.`}<span class="shotmob"> Swipe the picture sideways to see all of it.</span>${an&&!an.ok?" This scenery's ground colour is hard to read, so base shape is left for you to pick.":""}</p>
     <div class="shotwrap"><canvas id="shotcv" data-shotcv></canvas></div>
     ${an?`<ul class="advnotes">${an.notes.map(n=>`<li>${esc(n)}</li>`).join("")}</ul>
@@ -4513,13 +4523,13 @@ document.addEventListener("click",e=>{
   if(cv&&SHOT.view==="sim") return;
   if(cv&&SHOT.view==="plan"){ SHOT.view="tap"; }
   if(x&&x.dataset.shotx==="undo") SHOT.marks.pop();
-  if(x&&x.dataset.shotx==="view") SHOT.view=SHOT.view==="plan"?"tap":"plan";
+  if(x&&x.dataset.shotx==="view"){ SHOT.view=SHOT.view==="plan"?"tap":"plan"; if(SHOT.view==="plan") learnConfirmed(); }
   if(x&&x.dataset.shotx==="zoom") SHOT.zoom=!SHOT.zoom;
   if(x&&x.dataset.shotx==="close"){ URL.revokeObjectURL(SHOT.url); SHOT=null; return rerAdv(); }
   if(cv){ const r=cv.getBoundingClientRect(), nx=(e.clientX-r.left)/r.width, ny=(e.clientY-r.top)/r.height;
     const hit=SHOT.marks.findIndex(m=>m.t===SHOT.mode&&Math.hypot((m.x-nx)*r.width,(m.y-ny)*r.height)<14);
     if(hit>=0&&SHOT.mode==="sweep"){ const m=SHOT.marks[hit], P=SHOT.an&&SHOT.an.P.find(q=>q.x===m.x&&q.y===m.y); m.f=(m.f!=null?m.f:P?P.a:-Math.PI/2)+Math.PI/4; if(m.auto){ m.auto=false; learnTpl(m); } }
-    else if(hit>=0) SHOT.marks.splice(hit,1);
+    else if(hit>=0){ const m=SHOT.marks[hit]; if(m.auto&&!m.learned){ learnTpl(m,true); SHOT.fixed=(SHOT.fixed||0)+1; } SHOT.marks.splice(hit,1); }
     else{ const m={t:SHOT.mode,x:nx,y:ny}; SHOT.marks.push(m); learnTpl(m); const T=SHT[SHOT.mode];
       if(SHOT.marks.filter(m=>m.t===SHOT.mode).length>=T.n){ const nxt=SHOT_T.find(([q,,n])=>SHOT.marks.filter(m=>m.t===q).length<n); if(nxt) SHOT.mode=nxt[0]; } } }
   shotUpdate(); rerAdv();
@@ -4546,8 +4556,9 @@ function advisorView(accs){
   const all=PLAYBOOK.map(p=>scoreArmy(p,a,opTh)).sort((p,q)=>q.s-p.s), fitTh=all.filter(r=>th>=r.p.th[0]&&th<=r.p.th[1]);
   const res=fitTh.length>=2?fitTh:all;
   const top=res.slice(0,2), alt=res.slice(2,5);
-  const PC=plannerCard(a,th);
-  if(SHOT&&SHOT.an){ const L=window.__lastPlan; if(L&&L.plan) shotPlan({style:L.plan.style},a,th,L.plan.A); else shotPlan(top[0].p,a,th); }
+  const tab=["plan","war","up","log"].includes(ADV.tab)?ADV.tab:"plan";
+  const PC=tab==="plan"?plannerCard(a,th):"";
+  if(tab==="plan"&&SHOT&&SHOT.an){ const L=window.__lastPlan; if(L&&L.plan) shotPlan({style:L.plan.style},a,th,L.plan.A); else shotPlan(top[0].p,a,th); }
   const chips=(k,opts)=>opts.map(([v,l])=>`<button type="button" class="tchip" data-trait="${k}" data-v="${v}" aria-pressed="${ADV.traits[k]===v}">${l}</button>`).join("");
   const opPick=(()=>{ return `<label class="advth"><span>Opponent Town Hall</span><select data-adv="opth">${Array.from({length:8},(_,i)=>11+i).map(t=>`<option ${t===opTh?"selected":""}>${t}</option>`).join("")}</select></label>`; })();
   const card=(r,i)=>{ const p=r.p;
@@ -4565,9 +4576,10 @@ function advisorView(accs){
     </article>`; };
   return `<section class="advv rv">
     <header class="calh"><div><h1 class="calt">Attack</h1><p class="lvsub">Describe the base in a few taps. The advice is worked out here from a built-in strategy playbook (${PLAYBOOK_V}) and your own troop, hero and equipment levels. No AI, no cost.</p></div></header>
-    <div class="advin">
+    <div class="advrow advacc"><span class="advl">Attacking with</span><div class="lvaccs">${real.map(q=>`<button type="button" class="calacc ${q===a?"":"off"}" style="--c:${colorOf(q)}" data-advacc="${q.id}" aria-pressed="${q===a}"><i></i>${esc(q.nick)}<small class="mono">TH${analyze(q).th}</small></button>`).join("")}</div></div>
+    <nav class="advtabs" role="tablist">${[["plan","Plan"],["war","War",wv?"live":""],["up","Upgrades"],["log","Log",(ADV.log||[]).length||""]].map(([k,l,b])=>`<button type="button" role="tab" data-advtab="${k}" aria-selected="${tab===k}">${l}${b?`<small class="mono">${b}</small>`:""}</button>`).join("")}</nav>
+    ${tab==="plan"?`<div class="advin">
       ${shotBox()}
-      <div class="advrow"><span class="advl">Attacking with</span><div class="lvaccs">${real.map(q=>`<button type="button" class="calacc ${q===a?"":"off"}" style="--c:${colorOf(q)}" data-advacc="${q.id}" aria-pressed="${q===a}"><i></i>${esc(q.nick)}<small class="mono">TH${analyze(q).th}</small></button>`).join("")}</div></div>
       ${wv?`<div class="advrow"><span class="advl">${wv===atk.cwl?"CWL":"War"} vs ${esc(wv.vs||"")}<small class="advls">gold ring = your mirror</small></span><div class="tgts">${wv.opp.map(o=>`<button type="button" class="tgt ${o.stars===3?"done":""} ${o.n===wv.my?"mir":""}" data-tgt="${o.n}" aria-pressed="${tgt&&tgt.n===o.n}" title="${esc(o.name)}"><b class="mono">${o.n}</b><small class="mono">TH${o.th}</small><i>${"★".repeat(o.stars)}${"☆".repeat(3-o.stars)}</i></button>`).join("")}</div></div>`:""}
       <div class="advrow"><span class="advl">Opponent</span>${opPick}<div class="seg sm" role="group" aria-label="Goal"><button type="button" data-goal="triple" aria-pressed="${ADV.goal!=="safe"}">Go for 3★</button><button type="button" data-goal="safe" aria-pressed="${ADV.goal==="safe"}">Safe 2★</button></div></div>
       ${TRAITS.map(([k,l,opts])=>`<div class="advrow"><span class="advl">${l}</span><div class="tchips">${chips(k,opts)}</div></div>`).join("")}
@@ -4575,12 +4587,13 @@ function advisorView(accs){
     </div>
     ${answered<2?`<p class="note advhint">Tap at least two things about the base to get advice that fits it. Until then, these are the best armies for your account in general.</p>`:""}
     <div class="advres one">${PC}</div>
-    <div class="sub">Upgrade next for your attacks <small class="mono">${esc(a.nick)}</small></div>${attackUpView(a,th)}
-    ${warView(accs)}
     <div class="sub">Known strategies that fit your account</div>
     <div class="advres">${top.map(card).join("")}</div>
     ${alt.length?`<div class="sub">Also possible</div><div class="advalt">${alt.map(r=>`<span class="advmini" data-tip="${esc(r.p.army)}"><b>${esc(r.p.name)}</b><small>${r.p.style}${r.warn.length?" · "+esc(r.warn[0]):""}</small></span>`).join("")}</div>`:""}
-    ${logView()}
+    `:""}
+    ${tab==="war"?warView(accs):""}
+    ${tab==="up"?`<div class="sub">Upgrade next for your attacks <small class="mono">${esc(a.nick)}</small></div>${attackUpView(a,th)}`:""}
+    ${tab==="log"?logView():""}
     <p class="note">The playbook reflects community war guides as of ${PLAYBOOK_V}. After a balance update the meta can shift, and the playbook may need a refresh.</p>
   </section>`;
 }
@@ -4594,6 +4607,7 @@ document.addEventListener("click",e=>{
   if(r){ ADV.traits={}; ADV.tgt=null; ADV.opTh=null; }
   advSave(); const y=scrollY; render(); scrollTo(0,y);
 });
+document.addEventListener("click",e=>{ const t=e.target.closest("[data-advtab]"); if(!t) return; ADV.tab=t.dataset.advtab; advSave(); const y=Math.min(scrollY,(document.querySelector(".advtabs")||{offsetTop:0}).offsetTop-80); render(); scrollTo(0,Math.max(0,y)); });
 document.addEventListener("click",e=>{
   const st=e.target.closest("[data-logstar]"); if(st){ const f=st.closest("form"); f.querySelectorAll("[data-logstar]").forEach(b=>b.setAttribute("aria-pressed",b===st)); f.dataset.stars=st.dataset.logstar; return; }
   const del=e.target.closest("[data-logdel]"); if(del){ ADV.log=(ADV.log||[]).filter(q=>String(q.at)!==del.dataset.logdel); advSave(); rerAdv(); }
@@ -4601,6 +4615,7 @@ document.addEventListener("click",e=>{
 document.addEventListener("submit",e=>{
   const f=e.target.closest("[data-advlog]"); if(!f) return; e.preventDefault();
   if(f.dataset.stars==null){ toast("Pick how many stars you got."); return; }
+  learnConfirmed();
   const accs=list().filter(q=>!q.demo), a=accs.find(q=>q.id===ADV.acc)||accs[0]; if(!a) return;
   const th=analyze(a).th, stars=+f.dataset.stars, pct=Math.max(0,Math.min(100,+(f.elements.pct.value||(stars===3?100:stars===2?75:stars===1?50:20))));
   const sty=f.dataset.style||(PLAYBOOK.find(q=>q.id===f.dataset.advlog)||{}).style;
@@ -4888,7 +4903,7 @@ function drawSim(){
 }
 document.addEventListener("click",e=>{
   const b=e.target.closest("[data-sim]"); if(!b) return; const k=b.dataset.sim;
-  if(k==="play"){ const P=window.__lastPlan; if(P) simPlay(P.plan,P.a,P.th); }
+  if(k==="play"){ const P=window.__lastPlan; if(typeof learnConfirmed==="function") learnConfirmed(); if(P) simPlay(P.plan,P.a,P.th); }
   if(k==="pause"&&SIM){ SIM.playing=!SIM.playing; b.textContent=SIM.playing?"Pause":"Play"; }
   if(k==="speed"&&SIM){ SIM.speed=SIM.speed===3?6:SIM.speed===6?12:3; b.textContent=`${SIM.speed/3}×`; }
   if(k==="stop"){ SIM=null; if(SHOT) SHOT.view="plan"; rerAdv(); }
