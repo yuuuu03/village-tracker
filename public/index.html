@@ -1038,6 +1038,16 @@ body.gated>*:not(#gateWrap):not(#ground):not(.grain):not(#toast){visibility:hidd
 .ptr i{font-style:normal;font-weight:800;text-align:center}
 .ptr.ok i{color:#3ee08f}.ptr.bad i{color:#ff6b6b}.ptr.wait i{color:var(--gold)}
 .ptr span{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.advres.one{grid-template-columns:1fr}
+.advc.plan{gap:14px}
+.advsim{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,#3ee08f 9%,transparent);font-size:13px;color:var(--ink-2)}
+.advsim svg{width:14px;height:14px;color:#3ee08f;flex:none}
+.advsim span{flex:1;min-width:220px}
+.think{border-radius:12px;padding:10px 14px;box-shadow:inset 0 0 0 1px var(--line-2)}
+.think summary{cursor:pointer;font-weight:700;font-size:13px}
+.think ol{margin:8px 0 2px;padding-left:20px;display:grid;gap:7px;font-size:13px;color:var(--ink-2);line-height:1.45}
+.think b{color:var(--ink)}
+.simst{font-size:12px;color:var(--muted)}
 .advls{display:block;font-size:10.5px;color:var(--muted);margin-top:2px}
 .tgts{display:flex;flex-wrap:wrap;gap:6px}
 .tgt{display:grid;justify-items:center;gap:1px;min-width:44px;padding:6px 6px 5px;border-radius:10px;border:0;background:var(--chip,rgba(127,127,127,.12));color:var(--ink);cursor:pointer;font:inherit;box-shadow:inset 0 0 0 1px var(--line-2)}
@@ -3968,8 +3978,9 @@ function scoreArmy(p,a,opTh){
   const lr=learned(p.id,th,opTh); if(lr){ const conf=Math.min(1,lr.w/2.5); s+=(lr.stars-2.2)*2.2*conf+(lr.pct-85)/15*conf; }
   return {p,s,why:[...new Set(why)].slice(0,4),warn,lr};
 }
-function armyTable(id,a,th){
-  const A=buildArmy(id,a,th); if(!A) return "";
+function armyTable(id,a,th){ return renderArmy(buildArmy(id,a,th),a,th); }
+function renderArmy(A,a,th){
+  if(!A) return "";
   const row=(t,n,h,extra="",don=false)=>{ const base=SUPER_OF[t], lv=myLv(a,base||t), cap=capAt(base||t,th);
     return `<div class="axr ${lv||don?"":"miss"}">${ico(t)}<span class="axn"><b>${n}×</b> ${esc(name(t))}${base?` <em class="sup">super</em>`:""}</span><span class="axl mono">${don?"donated":lv?`lv ${lv}${cap&&lv<cap?`/${cap}`:""}`:"locked"}</span><span class="axh mono">${h}${extra}</span></div>`; };
   const tr=A.troops.map(([t,n])=>row(t,n,n*HS[t])).join("");
@@ -4122,17 +4133,21 @@ function entryFor(an,style){
 }
 // a point at "radius" f (1 = the outline) in direction a, in screen pixels of the original picture
 const dpt=(an,a,f)=>{ const c=Math.cos(a), s=Math.sin(a), L=Math.abs(c)+Math.abs(s), K=SHOT.w/SHOT.px.W; return [(an.D.mx+an.D.hx*an.S*f*c/L)*K,(an.D.my+an.D.hy*an.S*f*s/L)*K]; };
+function drawShotBase(cv){
+  const box=cv.parentElement.getBoundingClientRect(), k=(box.width<600?Math.min(1,Math.max(box.width,720)/SHOT.w):Math.min(1,box.width/SHOT.w,Math.min(560,innerHeight*.7)/SHOT.h))*(SHOT.zoom?2:1), W=Math.round(SHOT.w*k), H=Math.round(SHOT.h*k), dpr=devicePixelRatio||1;
+  if(cv.width!==Math.round(W*dpr)||cv.height!==Math.round(H*dpr)){ cv.width=W*dpr; cv.height=H*dpr; cv.style.width=W+"px"; cv.style.height=H+"px"; }
+  const g=cv.getContext("2d"); g.setTransform(dpr*k,0,0,dpr*k,0,0); g.drawImage(SHOT.img,0,0); return g;
+}
 function drawShot(){
   const cv=document.getElementById("shotcv"); if(!cv||!SHOT) return;
-  const box=cv.parentElement.getBoundingClientRect(), k=(box.width<600?Math.min(1,Math.max(box.width,720)/SHOT.w):Math.min(1,box.width/SHOT.w,Math.min(560,innerHeight*.7)/SHOT.h))*(SHOT.zoom?2:1), W=Math.round(SHOT.w*k), H=Math.round(SHOT.h*k), dpr=devicePixelRatio||1;
-  cv.width=W*dpr; cv.height=H*dpr; cv.style.width=W+"px"; cv.style.height=H+"px";
-  const g=cv.getContext("2d"); g.setTransform(dpr*k,0,0,dpr*k,0,0); g.drawImage(SHOT.img,0,0);
+  if(SHOT.view==="sim"&&typeof drawSim==="function"&&SIM){ drawSim(); return; }
+  const g=drawShotBase(cv);
   const an=SHOT.an, u=SHOT.w/600, plan=an&&SHOT.view==="plan";
   if(an&&!plan){ g.save(); g.setLineDash([6*u,6*u]); g.lineWidth=1.2*u; g.strokeStyle="rgba(255,255,255,.35)"; g.beginPath(); [0,Math.PI/2,Math.PI,-Math.PI/2].forEach((a,i)=>{ const [x,y]=dpt(an,a,1); i?g.lineTo(x,y):g.moveTo(x,y); }); g.closePath(); g.stroke(); g.restore(); }
   if(plan){
     const dia=f=>{ g.beginPath(); [0,Math.PI/2,Math.PI,-Math.PI/2].forEach((a,i)=>{ const [x,y]=dpt(an,a,f); i?g.lineTo(x,y):g.moveTo(x,y); }); g.closePath(); g.stroke(); };
     g.save(); g.setLineDash([8*u,6*u]); g.lineWidth=2*u; g.strokeStyle="rgba(255,255,255,.65)"; dia(1); g.strokeStyle="rgba(255,90,70,.8)"; dia(.4); g.restore();
-    if(an.entry){ const a=an.entry.th, o=dpt(an,a,1.22), t=dpt(an,a,.62);
+    if(an.entry){ const a=an.entry.th, cl=p=>[Math.max(SHOT.w*.03,Math.min(SHOT.w*.97,p[0])),Math.max(SHOT.h*.03,Math.min(SHOT.h*.97,p[1]))], o=cl(dpt(an,a,1.22)), t=dpt(an,a,.62);
       g.save(); g.lineWidth=7*u; g.strokeStyle="#3ee08f"; g.lineCap="round"; g.beginPath(); g.moveTo(...o); g.lineTo(...t); g.stroke();
       const ang=Math.atan2(t[1]-o[1],t[0]-o[0]); g.fillStyle="#3ee08f"; g.beginPath(); g.moveTo(t[0]+Math.cos(ang)*14*u,t[1]+Math.sin(ang)*14*u);
       g.lineTo(t[0]+Math.cos(ang+2.4)*16*u,t[1]+Math.sin(ang+2.4)*16*u); g.lineTo(t[0]+Math.cos(ang-2.4)*16*u,t[1]+Math.sin(ang-2.4)*16*u); g.fill(); g.restore(); }
@@ -4157,7 +4172,7 @@ function lbl(g,x,y,t,u,c){ u*=.7; g.save(); g.font=`800 ${12*u}px system-ui`; g.
   x=Math.max(w/2+4*u,Math.min(SHOT.w-w/2-4*u,x)); y=Math.max(14*u,Math.min(SHOT.h-12*u,y));
   g.fillStyle="rgba(0,0,0,.6)"; g.fillRect(x-w/2,y-10*u,w,18*u); g.fillStyle=c; g.textBaseline="middle"; g.fillText(t,x,y-1*u); g.restore(); }
 // after the advisor picks a plan: start side, and where Rage and Freeze go along the way in
-function shotPlan(p,a,th){
+function shotPlan(p,a,th,A2){
   const an=SHOT&&SHOT.an; if(!an) return; const style=p.style; an.entry=entryFor(an,style); const E=an.entry.th, spots=[], R=an.D.hx*an.S*(SHOT.w/SHOT.px.W);
   const A=dpt(an,E,1), O=dpt(an,E,0), at=m=>[m.x*SHOT.w,m.y*SHOT.h];
   const onPath=list=>list.map(m=>{ const [X,Y]=at(m), vx=O[0]-A[0], vy=O[1]-A[1], t=Math.max(0,Math.min(1,((X-A[0])*vx+(Y-A[1])*vy)/(vx*vx+vy*vy))); return {m,X,Y,t,d:Math.hypot(X-(A[0]+vx*t),Y-(A[1]+vy*t))}; }).sort((q,w)=>q.d-w.d);
@@ -4168,7 +4183,7 @@ function shotPlan(p,a,th){
   if(thm) spots.push({x:at(thm)[0],y:at(thm)[1],r:R*.1,l:style==="Air"?"RAGE 2":"WARDEN ABILITY",c:"#f5c542"});
   // funnel either side of the start, siege at the start
   const fl=dpt(an,E-.55,1.02), fr=dpt(an,E+.55,1.02), sg=dpt(an,E,1.08);
-  const A2=buildArmy(p.id,a,th), siege=A2&&A2.siege?name(A2.siege):null;
+  A2=A2||buildArmy(p.id,a,th); const siege=A2&&A2.siege?name(A2.siege):null;
   an.marks2=[{x:fl[0],y:fl[1],l:"FUNNEL",c:"#ffd27a"},{x:fr[0],y:fr[1],l:"FUNNEL",c:"#ffd27a"}].concat(siege?[{x:sg[0],y:sg[1],l:siege.toUpperCase(),c:"#ffffff",dy:40}]:[]);
   // heroes: in at the start, through the first big defense on the way, then to the Town Hall
   const tgt=style==="Air"?(eag||thm):(thm||eag);
@@ -4197,7 +4212,7 @@ function shotBox(){
   const cnt=t=>SHOT.marks.filter(m=>m.t===t).length, an=SHOT.an;
   return `<div class="advshot open">
     <div class="shotbar">${SHOT_T.map(([k,l,n,c])=>`<button type="button" class="shotk" data-shotk="${k}" aria-pressed="${SHOT.mode===k}" style="--c:${c}"><i></i>${l}<small class="mono">${cnt(k)}/${n}</small></button>`).join("")}
-      <span class="shotsp"></span>${an?`<button type="button" class="shotview ${SHOT.view==="plan"?"on":""}" data-shotx="view">${SHOT.view==="plan"?"Back to tapping":"Show the plan"}</button>`:""}<button type="button" class="glink" data-shotx="zoom">${SHOT.zoom?"Zoom out":"Zoom in"}</button><button type="button" class="glink" data-shotx="undo">Undo</button><button type="button" class="glink" data-shotx="close">Remove picture</button></div>
+      <span class="shotsp"></span>${SHOT.view==="sim"?`<span id="simstate" class="mono simst"></span><button type="button" class="glink" data-sim="pause">Pause</button><button type="button" class="glink" data-sim="speed">1×</button><button type="button" class="shotview on" data-sim="stop">Stop</button>`:""}${an&&SHOT.view!=="sim"?`<button type="button" class="shotview ${SHOT.view==="plan"?"on":""}" data-shotx="view">${SHOT.view==="plan"?"Back to tapping":"Show the plan"}</button>`:""}<button type="button" class="glink" data-shotx="zoom">${SHOT.zoom?"Zoom out":"Zoom in"}</button><button type="button" class="glink" data-shotx="undo">Undo</button><button type="button" class="glink" data-shotx="close">Remove picture</button></div>
     ${SHOT.finding?`<p class="note shothint">Looking for buildings from your saved examples…</p>`:SHOT.found!=null?`<p class="note shothint">${SHOT.found?`Found ${SHOT.found} building${SHOT.found>1?"s":""} from your saved examples (dashed markers). Tap any wrong one with its kind selected to remove it.`:"No buildings matched your saved examples on this picture. Tap them in; the page learns from every tap."}</p>`:""}
     <p class="note shothint">${SHOT.mode==="sweep"?"Tap an Air Sweeper to place it. Tap it again to turn the way it faces (the shaded cone).":an?(SHOT.view==="plan"?"The plan for the best army below. Tap the picture or a building type to go back to tapping.":"Tap more buildings to sharpen it, then press Show the plan. Tapping a marker of the selected kind removes it."):`Tap the <b>${esc(SHT[SHOT.mode].l)}</b> on the picture. Town Hall plus two more is enough to start.`}<span class="shotmob"> Swipe the picture sideways to see all of it.</span>${an&&!an.ok?" This scenery's ground colour is hard to read, so base shape is left for you to pick.":""}</p>
     <div class="shotwrap"><canvas id="shotcv" data-shotcv></canvas></div>
@@ -4212,6 +4227,7 @@ document.addEventListener("click",e=>{
   const k=e.target.closest("[data-shotk]"), x=e.target.closest("[data-shotx]"), cv=e.target.closest("[data-shotcv]");
   if(!SHOT||(!k&&!x&&!cv)) return;
   if(k){ SHOT.mode=k.dataset.shotk; SHOT.view="tap"; }
+  if(cv&&SHOT.view==="sim") return;
   if(cv&&SHOT.view==="plan"){ SHOT.view="tap"; }
   if(x&&x.dataset.shotx==="undo") SHOT.marks.pop();
   if(x&&x.dataset.shotx==="view") SHOT.view=SHOT.view==="plan"?"tap":"plan";
@@ -4229,7 +4245,7 @@ addEventListener("resize",()=>{ if(SHOT&&hashRaw()==="attack") drawShot(); });
 function logView(){
   const L=ADV.log||[]; if(!L.length) return `<div class="sub">Your attack log</div><p class="note">Log a result under a plan after you use it. Every result teaches the advisor which plans work for you on which kinds of base.</p>`;
   const by={}; for(const e of L){ (by[e.plan]=by[e.plan]||[]).push(e); }
-  const pn=id=>(PLAYBOOK.find(q=>q.id===id)||{name:id}).name;
+  const pn=id=>{ if(/^custom:/.test(id)){ const [,st,u]=id.split(":"); return `Worked out: ${st} · ${name(+u)}`; } return (PLAYBOOK.find(q=>q.id===id)||{name:id}).name; };
   const rows=Object.entries(by).map(([id,es])=>({id,n:es.length,st:es.reduce((a,e)=>a+e.stars,0)/es.length,pc:es.reduce((a,e)=>a+e.pct,0)/es.length,tr:es.filter(e=>e.stars===3).length})).sort((p,q)=>q.st-p.st);
   return `<div class="sub">Your attack log <small class="mono">${L.length} attack${L.length>1?"s":""}</small></div>
   <div class="advlogt"><div class="alr alh"><span>Plan</span><span>Used</span><span>Avg</span><span>3★</span></div>${rows.map(r=>`<div class="alr"><span>${esc(pn(r.id))}</span><span class="mono">${r.n}</span><span class="mono">${r.st.toFixed(1)}★ · ${Math.round(r.pc)}%</span><span class="mono">${Math.round(r.tr/r.n*100)}%</span></div>`).join("")}</div>
@@ -4247,12 +4263,13 @@ function advisorView(accs){
   const all=PLAYBOOK.map(p=>scoreArmy(p,a,opTh)).sort((p,q)=>q.s-p.s), fitTh=all.filter(r=>th>=r.p.th[0]&&th<=r.p.th[1]);
   const res=fitTh.length>=2?fitTh:all;
   const top=res.slice(0,2), alt=res.slice(2,5);
-  if(SHOT&&SHOT.an) shotPlan(top[0].p,a,th);
+  const PC=plannerCard(a,th);
+  if(SHOT&&SHOT.an){ const L=window.__lastPlan; if(L&&L.plan) shotPlan({style:L.plan.style},a,th,L.plan.A); else shotPlan(top[0].p,a,th); }
   const chips=(k,opts)=>opts.map(([v,l])=>`<button type="button" class="tchip" data-trait="${k}" data-v="${v}" aria-pressed="${ADV.traits[k]===v}">${l}</button>`).join("");
   const opPick=(()=>{ return `<label class="advth"><span>Opponent Town Hall</span><select data-adv="opth">${Array.from({length:8},(_,i)=>11+i).map(t=>`<option ${t===opTh?"selected":""}>${t}</option>`).join("")}</select></label>`; })();
   const card=(r,i)=>{ const p=r.p;
-    return `<article class="advc ${i===0?"best":""} rv" style="--i:${i}">
-      <header><span class="advrank mono">${i===0?"Best fit":"Option 2"}</span><h3>${esc(p.name)}</h3><span class="advtag">${p.style}</span></header>
+    return `<article class="advc rv" style="--i:${i}">
+      <header><span class="advrank mono">${i===0?"Known strategy":"Also good"}</span><h3>${esc(p.name)}</h3><span class="advtag">${p.style}</span></header>
       ${r.why.length?`<p class="advwhy">${glyph("check")}<span>${esc(r.why.join(" · "))}</span></p>`:""}
       ${r.warn.length?`<p class="advwarn">${glyph("bolt")}<span>${esc(r.warn.join(" · "))}</span></p>`:""}
       ${r.lr?`<p class="advlr">${glyph("star")}<span>Your record with this plan on bases like this: <b>${r.lr.stars.toFixed(1)}★</b> · ${Math.round(r.lr.pct)}% average over ${r.lr.n} attack${r.lr.n>1?"s":""}</span></p>`:""}
@@ -4274,6 +4291,8 @@ function advisorView(accs){
       ${answered?`<button type="button" class="glink advreset" data-adv="reset">Clear answers</button>`:""}
     </div>
     ${answered<2?`<p class="note advhint">Tap at least two things about the base to get advice that fits it. Until then, these are the best armies for your account in general.</p>`:""}
+    <div class="advres one">${PC}</div>
+    <div class="sub">Known strategies that fit your account</div>
     <div class="advres">${top.map(card).join("")}</div>
     ${alt.length?`<div class="sub">Also possible</div><div class="advalt">${alt.map(r=>`<span class="advmini" data-tip="${esc(r.p.army)}"><b>${esc(r.p.name)}</b><small>${r.p.style}${r.warn.length?" · "+esc(r.warn[0]):""}</small></span>`).join("")}</div>`:""}
     ${logView()}
@@ -4299,10 +4318,316 @@ document.addEventListener("submit",e=>{
   if(f.dataset.stars==null){ toast("Pick how many stars you got."); return; }
   const accs=list().filter(q=>!q.demo), a=accs.find(q=>q.id===ADV.acc)||accs[0]; if(!a) return;
   const th=analyze(a).th, stars=+f.dataset.stars, pct=Math.max(0,Math.min(100,+(f.elements.pct.value||(stars===3?100:stars===2?75:stars===1?50:20))));
-  ADV.log=(ADV.log||[]).concat({plan:f.dataset.advlog,acc:a.id,myTh:th,opTh:ADV.opTh||th,traits:{...ADV.traits},stars,pct,at:Date.now()}).slice(-300);
+  const sty=f.dataset.style||(PLAYBOOK.find(q=>q.id===f.dataset.advlog)||{}).style;
+  ADV.log=(ADV.log||[]).concat({plan:f.dataset.advlog,style:sty,acc:a.id,myTh:th,opTh:ADV.opTh||th,traits:{...ADV.traits},stars,pct,at:Date.now()}).slice(-300);
   advSave(); toast(`Saved: ${stars}★ ${pct}%. The advisor will use it.`); rerAdv();
 });
 document.addEventListener("change",e=>{ if(e.target.dataset.adv==="opth"){ ADV.opTh=+e.target.value; advSave(); const y=scrollY; render(); scrollTo(0,y); } });
+/* =====================================================================
+   The planner: works an army out from THIS base and THIS account, step by step,
+   then tests it in a simple attack simulation. Plain rules and maths, no AI.
+   ===================================================================== */
+// What each troop is like. hp/dps are rough per-unit numbers at max level (relative, not the game's exact stats).
+// tags: splash, jump (ignores walls), def (goes for defenses), tank, swarm, ranged, heal, cheap, chain, spawn
+const UNIT={
+ 4000000:{hp:160,dps:30,sp:1.6,r:.6,t:["cheap"]},          4000001:{hp:70,dps:30,sp:1.6,r:3.5,t:["cheap","ranged"]},
+ 4000003:{hp:1500,dps:60,sp:1.0,r:.8,t:["tank","def"]},     4000004:{hp:100,dps:0,sp:2.0,r:.6,t:["wallbreak"]},
+ 4000005:{hp:700,dps:250,sp:.8,r:.5,air:1,t:["def","swarm","splash"]}, 4000006:{hp:230,dps:200,sp:1.6,r:3,t:["splash","ranged"]},
+ 4000007:{hp:1500,dps:0,sp:1.6,r:5,air:1,t:["heal"]},       4000008:{hp:4000,dps:350,sp:1.4,r:2.5,air:1,t:["splash"]},
+ 4000009:{hp:6500,dps:700,sp:1.0,r:.8,t:["tank","hit"]},    4000010:{hp:120,dps:60,sp:2.6,r:2.75,air:1,t:["cheap"]},
+ 4000011:{hp:1000,dps:130,sp:2.4,r:.6,t:["def","jump","swarm"]}, 4000012:{hp:1500,dps:200,sp:2.0,r:.6,t:["splash"]},
+ 4000013:{hp:9000,dps:50,sp:.8,r:1,t:["tank","def"]},       4000015:{hp:400,dps:150,sp:1.2,r:4,t:["spawn","ranged"]},
+ 4000017:{hp:8000,dps:20,sp:1.4,r:.8,air:1,t:["tank","airtank"]}, 4000022:{hp:700,dps:120,sp:1.2,r:3,t:["splash","ranged"]},
+ 4000023:{hp:1700,dps:150,sp:1.8,r:2.5,air:1,t:["splash"]},4000024:{hp:1100,dps:150,sp:2.0,r:.6,t:["jump","swarm"]},
+ 4000053:{hp:4000,dps:300,sp:1.4,r:.8,t:["tank","hit","spawn"]}, 4000058:{hp:3000,dps:30,sp:1.0,r:.8,t:["tank","def"]},
+ 4000059:{hp:4800,dps:400,sp:1.2,r:3,air:1,t:["chain","splash"]}, 4000063:{hp:2000,dps:400,sp:1.6,r:3,air:1,t:["hit"]},
+ 4000065:{hp:5000,dps:450,sp:1.6,r:.8,air:1,t:["def","hit"]}, 4000082:{hp:500,dps:200,sp:2.0,r:.6,t:["cheap"]},
+ 4000095:{hp:8000,dps:250,sp:1.2,r:4,t:["tank","splash"]}, 4000097:{hp:1000,dps:150,sp:1.6,r:4,t:["support"]},
+ 4000110:{hp:7000,dps:220,sp:1.4,r:.8,t:["def","jump","tank"]}, 4000132:{hp:1500,dps:280,sp:1.4,r:7,t:["ranged","splash"]},
+ 4000147:{hp:9000,dps:400,sp:1.4,r:.8,t:["tank","hit","spawn"]}, 4000028:{hp:300,dps:0,sp:2.4,r:.6,t:["wallbreak"]},
+ 4000080:{hp:3600,dps:600,sp:1.2,r:3,t:["splash","ranged","hit"]}, 4000026:{hp:1000,dps:180,sp:1.8,r:.6,t:["swarm"]},
+ 4000056:{hp:5000,dps:450,sp:2.0,r:.6,t:["jump","hit"]}, 4000064:{hp:5000,dps:450,sp:2.0,r:.6,t:["splash","hit"]},
+ 4000081:{hp:9000,dps:600,sp:1.2,r:3,air:1,t:["splash","hit"]}, 4000177:{hp:12000,dps:200,sp:.8,r:1,t:["tank","def"]},
+ 4000123:{hp:1800,dps:100,sp:1.6,r:4,t:["heal"]}, 4000150:{hp:3000,dps:100,sp:1.0,r:4,t:["spawn"]}
+};
+// how good each troop is as a main hitter, and the Town Hall where it's at its best; it fades a little each TH after
+const VALUE={4000005:[.6,13],4000008:[.75,11],4000011:[.7,11],4000024:[.7,12],4000022:[.7,12],4000015:[.5,11],4000006:[.5,9],4000012:[.6,10],4000009:[.6,10],
+  4000023:[.5,9],4000053:[.8,14],4000147:[.85,17],4000059:[.8,14],4000065:[.85,16],4000110:[.95,18],4000132:[.8,18],4000080:[.85,17],4000081:[.75,14],
+  4000056:[.7,15],4000063:[.6,13],4000026:[.5,11],4000064:[.6,13],4000003:[.3,8],4000000:[.2,5],4000001:[.2,5]};
+const unitValue=(u,th)=>{ const v=VALUE[u]; if(!v) return .4; return Math.max(.15,v[0]-Math.max(0,th-v[1])*.06); };
+const HERO_U={28000000:{hp:10000,dps:600,sp:1.6,r:.8},28000001:{hp:4000,dps:700,sp:2.0,r:5},28000002:{hp:3500,dps:200,sp:1.6,r:5,aura:1},
+  28000004:{hp:6000,dps:800,sp:2.4,r:.8,def:1},28000006:{hp:3000,dps:500,sp:2.0,r:3,air:1},28000007:{hp:7000,dps:700,sp:1.6,r:3,air:1}};
+const has=(u,t)=>UNIT[u]&&UNIT[u].t.includes(t);
+const lvRatio=(a,th,u)=>{ const base=SUPER_OF[u]||u, l=myLv(a,base), c=capAt(base,th)||l||1; return l?Math.min(1,l/c):0; };
+const pctS=x=>Math.round(x*100)+"%";
+
+function planFor(a,th,opts={}){
+  const tr=ADV.traits, an=SHOT&&SHOT.an, C=capacity(a,th), T=[];   // T = the thinking, step by step
+  const think=(h,t)=>T.push({h,t});
+  const units=Object.keys(UNIT).map(Number).filter(u=>haveTroop(a,th,u)&&HS[u]&&(!SUPER_OF[u]||lvRatio(a,th,u)>=.8));
+  const str=u=>lvRatio(a,th,u);
+  // 1. what you're good with
+  const fighters=units.filter(u=>!has(u,"cheap")&&!has(u,"wallbreak")&&!has(u,"heal")).sort((x,y)=>str(y)*HS[y]-str(x)*HS[x]);
+  const strongest=fighters.filter(u=>str(u)>=.85).slice(0,5), weak=fighters.filter(u=>str(u)<.6).slice(0,3);
+  const heroes=Object.keys(HERO_U).map(Number).filter(h=>myLv(a,h)>0), hStr=heroes.length?heroes.reduce((s,h)=>s+(capAt(h,th)?myLv(a,h)/capAt(h,th):1),0)/heroes.length:0;
+  think("What you're strongest with",`${strongest.length?strongest.map(u=>`${name(u)} (${pctS(str(u))})`).join(", "):"nothing is near max yet"}${weak.length?`. Weaker: ${weak.map(u=>`${name(u)} (${pctS(str(u))})`).join(", ")}`:""}. Heroes average ${pctS(hStr)} of max for TH${th}.`);
+  // 2. air or ground for this base
+  const best=(list)=>list.sort((x,y)=>str(y)-str(x)).slice(0,2);
+  const airMain=best(units.filter(u=>UNIT[u].air&&!has(u,"cheap")&&!has(u,"heal")&&!has(u,"airtank")));
+  const gndMain=best(units.filter(u=>!UNIT[u].air&&!has(u,"cheap")&&!has(u,"wallbreak")&&!has(u,"heal")&&!has(u,"support")));
+  const avg=l=>l.length?l.reduce((s,u)=>s+str(u),0)/l.length:0;
+  const best2=l=>l.map(u=>str(u)*.5+unitValue(u,th)*.5).sort((x,y)=>y-x).slice(0,2), av=l=>l.length?l.reduce((s,x)=>s+x,0)/l.length:0;
+  let air=av(best2(airMain.length?units.filter(u=>UNIT[u].air&&!has(u,"cheap")&&!has(u,"heal")&&!has(u,"airtank")):[]))*8, gnd=av(best2(units.filter(u=>!UNIT[u].air&&!has(u,"cheap")&&!has(u,"wallbreak")&&!has(u,"heal")&&!has(u,"support")&&!(has(u,"tank")&&!has(u,"hit")))))*8; const why={air:[],gnd:[]};
+  const mod=(k,v,txt)=>{ if(!v) return; if(k==="air") air+=v; else gnd+=v; why[k].push(`${v>0?"+":""}${v} ${txt}`); };
+  if(tr.air==="open") mod("air",1.5,"Air Defenses easy to reach"); if(tr.air==="tight") mod("air",-1.5,"Air Defenses deep inside");
+  if(tr.shape==="boxed"){ mod("air",1.5,"walls don't stop flyers"); mod("gnd",-1,"many wall layers"); }
+  if(tr.shape==="spread"){ mod("gnd",1,"spread defenses suit wall-jumpers"); mod("air",-.5,"flyers drift apart on spread bases"); }
+  if(tr.shape==="compact"){ mod("air",.5,"compact base keeps flyers together"); mod("gnd",.5,"splash troops love compact bases"); }
+  if(tr.core==="strong") mod("gnd",1,"strong core needs heavy hitters"); if(tr.core==="weak") mod("air",1,"weak core falls to a flying wave");
+  if(tr.inferno==="multi"){ mod("air",-.5,"Multi Infernos shred swarms"); }
+  mod("gnd",+(hStr*1.5).toFixed(1),"heroes carry ground attacks"); mod("air",+(hStr*.5).toFixed(1),"heroes help less in air attacks");
+  const sw=an?an.P.filter(m=>m.t==="sweep").length:0; if(sw) mod("air",-.5*sw,`${sw} Air Sweeper${sw>1?"s":""}`);
+  // your own results so far
+  const log=(ADV.log||[]).filter(e=>e.style), res=k=>{ const L=log.filter(e=>e.style===k); return L.length?L.reduce((s,e)=>s+e.stars,0)/L.length:null; };
+  const ra=res("Air"), rg=res("Ground"); if(ra!=null&&rg!=null&&Math.abs(ra-rg)>=.3){ const k=ra>rg?"air":"gnd"; mod(k,+((Math.abs(ra-rg))*1.5).toFixed(1),"your own logged results"); }
+  const style=opts.style||(air>=gnd?"Air":"Ground");
+  think("Air or ground?",`Air ${air.toFixed(1)} vs ground ${gnd.toFixed(1)}. ${why.air.length?`Air: ${why.air.join(", ")}. `:""}${why.gnd.length?`Ground: ${why.gnd.join(", ")}. `:""}${opts.style?`Trying ${style.toLowerCase()} to compare.`:`→ ${style}.`}`);
+  // 3. main hitter
+  const pool=units.filter(u=>(style==="Air")===!!UNIT[u].air&&!has(u,"cheap")&&!has(u,"wallbreak")&&!has(u,"heal")&&!has(u,"support")&&!has(u,"airtank"));
+  const score=u=>{ const val=unitValue(u,th); let s=str(u)*3+val*5, r=[`${pctS(str(u))} levelled, worth ${val.toFixed(2)} at TH${th}`];
+    const add=(v,t)=>{ s+=v; r.push(t); };
+    if(tr.shape==="compact"&&(has(u,"splash")||has(u,"chain"))) add(1.5,"splash on a compact base");
+    if(tr.shape==="spread"&&(has(u,"jump")||has(u,"def"))) add(1.5,"goes straight for spread defenses");
+    if(tr.shape==="boxed"&&(has(u,"jump")||UNIT[u].air)) add(2,"ignores walls");
+    if(tr.core==="strong"&&(has(u,"hit")||has(u,"tank"))) add(1.5,"breaks a strong core");
+    if(tr.inferno==="single"&&has(u,"swarm")) add(1.5,"many units beat Single Infernos");
+    if(tr.inferno==="multi"&&has(u,"swarm")) add(-1.5,"Multi Infernos melt swarms");
+    if(tr.inferno==="multi"&&has(u,"tank")) add(1,"tanky units survive Multi Infernos");
+    if(has(u,"tank")&&!has(u,"hit")) add(-1.5,"a tank, not a hitter");
+    return {u,s,r}; };
+  const ranked=pool.map(score).sort((x,y)=>y.s-x.s);
+  if(!ranked.length) return null;
+  const main=ranked[0].u; let second=null;
+  const pair={4000011:[4000024],4000024:[4000011],4000005:[4000008,4000023],4000008:[4000005],4000059:[4000005],4000022:[4000015,4000006],4000053:[4000015,4000022],4000147:[4000015],4000110:[4000012],4000065:[4000008],4000080:[4000012],4000132:[4000012]};
+  second=(pair[main]||[]).find(u=>haveTroop(a,th,u)&&str(u)>=.5)||null;
+  think("Main troops",`${ranked.slice(0,3).map(c=>`${name(c.u)} ${c.s.toFixed(1)} (${c.r.join(", ")})`).join(" · ")} → ${name(main)}${second?` with ${name(second)}`:""}.`);
+  // 4. tank / support / funnel
+  let tank=null, healers=0, why4=[];
+  const fragile=u=>has(u,"ranged")&&UNIT[u].hp/HS[u]<300;
+  if(style==="Ground"){
+    if(fragile(main)||(tr.core==="strong"&&!has(main,"jump"))){ tank=[4000058,4000013,4000095,4000053,4000009,4000003].filter(u=>haveTroop(a,th,u)&&u!==main).sort((x,y)=>str(y)-str(x))[0]||null; if(tank) why4.push(`${name(main)} ${fragile(main)?"is fragile":"needs cover into a strong core"}, so ${name(tank)} go in front`); }
+    const aq=myLv(a,28000001), aqr=aq&&capAt(28000001,th)?aq/capAt(28000001,th):0;
+    if((has(main,"jump")||has(main,"def"))&&aqr>=.6&&haveTroop(a,th,4000007)){ healers=4; why4.push(`your Archer Queen is ${pctS(aqr)}: a Queen Walk with 4 Healers clears a side first`); }
+  }else{
+    if(main===4000005&&haveTroop(a,th,4000017)){ tank=4000017; why4.push("Balloons need Lava Hounds to soak up Air Defense fire"); }
+    else if(tr.air==="tight"&&haveTroop(a,th,4000017)){ tank=4000017; why4.push("deep Air Defenses: a Lava Hound or two to tank them"); }
+    if(!second&&main!==4000005&&haveTroop(a,th,4000005)&&tr.air!=="open"){ second=4000005; why4.push("Balloons to take out the Air Defenses in the way"); }
+  }
+  const funnel=style==="Air"?[4000082,4000010].find(u=>haveTroop(a,th,u)):[4000004].find(u=>haveTroop(a,th,u));
+  const funnel2=style==="Ground"?[4000006,4000012,4000001].find(u=>haveTroop(a,th,u)&&u!==main&&u!==second):null;
+  think("Support",why4.length?why4.join("; ")+".":`${name(main)} can hold up on its own here.`);
+  // 5. share out your camp space
+  const cap=C.camp, parts=[];
+  const add=(u,share,min=0)=>{ if(!u) return; const n=Math.max(min,Math.floor(share*cap/HS[u])); if(n>0) parts.push([u,n]); };
+  if(healers) parts.push([4000007,healers]);
+  const left=cap-healers*14;
+  const even=second&&has(main,"jump")&&has(second,"jump");
+  const sMain=second?(even?.4:.55):.72, sSec=second?(even?.36:.22):0, sTank=tank?(style==="Air"?.12:.14):0;
+  add(main,sMain*left/cap,1); add(second,sSec*left/cap); add(tank,sTank*left/cap,1);
+  if(style==="Ground"){ add(funnel,.03,2); add(funnel2,.06,2); } else add(funnel,.04,2);
+  const used=()=>parts.reduce((s,[u,n])=>s+n*HS[u],0);
+  while(used()>cap){ const i=parts.findIndex(([u])=>u===main); parts[i][1]--; }
+  for(const u of [main,second,funnel2,funnel,4000001,4000000].filter(Boolean)){ if(!haveTroop(a,th,u)) continue; while(used()+HS[u]<=cap){ const i=parts.findIndex(([q])=>q===u); if(i<0) parts.push([u,1]); else parts[i][1]++; } }
+  const troops=parts.filter(([,n])=>n>0);
+  think("Fitting your camps",`${cap} space: ${troops.map(([u,n])=>`${n} ${name(u)} (${n*HS[u]})`).join(" + ")} = ${used()}.`);
+  // 6. spells, each for a reason
+  const sp=[], why6=[]; let room=C.spells;
+  const own=s=>myLv(a,s)>0;
+  const put=(s,n,txt)=>{ if(!own(s)||n<=0) return 0; n=Math.min(n,Math.floor(room/SPH[s])); if(n<=0) return 0; const i=sp.findIndex(([q])=>q===s); if(i<0) sp.push([s,n]); else sp[i][1]+=n; room-=n*SPH[s]; why6.push(`${n} ${name(s).replace(" Spell","")}: ${txt}`); return n; };
+  const nInf=an?an.P.filter(m=>m.t==="inf").length:(tr.inferno?2:1), nEagle=an?an.P.filter(m=>m.t==="eagle").length:(tr.eagle?1:0);
+  if(style==="Air"&&tr.air==="tight"&&th<=13&&own(26000000)){ const z=Math.max(2,Math.min(5,(ADV.opTh||th)-7)); put(26000000,z,"zap the deepest Air Defense (roughly enough at this Town Hall)"); put(26000010,1,"finishes the zapped Air Defense"); }
+  if(has(main,"jump")||has(second||0,"jump")){ put(26000001,(main===4000011||second===4000011)?3:2,"keep the Hogs/Miners alive through bomb spots"); }
+  put(26000002,style==="Air"?2:2,`speed up and power up the ${name(main)} in the core`);
+  if(nInf+nEagle) put(26000005,Math.min(3,nInf+nEagle),`stop ${nInf} Inferno${nInf===1?"":"s"}${nEagle?" and the Eagle":""} when the army reaches them`);
+  if(style==="Ground"&&tr.shape==="boxed") put(26000003,1,"jump over the wall layers into the core")||put(26000010,2,"break the wall layers");
+  if(main===4000005||second===4000005) put(26000011,1,"Haste so Balloons don't get stuck");
+  const ccIn=an&&an.P.find(m=>m.t==="cc"); if(ccIn||tr.core==="strong") put(26000009,1,"kill the Clan Castle troops");
+  for(const s of [26000002,26000001,26000011,26000000]) while(room>=SPH[s]&&own(s)) { const i=sp.findIndex(([q])=>q===s); if(i<0) sp.push([s,1]); else sp[i][1]++; room-=SPH[s]; }
+  think("Spells",why6.join("; ")+(room?"":`; the rest is extra Rage.`));
+  // 7. siege, Clan Castle, heroes
+  const siegeWant=style==="Air"?(nEagle?4000052:4000062):(tr.core==="strong"?4000051:4000075);
+  const siegeOwn=myLv(a,siegeWant)>0, siegeAlt=SIEGE_ALT.find(s=>myLv(a,s)>0);
+  const siege=siegeOwn?siegeWant:C.cc.siege?siegeWant:siegeAlt||null;
+  const siegeNote=!siegeOwn&&C.cc.siege&&siege?`Request the ${name(siege)} in your Clan Castle`:"";
+  think("Siege machine",siege?`${name(siege)}: ${style==="Air"?(nEagle?"carries your Clan Castle troops straight to the Eagle":"Stone Slammer smashes the Air Defenses"):(tr.core==="strong"?"Wall Wrecker drives a path into the core":"Siege Barracks adds troops to the funnel")}${siegeNote?" (from your Clan Castle)":""}.`:"none available yet.");
+  const cct=[]; let ccu=0; for(const u of [main,second,4000010,4000001]){ if(!u||!HS[u]) continue; while(ccu+HS[u]<=C.cc.t){ const i=cct.findIndex(([q])=>q===u); if(i<0) cct.push([u,1]); else cct[i][1]++; ccu+=HS[u]; } }
+  const ccs=[]; let ccsu=0; for(const s of [26000005,26000002,26000009]) while(ccsu+SPH[s]<=C.cc.s&&ccs.length<3){ const i=ccs.findIndex(([q])=>q===s); if(i<0) ccs.push([s,1]); else ccs[i][1]++; ccsu+=SPH[s]; if(s===26000002) break; }
+  const hr=h=>{ const c=capAt(h,th); return c?myLv(a,h)/c:0; };
+  const owned=Object.keys(LOADOUT).map(Number).filter(h=>myLv(a,h)>0).sort((x,y)=>hr(y)-hr(x));
+  const gear=owned.map((h,i)=>[h,pickGear(a,h,null),i<4]);
+  // 8. start side
+  let entryTxt="Tap the key buildings on a screenshot to get a start side.";
+  if(an){ const e=entryFor(an,style); entryTxt=`From the ${e.nm}: ${style==="Air"?"the Air Defenses there are reachable early":"the least firepower faces you there"}${e.sw?", but an Air Sweeper faces it":""}.`; }
+  think("Where to start",entryTxt);
+  const A={troops,used:used(),cap,spells:sp.filter(([,n])=>n>0),sp:C.spells-room,sc:C.spells,cc:cct,ccu,ccCap:C.cc,ccs,ccsu,siege,siegeNote,gear,notes:[],slots:4};
+  const title=`${style}: ${name(main)}${second?` + ${name(second)}`:""}${tank&&tank!==main?` with ${name(tank)}`:""}${healers?" (Queen Walk)":""}`;
+  return {id:"custom:"+style+":"+main,title,style,main,second,tank,A,T};
+}
+
+/* ---------------- the attack simulation ----------------
+   A simple model: troops walk to their nearest target, defenses shoot the nearest troop in range,
+   spells go off when the army reaches them. Rough on purpose: it shows how the plan unfolds, not the game's exact result. */
+const SDEF={th:{hp:9000,dps:0,r:0},ad:{hp:1500,dps:550,r:10,air:1},eagle:{hp:4000,dps:350,r:30,both:1,splash:2.5,delay:20},
+  inf:{hp:3500,dps:1100,r:9,both:1,single:1},scat:{hp:4000,dps:300,r:10,both:1,splash:2},sweep:{hp:1500,dps:0,r:15,push:1},cc:{hp:4000,dps:0,r:12,spawn:1},
+  gen:{hp:1500,dps:0,r:0},gdef:{hp:2200,dps:200,r:9,both:1}};
+const SIMK={defEvery:3,troopF:1.05,defF:1};
+function simSetup(plan,a,th){
+  const an=SHOT.an, D=an.D, K=SHOT.w/SHOT.px.W, tile=(2*D.hx*K)/46, opF=.45+.55*Math.min(1,(ADV.opTh||th)/17), P=SHOT.px;
+  const B=[];
+  for(const m of an.P){ const d=SDEF[m.t]; B.push({k:m.t,x:m.x*SHOT.w,y:m.y*SHOT.h,hp:d.hp*opF,max:d.hp*opF,...d,dps:d.dps*opF*SIMK.defF,frz:0}); }
+  // other buildings: where the picture isn't grass inside the base, every ~3 tiles; some are generic defenses
+  const step=Math.max(6,Math.round(3*tile/K)); let i=0;
+  for(let y=0;y<P.H;y+=Math.max(2,Math.round(step*.6))) for(let x=0;x<P.W;x+=step){
+    const u=(x-D.mx)/D.hx, v=(y-D.my)/D.hy; if(Math.abs(u)+Math.abs(v)>an.S*.98) continue;
+    let st=0,n=0; for(let dy=-1;dy<=1;dy++) for(let dx=-1;dx<=1;dx++){ const q=(y+dy)*P.W+x+dx; if(q<0||q>=P.W*P.H) continue; n++; st+=1-(an.D.isG?an.D.isG[q]:0); }
+    if(st/n<.6) continue; const X=x*K, Y=y*K; if(B.some(b=>Math.hypot(b.x-X,b.y-Y)<tile*2.2)) continue;
+    const d=(i++%SIMK.defEvery===0)?SDEF.gdef:SDEF.gen; B.push({k:d===SDEF.gdef?"gdef":"gen",x:X,y:Y,hp:d.hp*opF,max:d.hp*opF,...d,dps:d.dps*opF*SIMK.defF,frz:0}); }
+  const onPic=p=>[Math.max(SHOT.w*.04,Math.min(SHOT.w*.96,p[0])),Math.max(SHOT.h*.05,Math.min(SHOT.h*.95,p[1]))];
+  const e=entryFor(an,plan.style), S=onPic(dpt(an,e.th,1.08)), fl=onPic(dpt(an,e.th-.55,1.02)), fr=onPic(dpt(an,e.th+.55,1.02)), perp=e.th+Math.PI/2;
+  const T=[], A=plan.A;
+  const spawn=(u,n,at,where,spread,hero)=>{ const st=hero?HERO_U[u]:UNIT[u]; if(!st) return; const f=.55+.45*(hero?(capAt(u,th)?myLv(a,u)/capAt(u,th):1):lvRatio(a,th,u));
+    for(let j=0;j<n;j++){ const o=(j-(n-1)/2)*spread*tile; T.push({u,hero:!!hero,x:where[0]+Math.cos(perp)*o*(hero?0:1),y:where[1]+Math.sin(perp)*o*.6,hp:st.hp*f*SIMK.troopF,max:st.hp*f*SIMK.troopF,dps:st.dps*f*SIMK.troopF,sp:st.sp*tile,r:Math.max(.7,st.r)*tile,air:!!st.air,def:hero?!!st.def:has(u,"def"),heal:hero?0:has(u,"heal"),jump:!hero&&has(u,"jump"),at,wb:!hero&&has(u,"wallbreak"),tgt:null}); } };
+  const order=A.troops.map(([u,n])=>({u,n,role:has(u,"wallbreak")||has(u,"cheap")?"funnel":has(u,"tank")||has(u,"airtank")?"tank":has(u,"heal")?"heal":"main"}));
+  for(const o of order){ if(o.role==="funnel"){ const h=Math.ceil(o.n/2); spawn(o.u,h,0,fl,.6); spawn(o.u,o.n-h,0,fr,.6); } }
+  for(const o of order){ if(o.role==="heal") spawn(o.u,o.n,1,fl,.4); }
+  for(const o of order){ if(o.role==="tank") spawn(o.u,o.n,3,S,1.2); }
+  for(const o of order){ if(o.role==="main") spawn(o.u,o.n,6,S,Math.min(1.2,12/o.n)); }
+  if(A.siege) T.push({u:A.siege,x:S[0],y:S[1],hp:5000,max:5000,dps:300,sp:1.4*tile,r:tile,air:A.siege===4000052,def:false,at:6,siege:1,tgt:null});
+  A.gear.filter(g=>g[2]).forEach(([h],i)=>spawn(h,1,8+i,i===1&&order.some(o=>o.role==="heal")?fl:S,0,1));
+  // spells: the planner's spots
+  const spots=[]; shotPlan({style:plan.style},a,th,A); for(const s of an.spots||[]) spots.push({...s,used:false});
+  const nsp=id=>(A.spells.find(([q])=>q===id)||[0,0])[1];
+  return {B,T,t:0,tile,spells:{rage:nsp(26000002),freeze:nsp(26000005),heal:nsp(26000001),zap:nsp(26000000)+nsp(26000010)},spots,fx:[],zones:[],boxed:ADV.traits.shape==="boxed",shots:[],start:S,ccOut:false};
+}
+function simStep(W,dt){
+  W.t+=dt; const live=W.T.filter(q=>q.hp>0&&q.at<=W.t), bl=W.B.filter(b=>b.hp>0);
+  // zap the nearest Air Defense at the start
+  if(W.spells.zap&&W.t>=.5&&!W.zapped){ W.zapped=1; const ad=bl.filter(b=>b.k==="ad").sort((p,q)=>Math.hypot(p.x-W.start[0],p.y-W.start[1])-Math.hypot(q.x-W.start[0],q.y-W.start[1]))[0]; if(ad){ ad.hp-=W.spells.zap*480; W.zones.push({x:ad.x,y:ad.y,r:W.tile*2,c:"#fff36b",until:W.t+1.2}); } }
+  // spells fire when enough of your army is inside the spot
+  for(const s of W.spots){ if(s.used) continue; const inside=live.filter(q=>!q.heal&&Math.hypot(q.x-s.x,q.y-s.y)<s.r*1.6).length;
+    if(inside>=3||(s.l==="FREEZE"&&inside>=1)){ const kind=/RAGE|WARDEN/.test(s.l)?"rage":"freeze"; if(kind==="rage"&&W.spells.rage<=0) continue; if(kind==="freeze"&&W.spells.freeze<=0) continue;
+      s.used=true; if(kind==="rage") W.spells.rage--; else W.spells.freeze--; W.zones.push({x:s.x,y:s.y,r:s.r*1.6,c:kind==="rage"?"#d070ff":"#7fd8ff",kind,until:W.t+(kind==="rage"?8:5)}); } }
+  // freeze any Inferno or Eagle the army is fighting, if Freezes are left
+  if(W.spells.freeze>0) for(const b of bl){ if((b.k==="inf"||b.k==="eagle")&&!b.frz&&live.filter(q=>Math.hypot(q.x-b.x,q.y-b.y)<b.r*W.tile*.6).length>=3){ W.spells.freeze--; b.frz=W.t+5; W.zones.push({x:b.x,y:b.y,r:W.tile*3.5,c:"#7fd8ff",kind:"freeze",until:W.t+5}); break; } }
+  const zones=W.zones.filter(z=>z.until>W.t);
+  // heal when the main group is hurting
+  if(W.spells.heal>0){ const hurt=live.filter(q=>(q.jump||q.def)&&q.hp<q.max*.6); if(hurt.length>=4){ const cx=hurt.reduce((s,q)=>s+q.x,0)/hurt.length, cy=hurt.reduce((s,q)=>s+q.y,0)/hurt.length; W.spells.heal--; W.zones.push({x:cx,y:cy,r:W.tile*5,c:"#ffe066",kind:"heal",until:W.t+6}); } }
+  for(const z of zones) if(z.kind==="heal") for(const q of live) if(Math.hypot(q.x-z.x,q.y-z.y)<z.r) q.hp=Math.min(q.max,q.hp+q.max*.12*dt);
+  // Clan Castle troops come out when you get close
+  const cc=W.B.find(b=>b.k==="cc"); if(cc&&!W.ccOut&&live.some(q=>Math.hypot(q.x-cc.x,q.y-cc.y)<12*W.tile)){ W.ccOut=true; W.B.push({k:"ccdef",x:cc.x,y:cc.y,hp:3500,max:3500,dps:260,r:3,both:1,frz:0,mob:1,sp:1.2*W.tile}); }
+  // troops
+  const W0=W.T.filter(q=>q.wb&&q.hp>0).length;
+  for(const q of live){
+    if(q.heal){ const f=live.filter(o=>o!==q&&!o.heal).sort((p,o)=>Math.hypot(p.x-q.x,p.y-q.y)-Math.hypot(o.x-q.x,o.y-q.y))[0]; if(f){ const d=Math.hypot(f.x-q.x,f.y-q.y); if(d>q.r){ q.x+=(f.x-q.x)/d*q.sp*dt; q.y+=(f.y-q.y)/d*q.sp*dt; } for(const o of live) if(!o.air&&Math.hypot(o.x-f.x,o.y-f.y)<2*W.tile) o.hp=Math.min(o.max,o.hp+60*dt); } continue; }
+    if(q.wb){ const t=bl.sort((p,o)=>Math.hypot(p.x-q.x,p.y-q.y)-Math.hypot(o.x-q.x,o.y-q.y))[0]; if(t){ const d=Math.hypot(t.x-q.x,t.y-q.y); if(d<W.tile){ q.hp=0; } else { q.x+=(t.x-q.x)/d*q.sp*dt; q.y+=(t.y-q.y)/d*q.sp*dt; } } continue; }
+    if(!q.tgt||q.tgt.hp<=0){ const pool=bl.filter(b=>b.hp>0&&b.k!=="ccdef"&&(q.siege?b.k==="th"||b.k==="eagle":q.def?b.dps>0||b.k==="th"||b.k==="ad":true)); const list=pool.length?pool:bl.filter(b=>b.hp>0);
+      q.tgt=list.sort((p,o)=>Math.hypot(p.x-q.x,p.y-q.y)-Math.hypot(o.x-q.x,o.y-q.y))[0]||null; }
+    const t=q.tgt; if(!t) continue; const d=Math.hypot(t.x-q.x,t.y-q.y);
+    const rage=zones.some(z=>z.kind==="rage"&&Math.hypot(q.x-z.x,q.y-z.y)<z.r)?1.5:1;
+    if(d>q.r){ let v=q.sp*(rage>1?1.3:1); if(!q.air&&!q.jump&&W.boxed&&W.t>10&&!W0) v*=.6; q.x+=(t.x-q.x)/d*v*dt; q.y+=(t.y-q.y)/d*v*dt; }
+    else { t.hp-=q.dps*rage*dt; if(Math.random()<.08) W.shots.push({x1:q.x,y1:q.y,x2:t.x,y2:t.y,c:q.air?"#9ef0ff":"#ffd27a",until:W.t+.15}); }
+  }
+  // defenses
+  for(const b of W.B){ if(b.hp<=0||!b.dps) continue; if(b.frz&&b.frz>W.t) continue; if(b.delay&&W.t<b.delay) continue;
+    if(b.mob){ const n=live.filter(q=>!q.air||b.both).sort((p,o)=>Math.hypot(p.x-b.x,p.y-b.y)-Math.hypot(o.x-b.x,o.y-b.y))[0]; if(n){ const d=Math.hypot(n.x-b.x,n.y-b.y); if(d>b.r*W.tile){ b.x+=(n.x-b.x)/d*b.sp*dt; b.y+=(n.y-b.y)/d*b.sp*dt; } } }
+    const inR=live.filter(q=>(b.air?q.air:b.both?true:!q.air)&&Math.hypot(q.x-b.x,q.y-b.y)<b.r*W.tile).sort((p,o)=>Math.hypot(p.x-b.x,p.y-b.y)-Math.hypot(o.x-b.x,o.y-b.y));
+    if(!inR.length) continue; const t=inR[0];
+    if(b.single){ t.hp-=b.dps*dt; } else if(b.k==="inf"){ for(const q of inR.slice(0,5)) q.hp-=b.dps*.16*dt; }
+    else if(b.splash){ for(const q of live) if(Math.hypot(q.x-t.x,q.y-t.y)<b.splash*W.tile) q.hp-=b.dps*dt*(q.hero?.5:1); }
+    else t.hp-=b.dps*dt;
+    if(Math.random()<.12) W.shots.push({x1:b.x,y1:b.y,x2:t.x,y2:t.y,c:b.k==="inf"?"#ff9f1a":b.k==="ad"?"#4fb3ff":"#ff6b6b",until:W.t+.12});
+    if(b.push){ for(const q of inR) if(q.air){ const d=Math.hypot(q.x-b.x,q.y-b.y)||1; q.x+=(q.x-b.x)/d*W.tile*.6*dt; q.y+=(q.y-b.y)/d*W.tile*.6*dt; } }
+  }
+  W.shots=W.shots.filter(s=>s.until>W.t);
+}
+function simScore(W){ const all=W.B.filter(b=>b.k!=="ccdef"), down=all.filter(b=>b.hp<=0).length, p=Math.round(down/Math.max(1,all.length)*100), th=all.find(b=>b.k==="th");
+  const st=(p>=50?1:0)+(th&&th.hp<=0?1:0)+(p>=100?1:0); return {pct:p,stars:Math.min(3,st)}; }
+function simDone(W){ const alive=W.T.some(q=>q.hp>0&&(q.at>W.t||!q.heal)); return W.t>=180||!alive||W.B.filter(b=>b.k!=="ccdef").every(b=>b.hp<=0); }
+// same seed every time so the preview and the animation agree
+function seeded(f){ let s=12345; const R=Math.random; Math.random=()=>((s=(s*16807)%2147483647)/2147483647); try{ return f(); } finally{ Math.random=R; } }
+function simRun(plan,a,th){ return seeded(()=>{ const W=simSetup(plan,a,th); while(!simDone(W)) simStep(W,.1); return {...simScore(W),t:Math.round(W.t)}; }); }
+
+/* ---------------- animation on the screenshot ---------------- */
+let SIM=null;
+function simPlay(plan,a,th){
+  SIM={W:null,plan,a,th,speed:3,playing:true}; // same seed as the preview, so it plays out the same way
+  const R0=Math.random; let s=12345; SIM.rand=()=>((s=(s*16807)%2147483647)/2147483647);
+  Math.random=SIM.rand; SIM.W=simSetup(plan,a,th); Math.random=R0;
+  SHOT.view="sim"; rerAdv(); setTimeout(()=>{ const c=document.getElementById("shotcv"); if(c) c.scrollIntoView({block:"center",behavior:"smooth"}); },50); let last=performance.now();
+  const tick=now=>{ if(!SIM||SHOT==null||SHOT.view!=="sim") return; const dt=Math.min(.1,(now-last)/1000)*SIM.speed; last=now;
+    if(SIM.playing&&!simDone(SIM.W)){ const R=Math.random; Math.random=SIM.rand; let k=dt; while(k>0){ simStep(SIM.W,Math.min(.1,k)); k-=.1; } Math.random=R; }
+    drawSim(); requestAnimationFrame(tick); };
+  requestAnimationFrame(tick);
+}
+function drawSim(){
+  const cv=document.getElementById("shotcv"); if(!cv||!SIM) return; drawShotBase(cv);
+  const g=cv.getContext("2d"), W=SIM.W, u=SHOT.w/600;
+  for(const z of W.zones.filter(z=>z.until>W.t)){ g.save(); g.globalAlpha=.28; g.fillStyle=z.c; g.beginPath(); g.ellipse(z.x,z.y,z.r,z.r*.6,0,0,Math.PI*2); g.fill(); g.restore(); }
+  for(const b of W.B){ if(b.k==="gen"||b.k==="gdef"){ if(b.hp<=0){ g.save(); g.strokeStyle="rgba(0,0,0,.65)"; g.lineWidth=2*u; g.beginPath(); g.moveTo(b.x-4*u,b.y-3*u); g.lineTo(b.x+4*u,b.y+3*u); g.moveTo(b.x+4*u,b.y-3*u); g.lineTo(b.x-4*u,b.y+3*u); g.stroke(); g.restore(); } continue; }
+    if(b.k==="ccdef"){ if(b.hp>0){ g.save(); g.fillStyle="#ff4d4d"; g.beginPath(); g.arc(b.x,b.y,4*u,0,Math.PI*2); g.fill(); g.restore(); } continue; }
+    const c=SHT[b.k]?SHT[b.k].c:"#fff"; g.save(); g.globalAlpha=b.hp>0?1:.35; g.fillStyle=b.hp>0?c:"#333"; g.strokeStyle="#000"; g.lineWidth=1.5*u; g.beginPath(); g.arc(b.x,b.y,6*u,0,Math.PI*2); g.fill(); g.stroke();
+    if(b.hp>0&&b.hp<b.max){ g.fillStyle="#000"; g.fillRect(b.x-8*u,b.y-11*u,16*u,2.5*u); g.fillStyle="#3ee08f"; g.fillRect(b.x-8*u,b.y-11*u,16*u*b.hp/b.max,2.5*u); }
+    if(b.frz>W.t){ g.strokeStyle="#7fd8ff"; g.lineWidth=2.5*u; g.beginPath(); g.arc(b.x,b.y,9*u,0,Math.PI*2); g.stroke(); } g.restore(); }
+  for(const s of W.shots){ g.save(); g.strokeStyle=s.c; g.globalAlpha=.8; g.lineWidth=1.2*u; g.beginPath(); g.moveTo(s.x1,s.y1); g.lineTo(s.x2,s.y2); g.stroke(); g.restore(); }
+  for(const q of W.T){ if(q.at>W.t||q.hp<=0) continue; g.save(); const r=q.hero?5*u:q.siege?4.5*u:Math.max(2.2*u,Math.min(4.5*u,Math.sqrt(HS[q.u]||1)*1.3*u));
+    g.fillStyle=q.hero?"#f5c542":q.heal?"#9dff9d":q.air?"#9ef0ff":"#ffffff"; g.strokeStyle="#000"; g.lineWidth=1*u; g.beginPath(); g.arc(q.x,q.y,r,0,Math.PI*2); g.fill(); g.stroke(); g.restore(); }
+  const sc=simScore(W), m=Math.max(0,180-W.t), mm=Math.floor(m/60), ss=String(Math.floor(m%60)).padStart(2,"0");
+  g.save(); g.fillStyle="rgba(0,0,0,.65)"; g.fillRect(8*u,8*u,150*u,26*u); g.fillStyle="#fff"; g.font=`800 ${12*u}px system-ui`; g.textBaseline="middle";
+  g.fillText(`${mm}:${ss}   ${sc.pct}%   `,14*u,21*u); g.fillStyle="#f5c542"; g.fillText("★".repeat(sc.stars)+"☆".repeat(3-sc.stars),100*u,21*u); g.restore();
+  const done=simDone(W); const lab=document.getElementById("simstate"); if(lab) lab.textContent=done?`Finished: ${sc.stars}★ ${sc.pct}% in ${Math.round(W.t)}s (simulated)`:`Simulating… ${sc.pct}%`;
+  const rp=document.querySelector('[data-sim="pause"]'); if(rp&&done&&rp.dataset.sim!=="replay"){ rp.dataset.sim="play"; rp.textContent="Replay"; }
+}
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-sim]"); if(!b) return; const k=b.dataset.sim;
+  if(k==="play"){ const P=window.__lastPlan; if(P) simPlay(P.plan,P.a,P.th); }
+  if(k==="pause"&&SIM){ SIM.playing=!SIM.playing; b.textContent=SIM.playing?"Pause":"Play"; }
+  if(k==="speed"&&SIM){ SIM.speed=SIM.speed===3?6:SIM.speed===6?12:3; b.textContent=`${SIM.speed/3}×`; }
+  if(k==="stop"){ SIM=null; if(SHOT) SHOT.view="plan"; rerAdv(); }
+});
+
+/* ---------------- the planner card ---------------- */
+let PLAN_CACHE={k:null,v:null};
+function plannerCard(a,th){
+  const key=JSON.stringify([a.id,a.v&&a.v.timestamp,ADV.traits,ADV.opTh,SHOT&&SHOT.marks,(ADV.log||[]).length]);
+  if(PLAN_CACHE.k===key&&PLAN_CACHE.v){ window.__lastPlan=PLAN_CACHE.plan; return PLAN_CACHE.v; }
+  const html=plannerCardRaw(a,th); PLAN_CACHE={k:key,v:html,plan:window.__lastPlan}; return html;
+}
+function plannerCardRaw(a,th){
+  let P=planFor(a,th); if(!P) return "";
+  let sims=null;
+  if(SHOT&&SHOT.an&&SHOT.an.P.some(m=>m.t==="th")){
+    const other=planFor(a,th,{style:P.style==="Air"?"Ground":"Air"});
+    const r1=simRun(P,a,th), r2=other?simRun(other,a,th):null;
+    const better=r2&&(r2.stars>r1.stars||(r2.stars===r1.stars&&r2.pct>r1.pct+5));
+    if(better){ const first=P.T.find(t=>/^Air or ground/.test(t.h));
+      other.T=[{h:"First idea",t:`${first?first.t.replace(/Trying \w+ to compare\./,"").trim():""} So ${P.style.toLowerCase()} came first: ${P.title}.`}].concat(other.T.filter(t=>!/^Air or ground/.test(t.h)));
+      other.T.push({h:"Tested both",t:`In the simulation ${P.style.toLowerCase()} scored ${r1.stars}★ ${r1.pct}% and ${other.style.toLowerCase()} ${r2.stars}★ ${r2.pct}%, so I switched to ${other.style.toLowerCase()}.`}); P=other; sims={me:r2,alt:r1}; }
+    else { P.T.push({h:"Tested both",t:`Simulated ${P.style.toLowerCase()} ${r1.stars}★ ${r1.pct}%${r2?` vs ${(P.style==="Air"?"ground":"air")} ${r2.stars}★ ${r2.pct}%`:""}: keeping ${P.style.toLowerCase()}.`}); sims={me:r1,alt:r2}; }
+  }
+  window.__lastPlan={plan:P,a,th};
+  const lr=learned(P.id,th,ADV.opTh||th);
+  return `<article class="advc best plan rv">
+    <header><span class="advrank mono">Worked out for this base</span><h3>${esc(P.title)}</h3><span class="advtag">${P.style}</span></header>
+    ${sims?`<p class="advsim">${glyph("bolt")}<span>Simulated result: <b>${"★".repeat(sims.me.stars)}${"☆".repeat(3-sims.me.stars)} ${sims.me.pct}%</b>. A rough model of the attack, not the game's exact outcome.</span>${SHOT&&SHOT.an?`<button type="button" class="shotview" data-sim="play">▶ Watch it</button>`:""}</p>`:`<p class="note">Upload a screenshot and tap the key buildings to test this plan in a simulated attack.</p>`}
+    ${lr?`<p class="advlr">${glyph("star")}<span>Your record with plans like this: <b>${lr.stars.toFixed(1)}★</b> · ${Math.round(lr.pct)}% over ${lr.n}</span></p>`:""}
+    <details class="think" open><summary>How I worked it out</summary><ol>${P.T.map(s=>`<li><b>${esc(s.h)}${/[?.]$/.test(s.h)?"":"."}</b> ${esc(s.t)}</li>`).join("")}</ol></details>
+    ${renderArmy(P.A,a,th)}
+    <form class="advlog" data-advlog="${esc(P.id)}" data-style="${P.style}"><span>Used it? Log the result:</span>
+      <div class="seg sm" role="group" aria-label="Stars">${[0,1,2,3].map(n=>`<button type="button" data-logstar="${n}" aria-pressed="false">${n}★</button>`).join("")}</div>
+      <input type="number" min="0" max="100" inputmode="numeric" placeholder="%" aria-label="Destruction %" name="pct"><button class="ghost" type="submit">Save</button></form>
+  </article>`;
+}
+
 
 /* ---------- boot ---------- */
 render();
