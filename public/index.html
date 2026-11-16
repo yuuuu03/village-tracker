@@ -1180,6 +1180,50 @@ body.gated>*:not(#gateWrap):not(#ground):not(.grain):not(#toast){visibility:hidd
 .sgrp{margin:22px 0 2px;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
 .sgrp:first-of-type{margin-top:6px}
 .sgrp:has(+ .sgrp),.sgrp:has(+ p.disc){display:none}
+/* ---------- calmer Home ---------- */
+.homeh{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 16px;margin:6px 0 16px}
+.homeh h1{margin:0;font-family:var(--display);font-weight:800;font-size:clamp(30px,4.4vw,44px);line-height:1}
+.homem{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;font-size:13px;color:var(--muted)}
+.hstreak{color:var(--gold);font-weight:600}
+.needs{display:grid;gap:2px;margin:0 0 14px;padding:12px 16px;border-radius:16px;box-shadow:inset 0 0 0 1px var(--line-2);background:color-mix(in srgb,var(--ink) 2.5%,transparent)}
+.needs.ok{background:transparent}
+.needh{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--ink-2);padding:2px 0 6px}
+.needh small{font-size:11px;padding:1px 7px;border-radius:999px;background:color-mix(in srgb,var(--hot) 16%,transparent);color:var(--hot)}
+.nok{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:color-mix(in srgb,#3ee08f 18%,transparent);color:#3ee08f}.nok svg{width:14px;height:14px}
+.need{display:grid;grid-template-columns:30px 1fr auto;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line-2);font-size:14px;color:var(--ink-2)}
+.need b{color:var(--ink);font-weight:600}
+.nic{display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:color-mix(in srgb,var(--gold) 12%,transparent);color:var(--gold)}
+.nic svg{width:17px;height:17px}
+.need.hot .nic{background:color-mix(in srgb,var(--hot) 14%,transparent);color:var(--hot)}
+.ghost.sm{padding:6px 12px;font-size:12.5px;text-decoration:none;white-space:nowrap}
+.stat1{margin:0 0 14px;font-size:14px;color:var(--ink-2)}
+.stat1 .bad{color:var(--hot);font-weight:600}.stat1 small{color:var(--muted)}
+.acards{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin:0 0 20px}
+.acard{display:grid;gap:3px;padding:12px 14px;border-radius:14px;text-decoration:none;color:var(--ink);background:color-mix(in srgb,var(--ink) 3%,transparent);box-shadow:inset 0 0 0 1px var(--line-2);transition:box-shadow .2s}
+.acard:hover{box-shadow:inset 0 0 0 1px var(--c)}
+.acard.hot{background:color-mix(in srgb,var(--hot) 9%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--hot) 35%,transparent)}
+.acard.hot b{color:var(--hot)}
+.ach{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink-2)}
+.ach i{width:8px;height:8px;border-radius:50%;background:var(--c)}.ach small{margin-left:auto;color:var(--muted);font-size:10.5px}
+.acard b{font-size:17px;font-weight:700}
+.acn{font-size:12px;color:var(--muted)}
+.fold{margin:0 0 12px;border-top:1px solid var(--line-2)}
+.fold>summary{list-style:none;display:flex;align-items:baseline;gap:10px;padding:14px 2px;cursor:pointer;font-weight:600;font-size:15px}
+.fold>summary::-webkit-details-marker{display:none}
+.fold>summary::after{content:"";margin-left:auto;width:9px;height:9px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:transform .2s;align-self:center}
+.fold[open]>summary::after{transform:rotate(-135deg)}
+.fold>summary small{font-weight:400;font-size:12.5px;color:var(--muted)}
+.fold .atkb,.fold .river{margin-top:0}
+.night1{margin:0 0 14px;border-radius:14px;box-shadow:inset 0 0 0 1px color-mix(in srgb,#8a96ff 28%,transparent);background:color-mix(in srgb,#5b6cff 7%,transparent);font-size:13.5px;color:var(--ink-2)}
+.night1.ok{display:flex;gap:10px;align-items:center;padding:8px 12px;background:transparent;box-shadow:inset 0 0 0 1px var(--line-2)}
+.night1>summary{list-style:none;display:flex;gap:10px;align-items:center;padding:8px 12px;cursor:pointer}
+.night1>summary::-webkit-details-marker{display:none}
+.night1>summary::after{content:"";margin-left:auto;width:8px;height:8px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:transform .2s}
+.night1[open]>summary::after{transform:rotate(-135deg)}
+.night1 b{color:var(--ink)}
+.night1 .nc-ic{width:26px;height:26px;font-size:14px;flex:none}
+.n1b{padding:0 14px 12px 48px}.n1b ul{margin:0 0 6px;padding-left:16px;display:grid;gap:3px}.n1b p{margin:0;color:var(--muted);font-size:12.5px}
+@media (max-width:600px){.acards{grid-template-columns:repeat(2,minmax(0,1fr))}.acard b{font-size:15px}}
 .advls{display:block;font-size:10.5px;color:var(--muted);margin-top:2px}
 .tgts{display:flex;flex-wrap:wrap;gap:6px}
 .tgt{display:grid;justify-items:center;gap:1px;min-width:44px;padding:6px 6px 5px;border-radius:10px;border:0;background:var(--chip,rgba(127,127,127,.12));color:var(--ink);cursor:pointer;font:inherit;box-shadow:inset 0 0 0 1px var(--line-2)}
@@ -1990,11 +2034,15 @@ function overviewView(accs){
   const axis=TICKS.map(([ms,l,minor])=>`<span class="${minor?"minor":""}" style="left:${pct(ms?xOf(ms):0)}">${l}</span>`).join("");
   const grid=TICKS.map(([ms],i)=>`<i class="${i?"":"now"}" style="left:${pct(ms?xOf(ms):0)}"></i>`).join("");
   const lanes=an.map(([a,x],li)=>lane(a,x,li,grid,now)).join("");
-  return freshBar(accs)+tonightCard(accs)+kpis+attackBoard(accs)+`<section class="river rv" style="--i:4">
+  const river=`<section class="river" style="--i:4">
     <div class="rhead"><h2>Time river</h2><div class="axis">${axis}</div></div>
     ${lanes}
     <div class="legend"><span><i></i>Builder</span><span><i class="l"></i>Lab</span><span><i class="p"></i>Pets</span><span><i class="b"></i>Builder Base</span></div>
   </section>`;
+  if(accs.some(a=>a.demo)) return freshBar(accs)+kpis+attackBoard(accs)+river;
+  return homeTop(accs,an,now)+tonightCard(accs)
+    +`<details class="fold rv" data-fold="river" ${HOMEFOLD.river?"open":""}><summary><span>Timeline</span><small>every upgrade, next 7 days</small></summary>${river}</details>`
+    +attackFold(accs);
 }
 function lane(a,x,li,grid,now){
   const c=colorOf(a), stale=now-a.ts*1000>36*3600e3;
@@ -2153,6 +2201,53 @@ function accountView(a, idx){
   </section>`;
 }
 
+
+/* ---------- Home: what needs you first, everything else quieter ---------- */
+let HOMEFOLD=(()=>{ try{ return JSON.parse(localStorage.getItem("cvt.homefold")||"{}"); }catch(e){ return {}; } })();
+document.addEventListener("toggle",e=>{ const d=e.target; if(!d.matches||!d.matches("details[data-fold]")) return; HOMEFOLD[d.dataset.fold]=d.open; try{ localStorage.setItem("cvt.homefold",JSON.stringify(HOMEFOLD)); }catch(er){} },true);
+const HI={hammer:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 12-8.5 8.5a2.1 2.1 0 0 1-3-3L12 9"/><path d="M17.6 15 22 10.6M20.9 11.7 14.3 5.1a4 4 0 0 0-5.6 0L8 5.8l5 5 1-1 2.6 2.6"/></svg>',
+  flask:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6L4.5 18.5A1.7 1.7 0 0 0 6 21h12a1.7 1.7 0 0 0 1.5-2.5L14 9V3"/><path d="M7 15h10"/></svg>',
+  paw:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="10" r="2"/><circle cx="9" cy="5.5" r="2"/><circle cx="15" cy="5.5" r="2"/><circle cx="19" cy="10" r="2"/><path d="M7.5 17c0-3 2-5.5 4.5-5.5s4.5 2.5 4.5 5.5c0 2-1.5 3-3 3h-3c-1.5 0-3-1-3-3z"/></svg>',
+  clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  sword:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="m13 19 6-6M16 16l4 4M19 21l2-2"/></svg>',
+  sync:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14.9-3M4 4v4h4M4 13a8 8 0 0 0 14.9 3M20 20v-4h-4"/></svg>',
+  ok:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>'};
+function homeTop(accs,an,now){
+  const real=an.filter(([a])=>!a.demo), N=[];
+  for(const [a,x] of real){
+    const go=`#${a.id}`, age=now-(a.ts?a.ts*1000:a.savedAt||now);
+    if(x.idle) N.push({p:0,ic:"hammer",hot:1,t:`<b>${esc(a.nick)}</b>: ${x.idle} builder${x.idle>1?"s":""} free`,btn:"Plan next",href:go});
+    if(x.hasLab&&!x.lab) N.push({p:0,ic:"flask",hot:1,t:`<b>${esc(a.nick)}</b>: lab is idle`,btn:"Start research",href:go});
+    if(x.hasPets&&!x.pet) N.push({p:2,ic:"paw",t:`<b>${esc(a.nick)}</b>: Pet House is idle`,btn:"Open",href:go});
+    const soon=x.active.filter(u=>u.end>now&&u.end-now<60*60e3&&(u.kind==="builder"||u.kind==="lab")).sort((p,q)=>p.end-q.end)[0];
+    if(soon) N.push({p:1,ic:"clock",t:`<b>${esc(a.nick)}</b>: ${esc(soon.name)} ${soon.to} finishes in <span class="cdk" data-end="${soon.end}">${fmtLeft(soon.end-now)}</span>`,btn:"Plan next",href:go});
+    const t=(typeof API_ATK!=="undefined"&&API_ATK.get(a.id))||{};
+    for(const [k,lab] of [["war","war"],["cwl","CWL"],["raid","raid"]]){ const o=t[k]; if(!o||o.state==="preparation"||(k==="cwl"&&!o.inLineup)) continue; const left=o.max-o.used; if(left<=0) continue;
+      N.push({p:o.end-now<6*36e5?0:1,ic:"sword",hot:o.end-now<6*36e5,t:`<b>${esc(a.nick)}</b>: ${left} ${lab} attack${left>1?"s":""} left · ends in ${fmtLeft(o.end-now)}`,btn:"Plan attack",href:"#attack"}); }
+    if(age>24*36e5) N.push({p:3,ic:"sync",t:`<b>${esc(a.nick)}</b>: data is ${agoS(age)} old`,btn:"Refresh",act:"fresh"});
+  }
+  N.sort((p,q)=>p.p-q.p);
+  const hr=new Date().getHours(), hello=hr<5?"Late night":hr<12?"Good morning":hr<18?"Good afternoon":"Good evening";
+  const oldest=Math.max(0,...real.map(([a])=>now-(a.ts?a.ts*1000:a.savedAt||now)));
+  const t=real.reduce((o,[,x])=>(o.b+=x.builders,o.w+=x.busy,o.l+=x.hasLab?1:0,o.lr+=x.hasLab&&x.lab?1:0,o),{b:0,w:0,l:0,lr:0});
+  const nx=real.flatMap(([a,x])=>x.active.filter(u=>u.end>now).map(u=>[a,u])).sort((p,q)=>p[1].end-q[1].end)[0];
+  const card=([a,x])=>{ const nu=x.active.filter(u=>u.end>now).sort((p,q)=>p.end-q.end)[0];
+    const state=x.idle?`${x.idle} builder${x.idle>1?"s":""} free`:x.hasLab&&!x.lab?"Lab idle":"All busy", hot=x.idle||(x.hasLab&&!x.lab);
+    return `<a class="acard ${hot?"hot":""}" href="#${a.id}" style="--c:${colorOf(a)}"><span class="ach"><i></i>${esc(a.nick)}<small class="mono">TH${x.th}</small></span><b>${state}</b><span class="acn">${nu?`next in <span class="cdk" data-end="${nu.end}">${fmtLeft(nu.end-now)}</span>`:"nothing running"}</span></a>`; };
+  return `${REFRESH?freshBar(accs):""}
+  <header class="homeh rv"><h1>${hello}</h1><span class="homem">${typeof STREAK!=="undefined"&&STREAK.n?`<span class="hstreak">🔥 ${STREAK.n}-day streak</span>`:""}<span>Data ${agoS(oldest)} old at most</span>${oldest>6*36e5?`<button type="button" class="glink" data-fresh="go">Refresh all</button>`:""}</span></header>
+  <section class="needs rv ${N.length?"":"ok"}"><div class="needh">${N.length?`Needs you <small class="mono">${N.length}</small>`:`<span class="nok">${HI.ok}</span> All good. Every builder and lab is busy.`}</div>
+    ${N.slice(0,6).map(n=>`<div class="need ${n.hot?"hot":""}"><span class="nic">${HI[n.ic]}</span><span class="ntx">${n.t}</span>${n.act?`<button type="button" class="ghost sm" data-fresh="go">${n.btn}</button>`:`<a class="ghost sm" href="${n.href}" ${n.href!=="#attack"?'data-acctab-go="now"':""}>${n.btn}</a>`}</div>`).join("")}
+    ${N.length>6?`<p class="note">+${N.length-6} more below in each village.</p>`:""}</section>
+  <p class="stat1 rv"><span class="${t.w<t.b?"bad":""}">${t.w} of ${t.b} builders busy</span> · <span class="${t.lr<t.l?"bad":""}">${t.lr} of ${t.l} labs busy</span>${nx?` · next finish in <span class="cdk" data-end="${nx[1].end}">${fmtLeft(nx[1].end-now)}</span> <small>(${esc(nx[0].nick)} ${esc(nx[1].name)})</small>`:""}</p>
+  <section class="acards rv">${real.map(card).join("")}</section>`;
+}
+document.addEventListener("click",e=>{ const g=e.target.closest("[data-acctab-go]"); if(!g) return; ACCTAB=g.dataset.acctabGo; try{ localStorage.setItem("cvt.acctab",ACCTAB); }catch(er){} });
+function attackFold(accs){
+  if(!API_ON()) return "";
+  const live=accs.some(a=>{ const t=API_ATK.get(a.id)||{}; return [t.war,t.cwl,t.raid].some(o=>o&&o.state!=="ended"); });
+  return `<details class="fold rv" data-fold="atk" ${live||HOMEFOLD.atk?"open":""}><summary><span>${live?"Wars and raids":"No wars or raids right now"}</span><small>${live?"attacks left on each account":"tap to check"}</small></summary>${attackBoard(accs)}</details>`;
+}
 
 /* ---------- villages: switcher and tabs ---------- */
 let ACCTAB=(()=>{ try{ return localStorage.getItem("cvt.acctab")||"now"; }catch(e){ return "now"; } })();
@@ -5189,11 +5284,11 @@ function tonightCard(accs){
   const now=Date.now(), asleep=now>=N.s, soon=N.s-now<8*36e5||asleep; if(!soon) return "";
   const F=finishesIn(Math.max(now,N.s),N.e), idleH=F.reduce((s,f)=>s+f.idle,0)/36e5;
   const freeNow=asleep?0:accs.filter(a=>!a.demo).reduce((s,a)=>s+analyze(a).idle,0);
-  if(!F.length&&!freeNow) return `<section class="night-c ok rv"><span class="nc-ic">☾</span><div><b>Tonight ${hm(N.s)}–${hm(N.e)}</b><span>Nothing finishes while you sleep. Every builder stays busy. ✓</span></div></section>`;
-  return `<section class="night-c rv"><span class="nc-ic">☾</span><div><b>Tonight ${hm(N.s)}–${hm(N.e)}${F.length?` · ${F.length} finish${F.length>1?"":"es"} while you sleep`:""}</b>
-    ${F.length?`<span>${(()=>{ const g=new Map(); for(const f of F){ const k=f.a.nick+"|"+f.u.name+"|"+hm(f.u.end); g.set(k,(g.get(k)||0)+1); } const L=[...g].map(([k,n])=>{ const [nk,nm,t]=k.split("|"); return `${esc(nk)}: ${n>1?n+"× ":""}${esc(nm)} at ${t}`; }); return L.slice(0,4).join(" · ")+(L.length>4?` · +${L.length-4} more`:""); })()}. That's about <b>${Math.round(idleH)}h</b> of idle time before you wake.</span>`:""}
-    ${freeNow?`<span>${freeNow} builder${freeNow>1?"s are":" is"} free right now: start something long before bed.</span>`:""}
-    <span class="nc-tip">${F.length?"Before bed: start the longest upgrades on builders finishing tonight, or save a Builder Potion for the morning.":""}</span></div></section>`;
+  if(!F.length&&!freeNow) return `<div class="night1 ok rv"><span class="nc-ic">☾</span><span><b>Tonight ${hm(N.s)}–${hm(N.e)}</b> · nothing finishes while you sleep ✓</span></div>`;
+  const head=[F.length?`${F.length} finish${F.length>1?"":"es"} while you sleep`:"",F.length?`~${Math.round(idleH)}h idle`:"",freeNow?`${freeNow} builder${freeNow>1?"s":""} free now`:""].filter(Boolean).join(" · ");
+  const list=(()=>{ const g=new Map(); for(const f of F){ const k=f.a.nick+"|"+f.u.name+"|"+hm(f.u.end); g.set(k,(g.get(k)||0)+1); } return [...g].map(([k,n])=>{ const [nk,nm,t]=k.split("|"); return `<li><b>${esc(nk)}</b>: ${n>1?n+"× ":""}${esc(nm)} at ${t}</li>`; }).join(""); })();
+  return `<details class="night1 rv" data-fold="night" ${HOMEFOLD.night?"open":""}><summary><span class="nc-ic">☾</span><span><b>Tonight ${hm(N.s)}–${hm(N.e)}</b> · ${head}</span></summary>
+    <div class="n1b">${list?`<ul>${list}</ul>`:""}<p>${freeNow?"Start something long on the free builders before bed. ":""}${F.length?"Before bed, start the longest upgrades on builders that finish tonight, or save a Builder Potion for the morning.":""}</p></div></details>`;
 }
 
 
