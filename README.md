@@ -102,6 +102,12 @@ Commit the filled-in `public/config.js`; the site redeploys automatically. Then 
 
 ---
 
+## 10 · Auto-upload from your phone (optional, recommended)
+Copy the export in the game and leave the game: your phone sends it to your tracker, no pasting.
+1. Supabase → **SQL Editor** → paste `supabase/ingest.sql` → **Run**.
+2. **Edge Functions** → **Deploy a new function** → **Via Editor** → name it `ingest` → paste `supabase/functions/ingest/index.ts` → **Deploy**. Open its **Details** and turn **Verify JWT** OFF (the private key in your link is the check).
+3. On the site: **Settings → Auto-upload from your phone → Set up**. Copy your link and follow the iPhone or Android steps shown there.
+
 ## Rules for publishing (Supercell fan content policy)
 
 - **Free only.** No paid features or premium tier. Ads and true donations are allowed.

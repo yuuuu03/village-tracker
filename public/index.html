@@ -81,8 +81,10 @@ a{color:inherit;text-decoration:none}
 .mono{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
 
 /* ground: shader canvas + grain */
-#ground{position:fixed;inset:0;width:100%;height:100%;z-index:-2;display:block}
-.grain{position:fixed;inset:-50%;z-index:-1;pointer-events:none;opacity:.07;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");animation:grain 1.2s steps(6) infinite}
+#ground{display:none}
+/* calm, still background: deep charcoal (or warm paper in light mode), a soft gold glow in two corners, fine grain */
+body{background:radial-gradient(1100px 620px at 8% -12%,color-mix(in srgb,var(--gold) 9%,transparent),transparent 62%),radial-gradient(900px 700px at 105% 110%,color-mix(in srgb,var(--gold) 6%,transparent),transparent 60%),var(--bg);background-attachment:fixed}
+.grain{position:fixed;inset:-50%;z-index:-1;pointer-events:none;opacity:.045;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 @keyframes grain{0%{transform:translate(0,0)}20%{transform:translate(-3%,2%)}40%{transform:translate(2%,-3%)}60%{transform:translate(-2%,-1%)}80%{transform:translate(3%,3%)}100%{transform:translate(0,0)}}
 #fx{position:fixed;inset:0;pointer-events:none;z-index:60}
 
@@ -1063,6 +1065,18 @@ body.gated>*:not(#gateWrap):not(#ground):not(.grain):not(#toast){visibility:hidd
 .wtt{font-weight:700}
 .wtr .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
 .wtr small{color:var(--muted)}
+.fresh{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;margin:0 0 18px;padding:10px 14px;border-radius:14px;box-shadow:inset 0 0 0 1px var(--line-2)}
+.fresh.on{box-shadow:inset 0 0 0 1px var(--gold);background:color-mix(in srgb,var(--gold) 6%,transparent)}
+.fresh p{margin:0;flex-basis:100%;font-size:13px;color:var(--ink-2)}
+.frl{display:flex;flex-wrap:wrap;gap:8px}
+.frc{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-2)}
+.frc i{width:7px;height:7px;border-radius:50%;background:var(--c)}
+.frc small{color:var(--muted)}
+.frc.old small{color:var(--hot,#e5484d)}
+.frc.now{color:var(--ink);font-weight:700}.frc.ok{color:#3ee08f}
+.ingl{display:flex;gap:8px;align-items:center}
+.ingl input{flex:1;min-width:0;padding:8px 10px;border-radius:10px;border:0;box-shadow:inset 0 0 0 1px var(--line-2);background:transparent;color:var(--ink);font:12px var(--mono)}
+#ingestBox details{font-size:13px}#ingestBox ol{margin:6px 0 4px;padding-left:20px;display:grid;gap:4px;color:var(--ink-2)}
 .advls{display:block;font-size:10.5px;color:var(--muted);margin-top:2px}
 .tgts{display:flex;flex-wrap:wrap;gap:6px}
 .tgt{display:grid;justify-items:center;gap:1px;min-width:44px;padding:6px 6px 5px;border-radius:10px;border:0;background:var(--chip,rgba(127,127,127,.12));color:var(--ink);cursor:pointer;font:inherit;box-shadow:inset 0 0 0 1px var(--line-2)}
@@ -1863,7 +1877,7 @@ function overviewView(accs){
   const axis=TICKS.map(([ms,l,minor])=>`<span class="${minor?"minor":""}" style="left:${pct(ms?xOf(ms):0)}">${l}</span>`).join("");
   const grid=TICKS.map(([ms],i)=>`<i class="${i?"":"now"}" style="left:${pct(ms?xOf(ms):0)}"></i>`).join("");
   const lanes=an.map(([a,x],li)=>lane(a,x,li,grid,now)).join("");
-  return kpis+attackBoard(accs)+`<section class="river rv" style="--i:4">
+  return freshBar(accs)+kpis+attackBoard(accs)+`<section class="river rv" style="--i:4">
     <div class="rhead"><h2>Time river</h2><div class="axis">${axis}</div></div>
     ${lanes}
     <div class="legend"><span><i></i>Builder</span><span><i class="l"></i>Lab</span><span><i class="p"></i>Pets</span><span><i class="b"></i>Builder Base</span></div>
@@ -2327,6 +2341,7 @@ function ftick(){
 
 /* ---------- ground: animated contour map (WebGL2 shader) ---------- */
 (function ground(){
+  return; // retired: the background is now still (see #ground / body in the CSS)
   const cv=$("#ground"), gl=cv.getContext("webgl2",{antialias:false,alpha:false,premultipliedAlpha:false});
   if(!gl) return;
   const vs=`#version 300 es
@@ -2433,7 +2448,7 @@ async function loadSupa(session){
   S.accounts=rows.filter(d=>d.kind!=="advisor");
   const loc=loadLocal().filter(l=>!S.accounts.some(a=>a.id===l.id));
   if(loc.length){ for(const a of loc){ S.accounts.push(a); try{ await supaSave(a); }catch(e){} } toast(`Moved ${loc.length} village${loc.length>1?"s":""} from this device to your account.`); }
-  render();
+  render(); setTimeout(inboxPull,300);
 }
 
 /* =====================================================================
@@ -2673,6 +2688,7 @@ function openSettings(){
       :`<form class="srow" data-form="signin"><div><b>Sync across devices</b><span>We'll email you a sign-in link. No password.</span></div><input id="si-email" type="email" required placeholder="you@example.com" autocomplete="email"><button class="paste sm" type="submit">Send link</button></form>`):""}
     ${pushOk?`<div class="srow"><div><b>Push reminders</b><span>1 minute before each finish, even with the app closed${/iPhone|iPad/.test(navigator.userAgent)?". On iPhone, add the app to your Home Screen first":""}.</span></div><button class="ghost" type="button" data-set="push">${Notification.permission==="granted"?"Re-enable":"Turn on"}</button></div>`:""}
     ${pushOk&&signed?`<div class="srow"><div><b>Test notifications</b><span>Checks every step on this device and on the server, then sends you a test push.</span></div><button class="ghost" type="button" data-set="pushtest">Run test</button></div><div id="pushTest" class="ptest" hidden></div>`:""}
+    ${signed?`<div class="srow"><div><b>Auto-upload from your phone</b><span>Copy the export in the game and leave it: your phone sends it here by itself. Works even when this site is closed.</span></div><button class="ghost" type="button" data-set="ingest">Set up</button></div><div id="ingestBox" class="ptest" hidden></div>`:""}
     <div class="srow"><div><b>Auto-import</b><span>When you come back to this tab, pick up a village export you just copied in the game. No pasting.${"clipboard" in navigator&&navigator.clipboard.readText?"":" This browser can't read the clipboard by itself."}</span></div><button class="ghost" type="button" data-set="autoimp" aria-pressed="${autoImpOn()}">${autoImpOn()?"On":"Off"}</button></div>
     <div class="srow"><div><b>Game data</b><span>${GAME?`Loaded: ${Object.keys(GAME.items).length} items. `:""}${STANDALONE?"Built automatically by the weekly GitHub job.":`Max levels per Town Hall are built in (${CAPS_V}). A game-data file adds upgrade times and costs: any Clash data JSON whose items have a game id and per-level time and cost.`}</span></div>${STANDALONE?"":`<label class="ghost filebtn">${GAME?"Replace":"Load file"}<input type="file" id="gdf" accept=".json,application/json" hidden></label>`}</div>
     <div class="srow"><div><b>Max-level celebration</b><span>Plays when an upgrade reaches the max for its Town Hall.</span></div><button class="ghost" type="button" data-set="cele">Preview</button></div>
@@ -2682,6 +2698,61 @@ function openSettings(){
   $("#setOvl").classList.add("open");
 }
 function closeSettings(){ $("#setOvl").classList.remove("open"); }
+/* inbox: exports your phone sent while the site was closed (see Settings → Auto-upload) */
+let INBOX_BUSY=false;
+async function inboxPull(){
+  if(INBOX_BUSY||S.source!=="supa"||!S.sb||document.visibilityState!=="visible") return; INBOX_BUSY=true;
+  try{ const { data, error } = await S.sb.from("inbox").select("id,raw").order("id",{ascending:true}).limit(20);
+    if(!error&&data&&data.length){ const got=[];
+      for(const r of data){ try{ const acc=importText(r.raw); if(acc) got.push(acc.nick); }catch(e){} }
+      await S.sb.from("inbox").delete().in("id",data.map(r=>r.id));
+      if(got.length){ render(); toast(`Updated from your phone: ${[...new Set(got)].join(", ")}`); } } }catch(e){}
+  INBOX_BUSY=false;
+}
+setInterval(inboxPull,60000);
+addEventListener("focus",()=>setTimeout(inboxPull,400));
+document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible") setTimeout(inboxPull,400); });
+async function ingestLink(fresh){
+  if(fresh) await S.sb.from("ingest_keys").delete().eq("user_id",S.user.id);
+  let { data } = await S.sb.from("ingest_keys").select("token").maybeSingle();
+  if(!data){ const r=await S.sb.from("ingest_keys").insert({}).select("token").single(); if(r.error) throw r.error; data=r.data; }
+  return `${CFG.supabaseUrl.replace(/\/$/,"")}/functions/v1/ingest?key=${data.token}`;
+}
+async function showIngest(fresh){
+  const box=$("#ingestBox"); if(!box) return; box.hidden=false; box.innerHTML=`<p class="note">Getting your link…</p>`;
+  try{ const url=await ingestLink(fresh);
+    box.innerHTML=`<div class="ingl"><input readonly value="${esc(url)}" id="ingUrl"><button class="ghost" type="button" data-set="ingcopy">Copy</button><button class="glink" type="button" data-set="ingnew">New link</button></div>
+      <p class="note">Keep this link private: anyone with it can send exports to your tracker. "New link" turns the old one off.</p>
+      <details open><summary><b>iPhone</b> (Shortcuts app)</summary><ol>
+        <li>New shortcut → add <b>Get Clipboard</b>.</li>
+        <li>Add <b>Get Contents of URL</b>: paste your link, Method <b>POST</b>, Request Body <b>File</b> → choose <b>Clipboard</b>. Name it "Upload village".</li>
+        <li>Automation tab → <b>+</b> → <b>App</b> → Clash of Clans → <b>Is Closed</b> → <b>Run Immediately</b> → pick "Upload village".</li>
+        <li>Now: in the game, Data Export → Copy, then leave the game. It uploads by itself.</li></ol></details>
+      <details><summary><b>Android</b> (HTTP Shortcuts app, free)</summary><ol>
+        <li>New shortcut → Regular → Method <b>POST</b>, URL = your link.</li>
+        <li>Request Body → Custom text → insert the <b>{clipboard}</b> variable (Content type text/plain).</li>
+        <li>Put it on your home screen. After copying the export in the game, tap it once.</li>
+        <li>Want it fully hands-free? Automation apps like MacroDroid can run it when you leave Clash of Clans.</li></ol></details>`;
+  }catch(e){ box.innerHTML=`<p class="note">${/does not exist|42P01/i.test(String(e.message||e.code))?"Run supabase/ingest.sql in Supabase first (README step 10).":"Couldn't make the link: "+esc(e.message||String(e))}</p>`; }
+}
+
+/* how fresh each account's data is, and a guided "refresh all": copy each account in the game, come back, next */
+let REFRESH=null; // {since, wait:[ids]}
+const agoS=ms=>ms<36e5?Math.max(1,Math.round(ms/6e4))+"m":ms<864e5?Math.round(ms/36e5)+"h":Math.round(ms/864e5)+"d";
+function freshBar(accs){
+  const real=accs.filter(a=>!a.demo); if(!real.length) return "";
+  const now=Date.now(), age=a=>now-(a.ts?a.ts*1000:a.savedAt||0), stale=real.filter(a=>age(a)>6*36e5);
+  if(REFRESH){ const done=real.filter(a=>(a.savedAt||0)>=REFRESH.since), next=real.find(a=>!done.includes(a));
+    return `<section class="fresh on rv"><div class="frl">${real.map(a=>`<span class="frc ${done.includes(a)?"ok":a===next?"now":""}" style="--c:${colorOf(a)}"><i></i>${esc(a.nick)}${done.includes(a)?" ✓":""}</span>`).join("")}</div>
+      <p>${next?`Next: <b>${esc(next.nick)}</b>. In the game switch to it, then Settings › More Settings › Data Export › <b>Copy</b>, and come back here. ${autoImpOn()||S.source==="supa"?"It's picked up by itself.":"Then paste (Ctrl+V)."}`:"All accounts are up to date."}</p>
+      <button class="ghost" type="button" data-fresh="stop">${next?"Stop":"Done"}</button></section>`; }
+  return `<section class="fresh rv"><div class="frl">${real.map(a=>`<span class="frc ${age(a)>6*36e5?"old":""}" style="--c:${colorOf(a)}" data-tip="Export from ${new Date(a.ts?a.ts*1000:a.savedAt).toLocaleString()}"><i></i>${esc(a.nick)} <small class="mono">${agoS(age(a))}</small></span>`).join("")}</div>
+    ${stale.length?`<button class="ghost" type="button" data-fresh="go">Refresh ${stale.length===real.length?"all":stale.length} account${stale.length>1?"s":""}</button>`:""}</section>`;
+}
+document.addEventListener("click",e=>{ const b=e.target.closest("[data-fresh]"); if(!b) return;
+  if(b.dataset.fresh==="go"){ REFRESH={since:Date.now()}; if(!autoImpOn()&&"clipboard" in navigator){ try{ localStorage.setItem("cvt.autoimp","1"); }catch(e){} } toast("Copy each account's export in the game and come back; each one ticks off."); }
+  else REFRESH=null; render(); });
+
 /* auto-import: read the clipboard when you return to the tab (only if you turned it on) */
 const autoImpOn=()=>{ try{ return localStorage.getItem("cvt.autoimp")==="1"; }catch(e){ return false; } };
 let AUTO_BUSY=false;
@@ -2744,6 +2815,9 @@ document.addEventListener("click",async e=>{
   if(k==="signout"){ await S.sb.auth.signOut(); location.reload(); }
   if(k==="push") enablePush();
   if(k==="pushtest") pushTest();
+  if(k==="ingest") showIngest(false);
+  if(k==="ingnew") showIngest(true);
+  if(k==="ingcopy"){ const i=$("#ingUrl"); try{ await navigator.clipboard.writeText(i.value); toast("Link copied."); }catch(e){ i.select(); } }
   if(k==="autoimp"){ const on=!autoImpOn(); try{ localStorage.setItem("cvt.autoimp",on?"1":""); }catch(e){} b.textContent=on?"On":"Off"; b.setAttribute("aria-pressed",on);
     if(on) autoImport(true); toast(on?"Auto-import is on. Copy a village in the game, then come back here.":"Auto-import is off."); }
   if(k==="export") exportBackup();
