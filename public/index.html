@@ -1007,7 +1007,9 @@ body.gated>*:not(#gateWrap):not(#ground):not(.grain):not(#toast){visibility:hidd
 .shotk small{color:var(--muted);font-size:10.5px}
 .shotk[aria-pressed=true]{box-shadow:inset 0 0 0 2px var(--c);color:var(--ink)}
 .shothint{margin:0}
-.shotwrap{width:100%;line-height:0;text-align:center;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.shotwrap{width:100%;line-height:0;text-align:center;overflow:auto;max-height:78vh;-webkit-overflow-scrolling:touch}
+.shotview{border:0;cursor:pointer;font:inherit;font-size:12.5px;font-weight:700;padding:7px 14px;border-radius:999px;background:#3ee08f;color:#06210f}
+.shotview.on{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1px var(--line-2)}
 .shotmob{display:none}@media (max-width:640px){.shotmob{display:inline}}
 .shotwrap canvas{border-radius:10px}
 .shotwrap canvas{cursor:crosshair;touch-action:manipulation;max-width:100%}
@@ -3676,7 +3678,7 @@ function fillSyncLine(){
    ===================================================================== */
 let PLAYBOOK_V="Nov 2026";
 // housing space (troops) and spell space, from the Clash wiki, Nov 2026
-const HS={4000110:20,4000012:8,4000058:15,4000082:6,4000097:20,4000010:2,4000147:35,4000015:12,4000028:8,4000095:32,4000017:30,4000005:5,4000007:14,
+const HS={4000000:1,4000001:1,4000002:1,4000003:5,4000006:4,4000009:25,4000011:5,4000013:30,4000024:6,4000026:5,4000027:12,4000029:10,4000056:24,4000057:8,4000064:20,4000066:40,4000081:40,4000083:10,4000084:12,4000098:12,4000123:16,4000150:18,4000109:26,4000110:20,4000012:8,4000058:15,4000082:6,4000097:20,4000010:2,4000147:35,4000015:12,4000028:8,4000095:32,4000017:30,4000005:5,4000007:14,
   4000008:20,4000065:25,4000063:15,4000132:16,4000080:30,4000053:18,4000059:30,4000177:40,4000022:6,4000004:2,4000023:10};
 const SUPER_OF={4000147:4000053,4000028:4000004,4000080:4000022,4000081:4000008,4000026:4000000,4000064:4000012,4000056:4000024}; // super troop -> base troop it needs
 const SPH={26000000:1,26000001:2,26000002:2,26000003:2,26000005:1,26000009:1,26000010:1,26000011:1,26000016:3,26000017:1,26000028:1,26000035:1,26000053:2,26000070:2,26000098:2,26000109:1,26000120:1};
@@ -3698,6 +3700,13 @@ function pickGear(a,h,pref){
 }
 // exact armies at 340 space / 11 spells / 50+3 Clan Castle; flex = troop that absorbs bigger or smaller camps
 let ARMIES={
+ dragloon:{troops:[[4000008,11],[4000005,20]],flex:4000005,spells:[[26000000,3],[26000010,1],[26000002,2],[26000005,2],[26000011,1]],xspell:26000002,siege:4000052,cc:[[4000008,1],[4000005,6]],ccs:[[26000002,1],[26000005,1]],heroes:{}},
+ zapdrag:{troops:[[4000008,15],[4000005,8]],flex:4000005,spells:[[26000000,8],[26000010,1],[26000002,1]],xspell:26000000,siege:4000052,cc:[[4000008,1],[4000005,6]],ccs:[[26000002,1],[26000005,1]],heroes:{}},
+ hogs:{troops:[[4000011,52],[4000006,10],[4000004,4]],flex:4000011,spells:[[26000001,4],[26000009,1],[26000000,2]],xspell:26000001,siege:4000075,cc:[[4000011,6],[4000006,5]],ccs:[[26000001,1],[26000009,1]],heroes:{}},
+ gowipe:{troops:[[4000013,3],[4000009,5],[4000006,25],[4000004,8]],flex:4000006,spells:[[26000002,2],[26000001,2],[26000003,1],[26000010,1]],xspell:26000002,siege:4000051,cc:[[4000009,1],[4000006,6]],ccs:[[26000002,1],[26000009,1]],heroes:{}},
+ hogminer:{troops:[[4000007,4],[4000011,20],[4000024,22],[4000012,4],[4000004,4]],flex:4000024,spells:[[26000001,4],[26000002,1],[26000005,1],[26000009,1]],xspell:26000001,siege:4000051,cc:[[4000011,6],[4000006,5]],ccs:[[26000001,1],[26000009,1]],heroes:{}},
+ bowitch:{troops:[[4000013,2],[4000015,10],[4000022,22],[4000004,6],[4000006,4]],flex:4000022,spells:[[26000002,2],[26000001,1],[26000003,1],[26000005,2],[26000009,1]],xspell:26000002,siege:4000051,cc:[[4000022,5],[4000015,1],[4000006,2]],ccs:[[26000005,1],[26000009,1]],heroes:{}},
+ yetismash:{troops:[[4000053,8],[4000015,6],[4000058,2],[4000022,6],[4000004,6],[4000006,11]],flex:4000006,spells:[[26000002,3],[26000005,2],[26000003,1],[26000009,1]],xspell:26000002,siege:4000051,cc:[[4000053,2],[4000006,2]],ccs:[[26000005,1],[26000009,1]],heroes:{}},
  rr:{troops:[[4000110,8],[4000012,8],[4000058,2],[4000082,3],[4000097,3],[4000010,4]],flex:4000012,spells:[[26000035,3],[26000002,2],[26000005,2],[26000010,2]],xspell:26000005,siege:4000075,cc:[[4000110,2],[4000012,1],[4000010,1]],ccs:[[26000005,1],[26000035,1],[26000010,1]],heroes:{}},
  yeti:{troops:[[4000147,4],[4000015,9],[4000058,2],[4000028,2],[4000097,2],[4000010,3]],flex:4000015,spells:[[26000002,2],[26000005,2],[26000009,1],[26000010,2],[26000035,1],[26000120,1]],xspell:26000005,siege:4000075,cc:[[4000147,1],[4000058,1]],ccs:[[26000005,1],[26000002,1]],heroes:{}},
  rret:{troops:[[4000110,8],[4000095,3],[4000058,2],[4000082,4],[4000097,1],[4000010,5]],flex:4000082,spells:[[26000002,2],[26000005,2],[26000001,2],[26000120,1]],xspell:26000005,siege:4000092,cc:[[4000095,1],[4000053,1]],ccs:[[26000002,1],[26000005,1]],heroes:{}},
@@ -3710,35 +3719,130 @@ let ARMIES={
  meteor:{troops:[[4000177,4],[4000012,6],[4000058,2],[4000097,1],[4000053,2],[4000082,2],[4000095,1],[4000010,1]],flex:4000012,spells:[[26000010,3],[26000002,2],[26000005,2],[26000120,1],[26000035,1]],xspell:26000005,siege:4000092,cc:[[4000177,1],[4000012,1],[4000010,1]],ccs:[[26000002,1],[26000005,1]],heroes:{}}
 };
 // fit a 340-space template to this account's real camp, spell and Clan Castle space
+// what this account actually has room for: read from its own Army Camps, Spell Factories and Clan Castle
+const campHS=L=>L<=0?0:L===1?20:L<=13?20+5*L:88+3*(L-14);
+const CC_T=[0,10,15,20,25,30,35,35,40,45,45,50,50,55,55];
+function capacity(a,th){
+  const x=analyze(a), rows=effRows(a,x,"buildings"), lv=id=>rows.filter(r=>r.data===id);
+  let camp=lv(1000000).reduce((s,r)=>s+campHS(r.lvl)*(r.cnt||1),0); if(!camp) camp=campCap(th);
+  const sf=Math.max(0,...lv(1000020).map(r=>r.lvl)), dsf=lv(1000029).length>0;
+  let spells=sf?Math.min(10,sf*2)+(dsf?1:0):spellCap(th); if(th>=18&&spells>=11) spells=12;
+  const ccl=Math.max(0,...lv(1000014).map(r=>r.lvl));
+  const cc=ccl?{t:CC_T[Math.min(ccl,CC_T.length-1)],s:ccl>=14?4:ccl>=10?3:ccl>=7?2:ccl>=4?1:0,siege:ccl>=6}:{...ccCap(th),siege:th>=10};
+  return {camp,spells,cc};
+}
+// when a troop or spell isn't unlocked, use the closest thing you do have
+const SUBS={4000110:[4000012,4000053],4000147:[4000053,4000012],4000053:[4000012,4000009],4000015:[4000006],4000058:[4000013,4000003],4000028:[4000004],4000097:[4000006],4000082:[4000010],
+  4000095:[4000013,4000003],4000017:[4000023],4000008:[4000023],4000065:[4000008,4000023],4000063:[4000023,4000010],4000132:[4000006],4000080:[4000022,4000006],4000059:[4000008],
+  4000177:[4000013],4000012:[4000009,4000003],4000022:[4000006],4000011:[4000024,4000003],4000024:[4000011],4000013:[4000003],4000006:[4000001],4000009:[4000012,4000003],
+  4000023:[4000010],4000010:[4000001],4000003:[4000000],4000007:[],4000004:[]};
+const SPSUBS={26000005:[26000002,26000001],26000035:[26000005,26000011,26000002],26000120:[26000011,26000002],26000070:[26000002,26000001],26000010:[26000000],26000011:[26000002],
+  26000109:[26000005,26000002],26000053:[26000002],26000001:[26000002],26000002:[26000001],26000003:[26000010,26000002],26000009:[26000002],26000000:[26000010,26000002]};
+function haveTroop(a,th,t){ const base=SUPER_OF[t]; return base?th>=11&&myLv(a,base)>0:myLv(a,t)>0; }
 function buildArmy(id,a,th){
   const T=ARMIES[id]; if(!T) return null;
-  const cap=campCap(th), troops=T.troops.map(([t,n])=>[t,n]);
-  const used=()=>troops.reduce((s,[t,n])=>s+n*(HS[t]||0),0);
-  const fi=troops.findIndex(([t])=>t===T.flex), fh=HS[T.flex];
-  while(used()>cap&&troops[fi][1]>0) troops[fi][1]--;
-  while(used()+fh<=cap) troops[fi][1]++;
-  let mi=troops.findIndex(([t])=>t===4000010); if(mi<0&&cap-used()>=2){ troops.push([4000010,0]); mi=troops.length-1; }
-  while(mi>=0&&used()+2<=cap) troops[mi][1]++;
-  const sc=spellCap(th), spells=T.spells.map(([t,n])=>[t,n]); let sp=spells.reduce((s,[t,n])=>s+n*SPH[t],0);
-  while(sp>sc){ const k=spells.findIndex(([t,n])=>t===T.xspell&&n>0); const j=k>=0?k:spells.findIndex(([,n])=>n>0); spells[j][1]--; sp-=SPH[spells[j][0]]; }
-  while(sp<sc){ const k=spells.findIndex(([t])=>t===T.xspell); if(k<0) break; spells[k][1]++; sp++; }
-  const cc=ccCap(th), cct=T.cc.map(([t,n])=>[t,n]); let ccu=cct.reduce((s,[t,n])=>s+n*HS[t],0);
-  while(ccu>cc.t){ const k=cct.reduce((b,[t,n],i)=>n>0&&(b<0||HS[t]<HS[cct[b][0]])?i:b,-1); if(k<0) break; const h=HS[cct[k][0]]; if(cct.filter(([,n])=>n>0).length>1||h<=ccu-cc.t){ cct[k][1]--; ccu-=h; } else break; }
-  while(ccu+2<=cc.t){ const k=cct.findIndex(([t])=>t===4000010); if(k<0){ cct.push([4000010,0]); continue; } cct[k][1]++; ccu+=2; }
-  const ccs=T.ccs.map(([t,n])=>[t,n]); let ccsu=ccs.reduce((s,[t,n])=>s+n*SPH[t],0);
-  if(ccsu<cc.s){ const k=ccs.findIndex(([t])=>t===26000005); if(k>=0){ ccs[k][1]+=cc.s-ccsu; ccsu=cc.s; } }
-  // siege: the plan's pick if you have it, otherwise your best unlocked one
-  const has=sid=>myLv(a,sid)>0;
-  let siege=T.siege, siegeNote=""; if(!has(siege)){ const alt=SIEGE_ALT.find(has); siegeNote=`${name(siege)} isn't unlocked`; siege=alt||null; }
-  const pref={...(T.gear||{})}; for(const [eid,,hn] of ((PLAYBOOK.find(q=>q.id===id)||{}).gear||[])){ const h=+Object.keys(LOADOUT).find(k=>name(+k)===hn); if(h) pref[h]=[...new Set([eid,...(pref[h]||[])])]; }
-  const P=PLAYBOOK.find(q=>q.id===id)||{heroes:[]}, hr=h=>{ const c=capAt(h,th); return c?myLv(a,h)/c:0; };
-  const owned=Object.keys(LOADOUT).map(Number).filter(h=>myLv(a,h)>0).sort((x,y)=>(P.heroes.includes(y)-P.heroes.includes(x))||(hr(y)-hr(x)));
-  const gear=owned.map((h,i)=>[h,pickGear(a,h,pref[h]),i<4]);
-  return {troops:troops.filter(([,n])=>n>0),used:used(),cap,spells,sp,sc,cc:cct.filter(([,n])=>n>0),ccu,ccCap:cc,ccs,ccsu,siege,siegeNote,gear};
+  const C=capacity(a,th), cap=C.camp, k=cap/340, notes=[];
+  // 1. each part of the plan gets its share of your camp space, using the closest unlocked troop
+  const pick=t=>[t,...(SUBS[t]||[])].find(u=>haveTroop(a,th,u)&&HS[u]);
+  const counts=new Map(); let superN=0; const flexU=pick(T.flex);
+  for(const [t,n] of T.troops){ let u=pick(t);
+    if(u&&SUPER_OF[u]&&!counts.has(u)){ if(superN>=2) u=(SUBS[u]||[]).find(v=>haveTroop(a,th,v)&&!SUPER_OF[v]&&HS[v]); else superN++; }
+    if(!u){ notes.push(`${name(t)} isn't unlocked and there's nothing close`); continue; }
+    if(u!==t) notes.push(`${name(u)} instead of ${name(t)} (not unlocked yet)`);
+    const space=n*HS[t]*k, c=Math.max(space>=HS[u]*.6?1:0,Math.round(space/HS[u])); if(c) counts.set(u,(counts.get(u)||0)+c); }
+  const used=()=>[...counts].reduce((s,[u,c])=>s+c*HS[u],0);
+  // 2. never over capacity: trim the flex troop first, then the biggest
+  while(used()>cap){ const f=flexU&&counts.get(flexU)>0?flexU:[...counts].filter(([,c])=>c>0).sort((p,q)=>HS[q[0]]-HS[p[0]])[0][0]; counts.set(f,counts.get(f)-1); }
+  // 3. fill what's left: more of the flex troop, then small troops to the exact space
+  if(flexU) while(used()+HS[flexU]<=cap) counts.set(flexU,(counts.get(flexU)||0)+1);
+  const PL=PLAYBOOK.find(q=>q.id===id)||{style:"Ground"};
+  for(const f of (PL.style==="Air"?[4000010,4000001,4000000]:[4000004,4000001,4000000])){ if(!haveTroop(a,th,f)) continue; while(used()+HS[f]<=cap) counts.set(f,(counts.get(f)||0)+1); }
+  const troops=[...counts].filter(([,c])=>c>0);
+  // 4. spells: plan order is priority; swap locked ones, trim the last ones if you have less room, top up the main one if more
+  const spPick=t=>[t,...(SPSUBS[t]||[])].find(u=>myLv(a,u)>0&&SPH[u]);
+  const sm=new Map(); for(const [t,n] of T.spells){ const u=spPick(t); if(!u) continue; if(u!==t) notes.push(`${name(u)} instead of ${name(t)}`); sm.set(u,(sm.get(u)||0)+n); }
+  let spells=[...sm]; const sp=()=>spells.reduce((s,[u,n])=>s+n*SPH[u],0);
+  for(let i=spells.length-1;sp()>C.spells&&i>=0;){ if(spells[i][1]>0&&!(i===0&&spells[i][1]===1)){ spells[i][1]--; } else i--; if(spells[i]&&spells[i][1]===0) i--; }
+  while(sp()>C.spells){ const j=spells.findIndex(([,n])=>n>0); spells[j][1]--; }
+  const xs=spPick(T.xspell)||(spells[0]&&spells[0][0]);
+  if(xs){ while(sp()+SPH[xs]<=C.spells){ const j=spells.findIndex(([u])=>u===xs); if(j<0) spells.push([xs,1]); else spells[j][1]++; } }
+  const one=[26000000,26000005,26000009,26000010,26000011].find(u=>myLv(a,u)>0); if(one) while(sp()<C.spells){ const j=spells.findIndex(([u])=>u===one); if(j<0) spells.push([one,1]); else spells[j][1]++; }
+  spells=spells.filter(([,n])=>n>0);
+  // 5. Clan Castle: clanmates donate, so any troop works; just fit it to your castle's size
+  const cct=[]; let ccu=0; for(const [t,n] of T.cc){ const opts=[t,...(SUBS[t]||[])].filter(u=>HS[u]); for(const u of opts){ let c=0; while(c<n&&ccu+HS[u]<=C.cc.t){ c++; ccu+=HS[u]; } if(c){ cct.push([u,c]); break; } } }
+  for(const f of [4000010,4000001]){ while(ccu+HS[f]<=C.cc.t){ const j=cct.findIndex(([u])=>u===f); if(j<0) cct.push([f,1]); else cct[j][1]++; ccu+=HS[f]; } }
+  const ccs=[]; let ccsu=0; for(const [t,n] of T.ccs){ for(const u of [t,...(SPSUBS[t]||[])]){ if(!SPH[u]) continue; let c=0; while(c<n&&ccsu+SPH[u]<=C.cc.s){ c++; ccsu+=SPH[u]; } if(c){ ccs.push([u,c]); break; } } }
+  while(ccsu<C.cc.s){ const j=ccs.findIndex(([u])=>SPH[u]===1); if(j<0){ ccs.push([26000005,1]); } else ccs[j][1]++; ccsu++; }
+  // 6. siege: your own if your Workshop has it, otherwise ask the clan (Clan Castle level 6+)
+  const has=sid=>myLv(a,sid)>0; let siege=T.siege, siegeNote="";
+  if(!has(siege)){ if(C.cc.siege) siegeNote=`Request the ${name(siege)} in your Clan Castle`; else { const alt=SIEGE_ALT.find(has); siege=alt||null; siegeNote=alt?`${name(T.siege)} isn't unlocked, so this uses your best one`:""; } }
+  // 7. heroes and equipment
+  const pref={...(T.gear||{})}; for(const [eid,,hn] of (PL.gear||[])){ const h=+Object.keys(LOADOUT).find(q=>name(+q)===hn); if(h) pref[h]=[...new Set([eid,...(pref[h]||[])])]; }
+  const hr=h=>{ const c=capAt(h,th); return c?myLv(a,h)/c:0; };
+  const owned=Object.keys(LOADOUT).map(Number).filter(h=>myLv(a,h)>0).sort((x,y)=>((PL.heroes||[]).includes(y)-(PL.heroes||[]).includes(x))||(hr(y)-hr(x)));
+  const slots=4;
+  const gear=owned.map((h,i)=>[h,pickGear(a,h,pref[h]),i<slots]);
+  return {troops,used:used(),cap,spells,sp:sp(),sc:C.spells,cc:cct,ccu,ccCap:C.cc,ccs,ccsu,siege,siegeNote,gear,notes:[...new Set(notes)],slots};
 }
 const PLAYBOOK_V0=PLAYBOOK_V;
 // traits: shape compact|spread|boxed · core strong|weak · air open|tight · inferno multi|single · eagle core|side · scout known|new
 let PLAYBOOK=[
+ {id:"dragloon",name:"DragLoon (Dragons + Balloons)",style:"Air",th:[7,12],
+  needs:[[4000008,"Dragon"],[4000005,"Balloon"]],heroes:[],gear:[],
+  fit:{shape:{compact:2,boxed:2,spread:1},core:{strong:1,weak:2},air:{open:3,tight:1},inferno:{multi:1,single:1},eagle:{core:1,side:1},scout:{known:1,new:1}},
+  safe:2,
+  army:"Dragons as the main force, Balloons to take out the defenses in front of them.",
+  spells:"Lightning (plus Earthquake) to kill one Air Defense, Rage for the main push, Freeze or Haste for the core.",
+  plan:["Zap the Air Defense nearest your start with Lightning (and Earthquake) before anything else.","Drop the Dragons in a wide line on that side, Balloons right behind them.","Heroes go to the opposite side to clean up.","Rage the Dragons as they reach the core; Freeze any Inferno or the Eagle."],
+  why:{air:{open:"the Air Defenses are easy to reach"},core:{weak:"a weak core falls to a Dragon wave"},shape:{compact:"Dragons stay together on a compact base",boxed:"walls don't stop Dragons"}}},
+ {id:"zapdrag",name:"Zap Dragons",style:"Air",th:[7,11],
+  needs:[[4000008,"Dragon"]],heroes:[],gear:[],
+  fit:{shape:{compact:3,boxed:2,spread:0},core:{strong:0,weak:2},air:{open:1,tight:3},inferno:{multi:1,single:1},eagle:{core:1,side:1},scout:{known:1,new:2}},
+  safe:2,
+  army:"As many Dragons as fit, a few Balloons to finish.",
+  spells:"Lots of Lightning to knock out one or two Air Defenses before the Dragons go in, then Rage.",
+  plan:["Lightning the deepest Air Defense down first (this is what makes the attack work).","Drop all Dragons in a line on the side where that Air Defense was.","Heroes on the side to stop the Dragons drifting round the edge.","Rage when the Dragons reach the core."],
+  why:{air:{tight:"Lightning removes the deep Air Defenses the Dragons can't reach"},shape:{compact:"a compact base keeps the Dragons together"}}},
+ {id:"hogs",name:"Mass Hog Riders",style:"Ground",th:[7,10],
+  needs:[[4000011,"Hog Rider"]],heroes:[],gear:[],
+  fit:{shape:{compact:0,boxed:2,spread:3},core:{strong:0,weak:2},air:{open:0,tight:1},inferno:{multi:0,single:2},eagle:{core:1,side:0},scout:{known:2,new:0}},
+  safe:1,
+  army:"Hog Riders jumping walls to the defenses, Wizards to clear around them.",
+  spells:"Healing Spells along the Hogs' path (Giant Bombs!), a Poison for the Clan Castle troops.",
+  plan:["Lure and kill the Clan Castle troops first with a few Wizards and a Poison.","Kill the Barbarian King and Archer Queen side with your heroes.","Drop the Hogs in two groups so they spread over the defenses.","Heal where the Hogs bunch up, especially between pairs of defenses (Giant Bomb spots)."],
+  why:{shape:{spread:"Hogs jump between spread-out defenses quickly",boxed:"Hogs jump over walls"},inferno:{single:"Single Infernos struggle against many Hogs"}}},
+ {id:"gowipe",name:"GoWiPe (Golems, Wizards, P.E.K.K.A)",style:"Ground",th:[8,11],
+  needs:[[4000013,"Golem"],[4000009,"P.E.K.K.A"]],heroes:[],gear:[],
+  fit:{shape:{compact:3,boxed:1,spread:0},core:{strong:2,weak:1},air:{open:0,tight:2},inferno:{multi:1,single:1},eagle:{core:1,side:1},scout:{known:1,new:1}},
+  safe:3,
+  army:"Golems in front as tanks, P.E.K.K.As and Wizards behind, Wall Breakers to open the way.",
+  spells:"Earthquake and Jump to open walls, Rage and Healing for the push into the core.",
+  plan:["Drop Golems first to soak up damage.","Wall Breakers open the first wall layer.","Wizards behind the Golems to clear the outside buildings, then P.E.K.K.As and heroes.","Jump or Earthquake into the core; Rage when the P.E.K.K.As reach it."],
+  why:{shape:{compact:"a slow, tanky push works best on a compact base"},core:{strong:"P.E.K.K.As break strong cores"}}},
+ {id:"hogminer",name:"Queen Walk Hog Miner",style:"Ground",th:[10,14],
+  needs:[[4000011,"Hog Rider"],[4000024,"Miner"]],heroes:[28000001],gear:[[90000020,"Healer Puppet","Archer Queen"]],
+  fit:{shape:{compact:1,boxed:2,spread:3},core:{strong:0,weak:2},air:{open:1,tight:2},inferno:{multi:0,single:2},eagle:{core:1,side:1},scout:{known:2,new:0}},
+  safe:2,
+  army:"Archer Queen with Healers to clear a side, then Hog Riders and Miners together.",
+  spells:"Healing Spells along the Hog Miner path, Rage, Freeze for Infernos, Poison for the Clan Castle.",
+  plan:["Queen Walk with the Healers on one side to take out the Clan Castle troops and a few defenses.","Drop Hogs and Miners together from the other side, spread across the base.","Heal where Hogs bunch up; Freeze the Inferno or Eagle as they go in.","Heroes clean up the far side."],
+  why:{shape:{spread:"Hogs and Miners love spread-out defenses"},core:{weak:"no strong core to stop the Miners"},inferno:{single:"Single Infernos can't handle many Miners"}}},
+ {id:"bowitch",name:"Bowitch (Bowlers + Witches)",style:"Ground",th:[10,13],
+  needs:[[4000022,"Bowler"],[4000015,"Witch"]],heroes:[28000002],gear:[[90000004,"Eternal Tome","Grand Warden"]],
+  fit:{shape:{compact:3,boxed:3,spread:0},core:{strong:2,weak:1},air:{open:0,tight:2},inferno:{multi:0,single:1},eagle:{core:2,side:0},scout:{known:1,new:1}},
+  safe:3,
+  army:"Golems in front, Witches and Bowlers behind, Wall Breakers to open the way.",
+  spells:"Rage and Jump into the core, Freeze for Infernos and the Eagle, Poison for the Clan Castle.",
+  plan:["Clear a funnel on both sides of your entry.","Golems first, Wall Breakers, then Witches and Bowlers in a tight group.","Grand Warden follows the group with Eternal Tome for the core.","Jump into the core; Rage and Freeze as the group reaches the Town Hall."],
+  why:{shape:{compact:"Bowlers' bouncing boulders hit two layers at once on compact bases",boxed:"Bowlers and Witches grind through walled sections"},core:{strong:"a strong ground push breaks the core"}}},
+ {id:"yetismash",name:"Yeti Smash",style:"Ground",th:[12,15],
+  needs:[[4000053,"Yeti"]],heroes:[28000002],gear:[[90000022,"Fireball","Grand Warden"]],
+  fit:{shape:{compact:3,boxed:2,spread:1},core:{strong:3,weak:1},air:{open:0,tight:2},inferno:{multi:1,single:1},eagle:{core:2,side:1},scout:{known:1,new:1}},
+  safe:2,
+  army:"Yetis to smash through, Witches for support, Ice Golems and Bowlers to protect them.",
+  spells:"Rage and Freeze for the core, Jump to get in, Poison for the Clan Castle troops.",
+  plan:["Funnel both sides of your entry with Wizards or heroes.","Ice Golems first, then Yetis and Witches in one group.","Grand Warden follows the Yetis; Fireball the toughest defense on the way.","Jump into the core; Rage and Freeze on the Town Hall area."],
+  why:{core:{strong:"Yetis smash strong cores"},shape:{compact:"a compact base keeps the Yetis together"}}},
  {id:"rr",name:"RC Walk Root Riders",style:"Ground",th:[15,18],
   needs:[[4000110,"Root Rider"]],heroes:[28000004],gear:[[90000040,"Electro Boots","Royal Champion"]],
   fit:{shape:{compact:3,boxed:3,spread:1},core:{strong:1,weak:2},air:{open:0,tight:2},inferno:{multi:2,single:0},eagle:{core:1,side:1},scout:{known:1,new:2}},
@@ -3763,7 +3867,7 @@ let PLAYBOOK=[
   spells:"Rage and Freeze for the push, Healing if the defense is spread out.",
   plan:["Clear one side with the Queen to create a straight path.","Root Riders go in first and carve a line through the walls.","Electro Titans follow to clean up everything left near the line.","Rage and Freeze as the group reaches the strongest defenses."],
   why:{shape:{spread:"the base is stretched out, and this army steamrolls through the middle"},core:{weak:"it's built for a poorly defended core"}}},
- {id:"lalo",name:"Queen Charge LavaLoon",style:"Air",th:[13,17],
+ {id:"lalo",name:"Queen Charge LavaLoon",style:"Air",th:[9,17],
   needs:[[4000017,"Lava Hound"],[4000005,"Balloon"]],heroes:[28000001],gear:[[90000048,"Action Figure","Archer Queen"]],
   fit:{shape:{compact:2,boxed:1,spread:2},core:{strong:3,weak:0},air:{open:3,tight:0},inferno:{multi:0,single:2},eagle:{core:1,side:2},scout:{known:2,new:0}},
   safe:1,
@@ -3803,7 +3907,7 @@ let PLAYBOOK=[
   spells:"Rage and Freeze for the core push, plus Earthquakes if walls are thick.",
   plan:["The Dragon Duke clears one edge of the funnel.","The Queen or Royal Champion clears the other.","Super Bowlers go in a tight group behind the tanks; their bounce hits rows of buildings.","Rage and Freeze in the core."],
   why:{core:{strong:"it's a powerful push for a strong core"},shape:{compact:"bounces shine on compact rows of buildings"}}},
- {id:"edrag",name:"Electro Dragons",style:"Air",th:[13,18],
+ {id:"edrag",name:"Electro Dragons",style:"Air",th:[11,18],
   needs:[[4000059,"Electro Dragon"]],heroes:[],gear:[],
   fit:{shape:{compact:3,boxed:2,spread:0},core:{strong:1,weak:1},air:{open:2,tight:0},inferno:{multi:1,single:1},eagle:{core:1,side:1},scout:{known:1,new:1}},
   safe:1,
@@ -3848,7 +3952,7 @@ function learned(pid,th,opTh){
 }
 function scoreArmy(p,a,opTh){
   const x=analyze(a), th=x.th, why=[], warn=[]; let s=0;
-  if(th<p.th[0]||th>p.th[1]+0) s-=4;
+  if(th<p.th[0]||th>p.th[1]) s-=30;
   for(const [k,v] of Object.entries(ADV.traits)){ const w=(p.fit[k]||{})[v]; if(w!=null){ s+=w; const r=(p.why[k]||{})[v]; if(r&&w>=2) why.push(r); } }
   if(ADV.goal==="safe") s+=p.safe*1.5;
   // your troops: unlocked and how close to max for your Town Hall
@@ -3866,19 +3970,20 @@ function scoreArmy(p,a,opTh){
 }
 function armyTable(id,a,th){
   const A=buildArmy(id,a,th); if(!A) return "";
-  const row=(t,n,h,extra="")=>{ const base=SUPER_OF[t], lv=myLv(a,base||t), cap=capAt(base||t,th);
-    return `<div class="axr ${lv?"":"miss"}">${ico(t)}<span class="axn"><b>${n}×</b> ${esc(name(t))}${base?` <em class="sup">super</em>`:""}</span><span class="axl mono">${lv?`lv ${lv}${cap&&lv<cap?`/${cap}`:""}`:"locked"}</span><span class="axh mono">${h}${extra}</span></div>`; };
+  const row=(t,n,h,extra="",don=false)=>{ const base=SUPER_OF[t], lv=myLv(a,base||t), cap=capAt(base||t,th);
+    return `<div class="axr ${lv||don?"":"miss"}">${ico(t)}<span class="axn"><b>${n}×</b> ${esc(name(t))}${base?` <em class="sup">super</em>`:""}</span><span class="axl mono">${don?"donated":lv?`lv ${lv}${cap&&lv<cap?`/${cap}`:""}`:"locked"}</span><span class="axh mono">${h}${extra}</span></div>`; };
   const tr=A.troops.map(([t,n])=>row(t,n,n*HS[t])).join("");
   const sp=A.spells.map(([t,n])=>row(t,n,n*SPH[t])).join("");
-  const cc=A.cc.map(([t,n])=>row(t,n,n*HS[t])).join("")+A.ccs.map(([t,n])=>row(t,n,n*SPH[t])).join("");
+  const cc=A.cc.map(([t,n])=>row(t,n,n*HS[t],"",true)).join("")+A.ccs.map(([t,n])=>row(t,n,n*SPH[t],"",true)).join("");
   const hero=A.gear.map(([h,{pick,skipped},bring])=>`<div class="axg ${bring?"":"bench"}">${ico(h)}<b>${esc(name(h))}</b><span>${pick.map(e=>`${esc(name(e))} <small class="mono">lv ${myLv(a,e)}</small>`).join(" + ")||"no equipment yet"}${skipped.length&&bring?`<small class="axwhy">level ${skipped.map(e=>esc(name(e))).join(" and ")} for this plan</small>`:""}</span>${bring?"":`<em class="axbench">bench</em>`}</div>`).join("");
   const sup=A.troops.filter(([t])=>SUPER_OF[t]).map(([t])=>name(t));
   return `<div class="axt">
     <div class="axhd"><span>Troops</span><b class="mono">${A.used} / ${A.cap}</b></div>${tr}
     <div class="axhd"><span>Spells</span><b class="mono">${A.sp} / ${A.sc}</b></div>${sp}
-    <div class="axhd"><span>Siege machine</span></div>${A.siege?row(A.siege,1,"",""):`<p class="note">No siege machine unlocked.</p>`}${A.siegeNote?`<p class="axnote">${esc(A.siegeNote)}, so this uses your best unlocked one.</p>`:""}
+    <div class="axhd"><span>Siege machine</span></div>${A.siege?(myLv(a,A.siege)?row(A.siege,1,"",""):`<div class="axr">${ico(A.siege)}<span class="axn"><b>1×</b> ${esc(name(A.siege))}</span><span class="axl mono">clan castle</span><span class="axh mono"></span></div>`):`<p class="note">No siege machine unlocked.</p>`}${A.siegeNote?`<p class="axnote">${esc(A.siegeNote)}.</p>`:""}
     <div class="axhd"><span>Clan Castle request</span><b class="mono">${A.ccu}/${A.ccCap.t} · ${A.ccsu}/${A.ccCap.s}</b></div>${cc}
-    ${hero?`<div class="axhd"><span>Heroes and equipment</span><b class="mono">bring ${Math.min(4,A.gear.length)}</b></div><div class="axgs">${hero}</div>`:""}
+    ${hero?`<div class="axhd"><span>Heroes and equipment</span><b class="mono">bring ${Math.min(A.slots,A.gear.length)}</b></div><div class="axgs">${hero}</div>`:""}
+    ${A.notes.length?`<p class="axnote">Swapped for what you have: ${A.notes.map(esc).join(" · ")}</p>`:""}
     ${sup.length?`<p class="axnote">Boost ${sup.map(esc).join(" and ")} before attacking (max 2 Super Troops at once).</p>`:""}
   </div>`;
 }
@@ -3891,7 +3996,7 @@ let SHOT=null; // {img,url,w,h,marks:[{t,x,y}],mode,an}
 async function loadShot(file){
   if(!file||!/^image\//.test(file.type)) return;
   const url=URL.createObjectURL(file), img=new Image(); img.src=url; await img.decode();
-  SHOT={img,url,w:img.naturalWidth,h:img.naturalHeight,marks:[],mode:"th",an:null,px:pixels(img)};
+  SHOT={img,url,w:img.naturalWidth,h:img.naturalHeight,marks:[],mode:"th",view:"tap",zoom:false,an:null,px:pixels(img)};
   SHOT.D0=findMap(SHOT.px,SHOT.px.W/2,SHOT.px.H*.55,SHOT.px.W*.22); rerAdv(); autoFind();
 }
 // colour of every pixel, at a small working size
@@ -4019,11 +4124,12 @@ function entryFor(an,style){
 const dpt=(an,a,f)=>{ const c=Math.cos(a), s=Math.sin(a), L=Math.abs(c)+Math.abs(s), K=SHOT.w/SHOT.px.W; return [(an.D.mx+an.D.hx*an.S*f*c/L)*K,(an.D.my+an.D.hy*an.S*f*s/L)*K]; };
 function drawShot(){
   const cv=document.getElementById("shotcv"); if(!cv||!SHOT) return;
-  const box=cv.parentElement.getBoundingClientRect(), k=box.width<600?Math.min(1,Math.max(box.width,720)/SHOT.w):Math.min(1,box.width/SHOT.w,Math.min(560,innerHeight*.7)/SHOT.h), W=Math.round(SHOT.w*k), H=Math.round(SHOT.h*k), dpr=devicePixelRatio||1;
+  const box=cv.parentElement.getBoundingClientRect(), k=(box.width<600?Math.min(1,Math.max(box.width,720)/SHOT.w):Math.min(1,box.width/SHOT.w,Math.min(560,innerHeight*.7)/SHOT.h))*(SHOT.zoom?2:1), W=Math.round(SHOT.w*k), H=Math.round(SHOT.h*k), dpr=devicePixelRatio||1;
   cv.width=W*dpr; cv.height=H*dpr; cv.style.width=W+"px"; cv.style.height=H+"px";
   const g=cv.getContext("2d"); g.setTransform(dpr*k,0,0,dpr*k,0,0); g.drawImage(SHOT.img,0,0);
-  const an=SHOT.an, u=SHOT.w/600;
-  if(an){
+  const an=SHOT.an, u=SHOT.w/600, plan=an&&SHOT.view==="plan";
+  if(an&&!plan){ g.save(); g.setLineDash([6*u,6*u]); g.lineWidth=1.2*u; g.strokeStyle="rgba(255,255,255,.35)"; g.beginPath(); [0,Math.PI/2,Math.PI,-Math.PI/2].forEach((a,i)=>{ const [x,y]=dpt(an,a,1); i?g.lineTo(x,y):g.moveTo(x,y); }); g.closePath(); g.stroke(); g.restore(); }
+  if(plan){
     const dia=f=>{ g.beginPath(); [0,Math.PI/2,Math.PI,-Math.PI/2].forEach((a,i)=>{ const [x,y]=dpt(an,a,f); i?g.lineTo(x,y):g.moveTo(x,y); }); g.closePath(); g.stroke(); };
     g.save(); g.setLineDash([8*u,6*u]); g.lineWidth=2*u; g.strokeStyle="rgba(255,255,255,.65)"; dia(1); g.strokeStyle="rgba(255,90,70,.8)"; dia(.4); g.restore();
     if(an.entry){ const a=an.entry.th, o=dpt(an,a,1.22), t=dpt(an,a,.62);
@@ -4034,22 +4140,22 @@ function drawShot(){
     if(an.path&&an.path.length>1){ g.save(); g.strokeStyle="#f5c542"; g.lineWidth=4*u; g.setLineDash([10*u,7*u]); g.lineCap="round"; g.beginPath(); an.path.forEach(([x,y],i)=>i?g.lineTo(x,y):g.moveTo(x,y)); g.stroke();
       const [x1,y1]=an.path[an.path.length-2], [x2,y2]=an.path[an.path.length-1], ang=Math.atan2(y2-y1,x2-x1); g.setLineDash([]); g.fillStyle="#f5c542"; g.beginPath(); g.moveTo(x2-Math.cos(ang)*14*u,y2-Math.sin(ang)*14*u);
       g.lineTo(x2-Math.cos(ang)*30*u+Math.cos(ang+1.57)*9*u,y2-Math.sin(ang)*30*u+Math.sin(ang+1.57)*9*u); g.lineTo(x2-Math.cos(ang)*30*u-Math.cos(ang+1.57)*9*u,y2-Math.sin(ang)*30*u-Math.sin(ang+1.57)*9*u); g.fill(); g.restore(); }
-    for(const m of an.marks2||[]){ g.save(); g.fillStyle=m.c; g.strokeStyle="#000"; g.lineWidth=2*u; g.beginPath(); g.arc(m.x,m.y,7*u,0,Math.PI*2); g.fill(); g.stroke(); g.restore(); }
+    for(const m of an.marks2||[]){ g.save(); g.fillStyle=m.c; g.strokeStyle="#000"; g.lineWidth=2*u; g.beginPath(); g.arc(m.x,m.y,4.5*u,0,Math.PI*2); g.fill(); g.stroke(); g.restore(); }
   }
   SHOT.marks.forEach(m=>{ const x=m.x*SHOT.w,y=m.y*SHOT.h,c=SHT[m.t].c;
     if(m.t==="sweep"){ const P=an&&an.P.find(q=>q.x===m.x&&q.y===m.y), f=m.f!=null?m.f:P?P.a:-Math.PI/2, D=an?an.D:{hx:1,hy:.6}, dx=Math.cos(f)*D.hx, dy=Math.sin(f)*D.hy, L=Math.hypot(dx,dy)||1;
       g.save(); g.strokeStyle=c; g.lineWidth=3*u; g.beginPath(); g.moveTo(x,y); g.lineTo(x+dx/L*34*u,y+dy/L*34*u); g.stroke(); g.globalAlpha=.18; g.fillStyle=c; g.beginPath(); g.moveTo(x,y);
       const a0=Math.atan2(dy,dx); g.arc(x,y,60*u,a0-.6,a0+.6); g.closePath(); g.fill(); g.restore(); }
     g.save(); g.fillStyle=c; g.strokeStyle=m.auto?"#fff":"#000"; g.lineWidth=2*u; if(m.auto) g.setLineDash([3*u,2*u]);
-    g.beginPath(); g.arc(x,y,10*u,0,Math.PI*2); g.fill(); g.stroke(); g.fillStyle="#111"; g.font=`700 ${9.5*u}px system-ui`; g.textAlign="center"; g.textBaseline="middle";
+    g.beginPath(); g.arc(x,y,6.5*u,0,Math.PI*2); g.fill(); g.stroke(); g.fillStyle="#111"; g.font=`800 ${6*u}px system-ui`; g.textAlign="center"; g.textBaseline="middle";
     g.fillText(MK[m.t],x,y+.5*u); g.restore(); });
-  if(an&&an.entry){ const o=dpt(an,an.entry.th,1.22); lbl(g,o[0],o[1]+(Math.sin(an.entry.th)>.3?16:-16)*u,"START",u,"#3ee08f"); }
-  for(const m of (an&&an.marks2)||[]) lbl(g,m.x,m.y+(m.dy||-16)*u,m.l,u,m.c);
-  const used=[]; for(const s of (an&&an.spots)||[]){ let x=s.x, y=s.y+s.r*.6+14*u; while(used.some(q=>Math.abs(q[0]-x)<90*u&&Math.abs(q[1]-y)<20*u)) y+=20*u; used.push([x,y]); lbl(g,x,y,s.l,u,s.c); }
+  if(plan&&an.entry){ const o=dpt(an,an.entry.th,1.22); lbl(g,o[0],o[1]+(Math.sin(an.entry.th)>.3?16:-16)*u,"START",u,"#3ee08f"); }
+  for(const m of (plan&&an.marks2)||[]) lbl(g,m.x,m.y+(m.dy||-16)*u,m.l,u,m.c);
+  const used=[]; for(const s of (plan&&an.spots)||[]){ let x=s.x, y=s.y+s.r*.6+14*u; while(used.some(q=>Math.abs(q[0]-x)<90*u&&Math.abs(q[1]-y)<20*u)) y+=20*u; used.push([x,y]); lbl(g,x,y,s.l,u,s.c); }
 }
-function lbl(g,x,y,t,u,c){ g.save(); g.font=`800 ${12*u}px system-ui`; g.textAlign="center"; const w=g.measureText(t).width+12*u;
+function lbl(g,x,y,t,u,c){ u*=.7; g.save(); g.font=`800 ${12*u}px system-ui`; g.textAlign="center"; const w=g.measureText(t).width+10*u;
   x=Math.max(w/2+4*u,Math.min(SHOT.w-w/2-4*u,x)); y=Math.max(14*u,Math.min(SHOT.h-12*u,y));
-  g.fillStyle="rgba(0,0,0,.72)"; g.fillRect(x-w/2,y-10*u,w,18*u); g.fillStyle=c; g.textBaseline="middle"; g.fillText(t,x,y-1*u); g.restore(); }
+  g.fillStyle="rgba(0,0,0,.6)"; g.fillRect(x-w/2,y-10*u,w,18*u); g.fillStyle=c; g.textBaseline="middle"; g.fillText(t,x,y-1*u); g.restore(); }
 // after the advisor picks a plan: start side, and where Rage and Freeze go along the way in
 function shotPlan(p,a,th){
   const an=SHOT&&SHOT.an; if(!an) return; const style=p.style; an.entry=entryFor(an,style); const E=an.entry.th, spots=[], R=an.D.hx*an.S*(SHOT.w/SHOT.px.W);
@@ -4063,7 +4169,7 @@ function shotPlan(p,a,th){
   // funnel either side of the start, siege at the start
   const fl=dpt(an,E-.55,1.02), fr=dpt(an,E+.55,1.02), sg=dpt(an,E,1.08);
   const A2=buildArmy(p.id,a,th), siege=A2&&A2.siege?name(A2.siege):null;
-  an.marks2=[{x:fl[0],y:fl[1],l:"FUNNEL",c:"#ffd27a"},{x:fr[0],y:fr[1],l:"FUNNEL",c:"#ffd27a"}].concat(siege?[{x:sg[0],y:sg[1],l:siege.toUpperCase(),c:"#ffffff",dy:22}]:[]);
+  an.marks2=[{x:fl[0],y:fl[1],l:"FUNNEL",c:"#ffd27a"},{x:fr[0],y:fr[1],l:"FUNNEL",c:"#ffd27a"}].concat(siege?[{x:sg[0],y:sg[1],l:siege.toUpperCase(),c:"#ffffff",dy:40}]:[]);
   // heroes: in at the start, through the first big defense on the way, then to the Town Hall
   const tgt=style==="Air"?(eag||thm):(thm||eag);
   an.path=[dpt(an,E,1.12)].concat(key[0]&&key[0].t<.9?[[key[0].X,key[0].Y]]:[dpt(an,E,.5)]).concat(tgt?[at(tgt)]:[]);
@@ -4091,9 +4197,9 @@ function shotBox(){
   const cnt=t=>SHOT.marks.filter(m=>m.t===t).length, an=SHOT.an;
   return `<div class="advshot open">
     <div class="shotbar">${SHOT_T.map(([k,l,n,c])=>`<button type="button" class="shotk" data-shotk="${k}" aria-pressed="${SHOT.mode===k}" style="--c:${c}"><i></i>${l}<small class="mono">${cnt(k)}/${n}</small></button>`).join("")}
-      <span class="shotsp"></span><button type="button" class="glink" data-shotx="undo">Undo</button><button type="button" class="glink" data-shotx="close">Remove picture</button></div>
+      <span class="shotsp"></span>${an?`<button type="button" class="shotview ${SHOT.view==="plan"?"on":""}" data-shotx="view">${SHOT.view==="plan"?"Back to tapping":"Show the plan"}</button>`:""}<button type="button" class="glink" data-shotx="zoom">${SHOT.zoom?"Zoom out":"Zoom in"}</button><button type="button" class="glink" data-shotx="undo">Undo</button><button type="button" class="glink" data-shotx="close">Remove picture</button></div>
     ${SHOT.finding?`<p class="note shothint">Looking for buildings from your saved examples…</p>`:SHOT.found!=null?`<p class="note shothint">${SHOT.found?`Found ${SHOT.found} building${SHOT.found>1?"s":""} from your saved examples (dashed markers). Tap any wrong one with its kind selected to remove it.`:"No buildings matched your saved examples on this picture. Tap them in; the page learns from every tap."}</p>`:""}
-    <p class="note shothint">${SHOT.mode==="sweep"?"Tap an Air Sweeper to place it. Tap it again to turn the way it faces (the shaded cone).":an?"Tap more buildings to sharpen it. Tapping a marker of the selected kind removes it.":`Tap the <b>${esc(SHT[SHOT.mode].l)}</b> on the picture. Town Hall plus two more is enough to start.`}<span class="shotmob"> Swipe the picture sideways to see all of it.</span>${an&&!an.ok?" This scenery's ground colour is hard to read, so base shape is left for you to pick.":""}</p>
+    <p class="note shothint">${SHOT.mode==="sweep"?"Tap an Air Sweeper to place it. Tap it again to turn the way it faces (the shaded cone).":an?(SHOT.view==="plan"?"The plan for the best army below. Tap the picture or a building type to go back to tapping.":"Tap more buildings to sharpen it, then press Show the plan. Tapping a marker of the selected kind removes it."):`Tap the <b>${esc(SHT[SHOT.mode].l)}</b> on the picture. Town Hall plus two more is enough to start.`}<span class="shotmob"> Swipe the picture sideways to see all of it.</span>${an&&!an.ok?" This scenery's ground colour is hard to read, so base shape is left for you to pick.":""}</p>
     <div class="shotwrap"><canvas id="shotcv" data-shotcv></canvas></div>
     ${an?`<ul class="advnotes">${an.notes.map(n=>`<li>${esc(n)}</li>`).join("")}</ul>
     ${an.steps?`<div class="shotsteps"><b>The attack, on this base</b><ol>${an.steps.map(t=>`<li>${esc(t)}</li>`).join("")}</ol><p class="note">Green arrow: start. Gold line: hero path. Yellow dots: funnel. Rings: spells.</p></div>`:""}`:""}
@@ -4105,8 +4211,11 @@ document.addEventListener("paste",e=>{ if(hashRaw()!=="attack") return; const it
 document.addEventListener("click",e=>{
   const k=e.target.closest("[data-shotk]"), x=e.target.closest("[data-shotx]"), cv=e.target.closest("[data-shotcv]");
   if(!SHOT||(!k&&!x&&!cv)) return;
-  if(k) SHOT.mode=k.dataset.shotk;
+  if(k){ SHOT.mode=k.dataset.shotk; SHOT.view="tap"; }
+  if(cv&&SHOT.view==="plan"){ SHOT.view="tap"; }
   if(x&&x.dataset.shotx==="undo") SHOT.marks.pop();
+  if(x&&x.dataset.shotx==="view") SHOT.view=SHOT.view==="plan"?"tap":"plan";
+  if(x&&x.dataset.shotx==="zoom") SHOT.zoom=!SHOT.zoom;
   if(x&&x.dataset.shotx==="close"){ URL.revokeObjectURL(SHOT.url); SHOT=null; return rerAdv(); }
   if(cv){ const r=cv.getBoundingClientRect(), nx=(e.clientX-r.left)/r.width, ny=(e.clientY-r.top)/r.height;
     const hit=SHOT.marks.findIndex(m=>m.t===SHOT.mode&&Math.hypot((m.x-nx)*r.width,(m.y-ny)*r.height)<14);
@@ -4135,7 +4244,8 @@ function advisorView(accs){
   const tgt=wv&&(wv.opp.find(o=>o.n===ADV.tgt)||(ADV.tgt==null&&wv.my?wv.opp[wv.my-1]:null));
   const opTh=ADV.opTh||(tgt&&tgt.th)||th;
   const answered=Object.keys(ADV.traits).length;
-  const res=PLAYBOOK.map(p=>scoreArmy(p,a,opTh)).sort((p,q)=>q.s-p.s);
+  const all=PLAYBOOK.map(p=>scoreArmy(p,a,opTh)).sort((p,q)=>q.s-p.s), fitTh=all.filter(r=>th>=r.p.th[0]&&th<=r.p.th[1]);
+  const res=fitTh.length>=2?fitTh:all;
   const top=res.slice(0,2), alt=res.slice(2,5);
   if(SHOT&&SHOT.an) shotPlan(top[0].p,a,th);
   const chips=(k,opts)=>opts.map(([v,l])=>`<button type="button" class="tchip" data-trait="${k}" data-v="${v}" aria-pressed="${ADV.traits[k]===v}">${l}</button>`).join("");

@@ -3,6 +3,482 @@
  "note": "Edit this file to refresh the Attack advisor after a balance update. ids are the game's ids (see the Levels tab). troops/spells are [id,count] at 340 camp space and 11 spell space; the app scales them to each account. flex = the troop that absorbs bigger or smaller camps; xspell = the spell that absorbs extra spell space.",
  "strategies": [
   {
+   "id": "dragloon",
+   "name": "DragLoon (Dragons + Balloons)",
+   "style": "Air",
+   "th": [
+    7,
+    12
+   ],
+   "needs": [
+    [
+     4000008,
+     "Dragon"
+    ],
+    [
+     4000005,
+     "Balloon"
+    ]
+   ],
+   "heroes": [],
+   "gear": [],
+   "fit": {
+    "shape": {
+     "compact": 2,
+     "boxed": 2,
+     "spread": 1
+    },
+    "core": {
+     "strong": 1,
+     "weak": 2
+    },
+    "air": {
+     "open": 3,
+     "tight": 1
+    },
+    "inferno": {
+     "multi": 1,
+     "single": 1
+    },
+    "eagle": {
+     "core": 1,
+     "side": 1
+    },
+    "scout": {
+     "known": 1,
+     "new": 1
+    }
+   },
+   "safe": 2,
+   "army": "Dragons as the main force, Balloons to take out the defenses in front of them.",
+   "spells": "Lightning (plus Earthquake) to kill one Air Defense, Rage for the main push, Freeze or Haste for the core.",
+   "plan": [
+    "Zap the Air Defense nearest your start with Lightning (and Earthquake) before anything else.",
+    "Drop the Dragons in a wide line on that side, Balloons right behind them.",
+    "Heroes go to the opposite side to clean up.",
+    "Rage the Dragons as they reach the core; Freeze any Inferno or the Eagle."
+   ],
+   "why": {
+    "air": {
+     "open": "the Air Defenses are easy to reach"
+    },
+    "core": {
+     "weak": "a weak core falls to a Dragon wave"
+    },
+    "shape": {
+     "compact": "Dragons stay together on a compact base",
+     "boxed": "walls don't stop Dragons"
+    }
+   }
+  },
+  {
+   "id": "zapdrag",
+   "name": "Zap Dragons",
+   "style": "Air",
+   "th": [
+    7,
+    11
+   ],
+   "needs": [
+    [
+     4000008,
+     "Dragon"
+    ]
+   ],
+   "heroes": [],
+   "gear": [],
+   "fit": {
+    "shape": {
+     "compact": 3,
+     "boxed": 2,
+     "spread": 0
+    },
+    "core": {
+     "strong": 0,
+     "weak": 2
+    },
+    "air": {
+     "open": 1,
+     "tight": 3
+    },
+    "inferno": {
+     "multi": 1,
+     "single": 1
+    },
+    "eagle": {
+     "core": 1,
+     "side": 1
+    },
+    "scout": {
+     "known": 1,
+     "new": 2
+    }
+   },
+   "safe": 2,
+   "army": "As many Dragons as fit, a few Balloons to finish.",
+   "spells": "Lots of Lightning to knock out one or two Air Defenses before the Dragons go in, then Rage.",
+   "plan": [
+    "Lightning the deepest Air Defense down first (this is what makes the attack work).",
+    "Drop all Dragons in a line on the side where that Air Defense was.",
+    "Heroes on the side to stop the Dragons drifting round the edge.",
+    "Rage when the Dragons reach the core."
+   ],
+   "why": {
+    "air": {
+     "tight": "Lightning removes the deep Air Defenses the Dragons can't reach"
+    },
+    "shape": {
+     "compact": "a compact base keeps the Dragons together"
+    }
+   }
+  },
+  {
+   "id": "hogs",
+   "name": "Mass Hog Riders",
+   "style": "Ground",
+   "th": [
+    7,
+    10
+   ],
+   "needs": [
+    [
+     4000011,
+     "Hog Rider"
+    ]
+   ],
+   "heroes": [],
+   "gear": [],
+   "fit": {
+    "shape": {
+     "compact": 0,
+     "boxed": 2,
+     "spread": 3
+    },
+    "core": {
+     "strong": 0,
+     "weak": 2
+    },
+    "air": {
+     "open": 0,
+     "tight": 1
+    },
+    "inferno": {
+     "multi": 0,
+     "single": 2
+    },
+    "eagle": {
+     "core": 1,
+     "side": 0
+    },
+    "scout": {
+     "known": 2,
+     "new": 0
+    }
+   },
+   "safe": 1,
+   "army": "Hog Riders jumping walls to the defenses, Wizards to clear around them.",
+   "spells": "Healing Spells along the Hogs' path (Giant Bombs!), a Poison for the Clan Castle troops.",
+   "plan": [
+    "Lure and kill the Clan Castle troops first with a few Wizards and a Poison.",
+    "Kill the Barbarian King and Archer Queen side with your heroes.",
+    "Drop the Hogs in two groups so they spread over the defenses.",
+    "Heal where the Hogs bunch up, especially between pairs of defenses (Giant Bomb spots)."
+   ],
+   "why": {
+    "shape": {
+     "spread": "Hogs jump between spread-out defenses quickly",
+     "boxed": "Hogs jump over walls"
+    },
+    "inferno": {
+     "single": "Single Infernos struggle against many Hogs"
+    }
+   }
+  },
+  {
+   "id": "gowipe",
+   "name": "GoWiPe (Golems, Wizards, P.E.K.K.A)",
+   "style": "Ground",
+   "th": [
+    8,
+    11
+   ],
+   "needs": [
+    [
+     4000013,
+     "Golem"
+    ],
+    [
+     4000009,
+     "P.E.K.K.A"
+    ]
+   ],
+   "heroes": [],
+   "gear": [],
+   "fit": {
+    "shape": {
+     "compact": 3,
+     "boxed": 1,
+     "spread": 0
+    },
+    "core": {
+     "strong": 2,
+     "weak": 1
+    },
+    "air": {
+     "open": 0,
+     "tight": 2
+    },
+    "inferno": {
+     "multi": 1,
+     "single": 1
+    },
+    "eagle": {
+     "core": 1,
+     "side": 1
+    },
+    "scout": {
+     "known": 1,
+     "new": 1
+    }
+   },
+   "safe": 3,
+   "army": "Golems in front as tanks, P.E.K.K.As and Wizards behind, Wall Breakers to open the way.",
+   "spells": "Earthquake and Jump to open walls, Rage and Healing for the push into the core.",
+   "plan": [
+    "Drop Golems first to soak up damage.",
+    "Wall Breakers open the first wall layer.",
+    "Wizards behind the Golems to clear the outside buildings, then P.E.K.K.As and heroes.",
+    "Jump or Earthquake into the core; Rage when the P.E.K.K.As reach it."
+   ],
+   "why": {
+    "shape": {
+     "compact": "a slow, tanky push works best on a compact base"
+    },
+    "core": {
+     "strong": "P.E.K.K.As break strong cores"
+    }
+   }
+  },
+  {
+   "id": "hogminer",
+   "name": "Queen Walk Hog Miner",
+   "style": "Ground",
+   "th": [
+    10,
+    14
+   ],
+   "needs": [
+    [
+     4000011,
+     "Hog Rider"
+    ],
+    [
+     4000024,
+     "Miner"
+    ]
+   ],
+   "heroes": [
+    28000001
+   ],
+   "gear": [
+    [
+     90000020,
+     "Healer Puppet",
+     "Archer Queen"
+    ]
+   ],
+   "fit": {
+    "shape": {
+     "compact": 1,
+     "boxed": 2,
+     "spread": 3
+    },
+    "core": {
+     "strong": 0,
+     "weak": 2
+    },
+    "air": {
+     "open": 1,
+     "tight": 2
+    },
+    "inferno": {
+     "multi": 0,
+     "single": 2
+    },
+    "eagle": {
+     "core": 1,
+     "side": 1
+    },
+    "scout": {
+     "known": 2,
+     "new": 0
+    }
+   },
+   "safe": 2,
+   "army": "Archer Queen with Healers to clear a side, then Hog Riders and Miners together.",
+   "spells": "Healing Spells along the Hog Miner path, Rage, Freeze for Infernos, Poison for the Clan Castle.",
+   "plan": [
+    "Queen Walk with the Healers on one side to take out the Clan Castle troops and a few defenses.",
+    "Drop Hogs and Miners together from the other side, spread across the base.",
+    "Heal where Hogs bunch up; Freeze the Inferno or Eagle as they go in.",
+    "Heroes clean up the far side."
+   ],
+   "why": {
+    "shape": {
+     "spread": "Hogs and Miners love spread-out defenses"
+    },
+    "core": {
+     "weak": "no strong core to stop the Miners"
+    },
+    "inferno": {
+     "single": "Single Infernos can't handle many Miners"
+    }
+   }
+  },
+  {
+   "id": "bowitch",
+   "name": "Bowitch (Bowlers + Witches)",
+   "style": "Ground",
+   "th": [
+    10,
+    13
+   ],
+   "needs": [
+    [
+     4000022,
+     "Bowler"
+    ],
+    [
+     4000015,
+     "Witch"
+    ]
+   ],
+   "heroes": [
+    28000002
+   ],
+   "gear": [
+    [
+     90000004,
+     "Eternal Tome",
+     "Grand Warden"
+    ]
+   ],
+   "fit": {
+    "shape": {
+     "compact": 3,
+     "boxed": 3,
+     "spread": 0
+    },
+    "core": {
+     "strong": 2,
+     "weak": 1
+    },
+    "air": {
+     "open": 0,
+     "tight": 2
+    },
+    "inferno": {
+     "multi": 0,
+     "single": 1
+    },
+    "eagle": {
+     "core": 2,
+     "side": 0
+    },
+    "scout": {
+     "known": 1,
+     "new": 1
+    }
+   },
+   "safe": 3,
+   "army": "Golems in front, Witches and Bowlers behind, Wall Breakers to open the way.",
+   "spells": "Rage and Jump into the core, Freeze for Infernos and the Eagle, Poison for the Clan Castle.",
+   "plan": [
+    "Clear a funnel on both sides of your entry.",
+    "Golems first, Wall Breakers, then Witches and Bowlers in a tight group.",
+    "Grand Warden follows the group with Eternal Tome for the core.",
+    "Jump into the core; Rage and Freeze as the group reaches the Town Hall."
+   ],
+   "why": {
+    "shape": {
+     "compact": "Bowlers' bouncing boulders hit two layers at once on compact bases",
+     "boxed": "Bowlers and Witches grind through walled sections"
+    },
+    "core": {
+     "strong": "a strong ground push breaks the core"
+    }
+   }
+  },
+  {
+   "id": "yetismash",
+   "name": "Yeti Smash",
+   "style": "Ground",
+   "th": [
+    12,
+    15
+   ],
+   "needs": [
+    [
+     4000053,
+     "Yeti"
+    ]
+   ],
+   "heroes": [
+    28000002
+   ],
+   "gear": [
+    [
+     90000022,
+     "Fireball",
+     "Grand Warden"
+    ]
+   ],
+   "fit": {
+    "shape": {
+     "compact": 3,
+     "boxed": 2,
+     "spread": 1
+    },
+    "core": {
+     "strong": 3,
+     "weak": 1
+    },
+    "air": {
+     "open": 0,
+     "tight": 2
+    },
+    "inferno": {
+     "multi": 1,
+     "single": 1
+    },
+    "eagle": {
+     "core": 2,
+     "side": 1
+    },
+    "scout": {
+     "known": 1,
+     "new": 1
+    }
+   },
+   "safe": 2,
+   "army": "Yetis to smash through, Witches for support, Ice Golems and Bowlers to protect them.",
+   "spells": "Rage and Freeze for the core, Jump to get in, Poison for the Clan Castle troops.",
+   "plan": [
+    "Funnel both sides of your entry with Wizards or heroes.",
+    "Ice Golems first, then Yetis and Witches in one group.",
+    "Grand Warden follows the Yetis; Fireball the toughest defense on the way.",
+    "Jump into the core; Rage and Freeze on the Town Hall area."
+   ],
+   "why": {
+    "core": {
+     "strong": "Yetis smash strong cores"
+    },
+    "shape": {
+     "compact": "a compact base keeps the Yetis together"
+    }
+   }
+  },
+  {
    "id": "rr",
    "name": "RC Walk Root Riders",
    "style": "Ground",
@@ -228,7 +704,7 @@
    "name": "Queen Charge LavaLoon",
    "style": "Air",
    "th": [
-    13,
+    9,
     17
    ],
    "needs": [
@@ -576,7 +1052,7 @@
    "name": "Electro Dragons",
    "style": "Air",
    "th": [
-    13,
+    11,
     18
    ],
    "needs": [
@@ -691,6 +1167,440 @@
   }
  ],
  "armies": {
+  "dragloon": {
+   "troops": [
+    [
+     4000008,
+     11
+    ],
+    [
+     4000005,
+     20
+    ]
+   ],
+   "flex": 4000005,
+   "spells": [
+    [
+     26000000,
+     3
+    ],
+    [
+     26000010,
+     1
+    ],
+    [
+     26000002,
+     2
+    ],
+    [
+     26000005,
+     2
+    ],
+    [
+     26000011,
+     1
+    ]
+   ],
+   "xspell": 26000002,
+   "siege": 4000052,
+   "cc": [
+    [
+     4000008,
+     1
+    ],
+    [
+     4000005,
+     6
+    ]
+   ],
+   "ccs": [
+    [
+     26000002,
+     1
+    ],
+    [
+     26000005,
+     1
+    ]
+   ],
+   "heroes": {}
+  },
+  "zapdrag": {
+   "troops": [
+    [
+     4000008,
+     15
+    ],
+    [
+     4000005,
+     8
+    ]
+   ],
+   "flex": 4000005,
+   "spells": [
+    [
+     26000000,
+     8
+    ],
+    [
+     26000010,
+     1
+    ],
+    [
+     26000002,
+     1
+    ]
+   ],
+   "xspell": 26000000,
+   "siege": 4000052,
+   "cc": [
+    [
+     4000008,
+     1
+    ],
+    [
+     4000005,
+     6
+    ]
+   ],
+   "ccs": [
+    [
+     26000002,
+     1
+    ],
+    [
+     26000005,
+     1
+    ]
+   ],
+   "heroes": {}
+  },
+  "hogs": {
+   "troops": [
+    [
+     4000011,
+     52
+    ],
+    [
+     4000006,
+     10
+    ],
+    [
+     4000004,
+     4
+    ]
+   ],
+   "flex": 4000011,
+   "spells": [
+    [
+     26000001,
+     4
+    ],
+    [
+     26000009,
+     1
+    ],
+    [
+     26000000,
+     2
+    ]
+   ],
+   "xspell": 26000001,
+   "siege": 4000075,
+   "cc": [
+    [
+     4000011,
+     6
+    ],
+    [
+     4000006,
+     5
+    ]
+   ],
+   "ccs": [
+    [
+     26000001,
+     1
+    ],
+    [
+     26000009,
+     1
+    ]
+   ],
+   "heroes": {}
+  },
+  "gowipe": {
+   "troops": [
+    [
+     4000013,
+     3
+    ],
+    [
+     4000009,
+     5
+    ],
+    [
+     4000006,
+     25
+    ],
+    [
+     4000004,
+     8
+    ]
+   ],
+   "flex": 4000006,
+   "spells": [
+    [
+     26000002,
+     2
+    ],
+    [
+     26000001,
+     2
+    ],
+    [
+     26000003,
+     1
+    ],
+    [
+     26000010,
+     1
+    ]
+   ],
+   "xspell": 26000002,
+   "siege": 4000051,
+   "cc": [
+    [
+     4000009,
+     1
+    ],
+    [
+     4000006,
+     6
+    ]
+   ],
+   "ccs": [
+    [
+     26000002,
+     1
+    ],
+    [
+     26000009,
+     1
+    ]
+   ],
+   "heroes": {}
+  },
+  "hogminer": {
+   "troops": [
+    [
+     4000007,
+     4
+    ],
+    [
+     4000011,
+     20
+    ],
+    [
+     4000024,
+     22
+    ],
+    [
+     4000012,
+     4
+    ],
+    [
+     4000004,
+     4
+    ]
+   ],
+   "flex": 4000024,
+   "spells": [
+    [
+     26000001,
+     4
+    ],
+    [
+     26000002,
+     1
+    ],
+    [
+     26000005,
+     1
+    ],
+    [
+     26000009,
+     1
+    ]
+   ],
+   "xspell": 26000001,
+   "siege": 4000051,
+   "cc": [
+    [
+     4000011,
+     6
+    ],
+    [
+     4000006,
+     5
+    ]
+   ],
+   "ccs": [
+    [
+     26000001,
+     1
+    ],
+    [
+     26000009,
+     1
+    ]
+   ],
+   "heroes": {}
+  },
+  "bowitch": {
+   "troops": [
+    [
+     4000013,
+     2
+    ],
+    [
+     4000015,
+     10
+    ],
+    [
+     4000022,
+     22
+    ],
+    [
+     4000004,
+     6
+    ],
+    [
+     4000006,
+     4
+    ]
+   ],
+   "flex": 4000022,
+   "spells": [
+    [
+     26000002,
+     2
+    ],
+    [
+     26000001,
+     1
+    ],
+    [
+     26000003,
+     1
+    ],
+    [
+     26000005,
+     2
+    ],
+    [
+     26000009,
+     1
+    ]
+   ],
+   "xspell": 26000002,
+   "siege": 4000051,
+   "cc": [
+    [
+     4000022,
+     5
+    ],
+    [
+     4000015,
+     1
+    ],
+    [
+     4000006,
+     2
+    ]
+   ],
+   "ccs": [
+    [
+     26000005,
+     1
+    ],
+    [
+     26000009,
+     1
+    ]
+   ],
+   "heroes": {}
+  },
+  "yetismash": {
+   "troops": [
+    [
+     4000053,
+     8
+    ],
+    [
+     4000015,
+     6
+    ],
+    [
+     4000058,
+     2
+    ],
+    [
+     4000022,
+     6
+    ],
+    [
+     4000004,
+     6
+    ],
+    [
+     4000006,
+     11
+    ]
+   ],
+   "flex": 4000006,
+   "spells": [
+    [
+     26000002,
+     3
+    ],
+    [
+     26000005,
+     2
+    ],
+    [
+     26000003,
+     1
+    ],
+    [
+     26000009,
+     1
+    ]
+   ],
+   "xspell": 26000002,
+   "siege": 4000051,
+   "cc": [
+    [
+     4000053,
+     2
+    ],
+    [
+     4000006,
+     2
+    ]
+   ],
+   "ccs": [
+    [
+     26000005,
+     1
+    ],
+    [
+     26000009,
+     1
+    ]
+   ],
+   "heroes": {}
+  },
   "rr": {
    "troops": [
     [
