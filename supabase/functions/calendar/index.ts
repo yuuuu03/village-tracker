@@ -7,10 +7,17 @@ import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 const z = (d: Date) => d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
 const esc = (s: string) => s.replace(/[\;,]/g, (m) => "\\" + m).replace(/\n/g, "\\n");
 
+// Server key: legacy service_role, or the new secret key (SUPABASE_SECRET_KEYS is JSON keyed by name)
+const serverKey = () => {
+  const legacy = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (legacy) return legacy;
+  try { const all = JSON.parse(Deno.env.get("SUPABASE_SECRET_KEYS") ?? "{}"); return all.default ?? Object.values(all)[0]; } catch { return undefined; }
+};
+
 Deno.serve(async (req) => {
   const k = new URL(req.url).searchParams.get("k") ?? "";
   if (!/^[a-f0-9]{32}$/.test(k)) return new Response("not found", { status: 404 });
-  const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+  const sb = createClient(Deno.env.get("SUPABASE_URL")!, serverKey()!);
   const { data: feed } = await sb.from("feeds").select("user_id").eq("token", k).maybeSingle();
   if (!feed) return new Response("not found", { status: 404 });
 

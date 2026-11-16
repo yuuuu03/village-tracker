@@ -10,6 +10,7 @@ create table if not exists public.villages (
   primary key (user_id, id)
 );
 alter table public.villages enable row level security;
+drop policy if exists "villages: own rows" on public.villages;
 create policy "villages: own rows" on public.villages
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
@@ -21,6 +22,7 @@ create table if not exists public.push_subs (
   created_at timestamptz not null default now()
 );
 alter table public.push_subs enable row level security;
+drop policy if exists "push_subs: own rows" on public.push_subs;
 create policy "push_subs: own rows" on public.push_subs
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
@@ -36,6 +38,7 @@ create table if not exists public.reminders (
 );
 create index if not exists reminders_due on public.reminders (fire_at) where sent_at is null;
 alter table public.reminders enable row level security;
+drop policy if exists "reminders: own rows" on public.reminders;
 create policy "reminders: own rows" on public.reminders
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
@@ -47,6 +50,7 @@ create table if not exists public.shares (
   created_at timestamptz not null default now()
 );
 alter table public.shares enable row level security;
+drop policy if exists "shares: own rows" on public.shares;
 create policy "shares: own rows" on public.shares
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
@@ -97,6 +101,9 @@ alter table public.feeds enable row level security;
 drop policy if exists "feeds: own row" on public.feeds;
 create policy "feeds: own row" on public.feeds
   for all using (auth.uid() = user_id and public.is_allowed()) with check (auth.uid() = user_id and public.is_allowed());
+
+-- Let the signed-in app use these tables (row security above still limits it to your own rows)
+grant select, insert, update, delete on public.villages, public.push_subs, public.reminders, public.shares, public.feeds to authenticated;
 
 -- Then add yourself (change the address):
 -- insert into public.allowed_emails (email) values ('you@example.com');

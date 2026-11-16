@@ -1,0 +1,1409 @@
+{
+ "version": "Nov 2026",
+ "note": "Edit this file to refresh the Attack advisor after a balance update. ids are the game's ids (see the Levels tab). troops/spells are [id,count] at 340 camp space and 11 spell space; the app scales them to each account. flex = the troop that absorbs bigger or smaller camps; xspell = the spell that absorbs extra spell space.",
+ "strategies": [
+  {
+   "id": "rr",
+   "name": "RC Walk Root Riders",
+   "style": "Ground",
+   "th": [
+    15,
+    18
+   ],
+   "needs": [
+    [
+     4000110,
+     "Root Rider"
+    ]
+   ],
+   "heroes": [
+    28000004
+   ],
+   "gear": [
+    [
+     90000040,
+     "Electro Boots",
+     "Royal Champion"
+    ]
+   ],
+   "fit": {
+    "shape": {
+     "compact": 3,
+     "boxed": 3,
+     "spread": 1
+    },
+    "core": {
+     "strong": 1,
+     "weak": 2
+    },
+    "air": {
+     "open": 0,
+     "tight": 2
+    },
+    "inferno": {
+     "multi": 2,
+     "single": 0
+    },
+    "eagle": {
+     "core": 1,
+     "side": 1
+    },
+    "scout": {
+     "known": 1,
+     "new": 2
+    }
+   },
+   "safe": 2,
+   "army": "Root Riders as the main push, with Valkyries (or Druids) behind them, a Siege Barracks or Battle Drill, and a Root Rider in the Clan Castle.",
+   "spells": "2–3 Invisibility for the Royal Champion, Rage + Freeze for the main push, an Earthquake if walls are thick.",
+   "plan": [
+    "Send the Royal Champion in on one corner and use Invisibility to carry her through key defenses. That sets one side of the funnel.",
+    "Use the Queen (or Dragon Duke) to clear the other side so the funnel is wide.",
+    "Drop Root Riders in a line through the middle of the funnel, Valkyries right behind them.",
+    "Rage when they reach the core, Freeze the Infernos or Monolith as the push arrives.",
+    "Keep the Warden with the main group and pop his ability when the core fights start."
+   ],
+   "why": {
+    "shape": {
+     "compact": "Root Riders smash walls and walk straight, so tight compartments don't slow them",
+     "boxed": "many wall layers are exactly what Root Riders break through"
+    },
+    "core": {
+     "weak": "a weak core means the Root Riders finish the job once they're in"
+    },
+    "air": {
+     "tight": "the air defense is strong, so a ground push avoids it"
+    },
+    "inferno": {
+     "multi": "Multi Infernos do little to a few high-hitpoint Root Riders"
+    },
+    "scout": {
+     "new": "it's forgiving on a base you haven't seen before"
+    }
+   }
+  },
+  {
+   "id": "yeti",
+   "name": "Fireball Super Yeti",
+   "style": "Ground",
+   "th": [
+    15,
+    17
+   ],
+   "needs": [
+    [
+     4000053,
+     "Yeti (for Super Yeti)"
+    ]
+   ],
+   "heroes": [
+    28000002
+   ],
+   "gear": [
+    [
+     90000022,
+     "Fireball",
+     "Grand Warden"
+    ]
+   ],
+   "fit": {
+    "shape": {
+     "compact": 3,
+     "boxed": 1,
+     "spread": 1
+    },
+    "core": {
+     "strong": 3,
+     "weak": 1
+    },
+    "air": {
+     "open": 0,
+     "tight": 2
+    },
+    "inferno": {
+     "multi": 2,
+     "single": 0
+    },
+    "eagle": {
+     "core": 3,
+     "side": 1
+    },
+    "scout": {
+     "known": 1,
+     "new": 3
+    }
+   },
+   "safe": 3,
+   "army": "Super Yetis as tanks with Witches behind them, 2 Ice Golems, a Super Wall Breaker and a Super Yeti in the Clan Castle.",
+   "spells": "Earthquake, Rage, Freeze and Poison, plus whatever space remains for Rage or Freeze.",
+   "plan": [
+    "Use the Warden's Fireball to delete 2–3 key defenses: the Eagle/Inferno Artillery and an Inferno are the usual picks.",
+    "Make a funnel with the Queen or Royal Champion on one side.",
+    "Drop Super Yetis in a line with the Ice Golems in front to soak the first big hits.",
+    "Witches go behind the Yetis. The Yetimites they create distract single-target defenses.",
+    "Warden walks with the main group. Rage the core and Freeze Monolith/Infernos as you arrive."
+   ],
+   "why": {
+    "core": {
+     "strong": "Fireball deletes the core defenses before the push arrives"
+    },
+    "eagle": {
+     "core": "the Eagle/Inferno Artillery sits where Fireball can reach it"
+    },
+    "scout": {
+     "new": "it's the safest triple on an unknown base"
+    },
+    "shape": {
+     "compact": "Yetimites flood compact compartments and overwhelm single-target defenses"
+    }
+   }
+  },
+  {
+   "id": "rret",
+   "name": "Root Rider + Electro Titan",
+   "style": "Ground",
+   "th": [
+    16,
+    18
+   ],
+   "needs": [
+    [
+     4000110,
+     "Root Rider"
+    ],
+    [
+     4000095,
+     "Electro Titan"
+    ]
+   ],
+   "heroes": [],
+   "gear": [],
+   "fit": {
+    "shape": {
+     "compact": 0,
+     "boxed": 1,
+     "spread": 3
+    },
+    "core": {
+     "strong": 0,
+     "weak": 3
+    },
+    "air": {
+     "open": 0,
+     "tight": 2
+    },
+    "inferno": {
+     "multi": 2,
+     "single": 0
+    },
+    "eagle": {
+     "core": 0,
+     "side": 1
+    },
+    "scout": {
+     "known": 1,
+     "new": 1
+    }
+   },
+   "safe": 2,
+   "army": "Root Riders in front with Electro Titans behind to wipe out whatever survives; Clan Castle: a Root Rider or Electro Titan.",
+   "spells": "Rage and Freeze for the push, Healing if the defense is spread out.",
+   "plan": [
+    "Clear one side with the Queen to create a straight path.",
+    "Root Riders go in first and carve a line through the walls.",
+    "Electro Titans follow to clean up everything left near the line.",
+    "Rage and Freeze as the group reaches the strongest defenses."
+   ],
+   "why": {
+    "shape": {
+     "spread": "the base is stretched out, and this army steamrolls through the middle"
+    },
+    "core": {
+     "weak": "it's built for a poorly defended core"
+    }
+   }
+  },
+  {
+   "id": "lalo",
+   "name": "Queen Charge LavaLoon",
+   "style": "Air",
+   "th": [
+    13,
+    17
+   ],
+   "needs": [
+    [
+     4000017,
+     "Lava Hound"
+    ],
+    [
+     4000005,
+     "Balloon"
+    ]
+   ],
+   "heroes": [
+    28000001
+   ],
+   "gear": [
+    [
+     90000048,
+     "Action Figure",
+     "Archer Queen"
+    ]
+   ],
+   "fit": {
+    "shape": {
+     "compact": 2,
+     "boxed": 1,
+     "spread": 2
+    },
+    "core": {
+     "strong": 3,
+     "weak": 0
+    },
+    "air": {
+     "open": 3,
+     "tight": 0
+    },
+    "inferno": {
+     "multi": 0,
+     "single": 2
+    },
+    "eagle": {
+     "core": 1,
+     "side": 2
+    },
+    "scout": {
+     "known": 2,
+     "new": 0
+    }
+   },
+   "safe": 1,
+   "army": "Lava Hounds to tank the Air Defenses, a big wave of Balloons, plus Minions or Headhunters for cleanup.",
+   "spells": "Rage and Haste for the Balloons, Freeze for the Infernos and a Poison for the Clan Castle troops.",
+   "plan": [
+    "Queen Charge with Healers takes out an Air Defense and one side of the base.",
+    "Lava Hounds go onto the remaining Air Defenses.",
+    "Balloons follow in a wide line behind the Hounds.",
+    "Rage and Haste as the Balloons reach the core; Freeze Infernos and the Eagle."
+   ],
+   "why": {
+    "core": {
+     "strong": "it's built for bases with a very strong core"
+    },
+    "air": {
+     "open": "the Air Defenses are reachable"
+    },
+    "inferno": {
+     "single": "Single Infernos struggle against a big Balloon swarm"
+    }
+   }
+  },
+  {
+   "id": "hydra",
+   "name": "Hydra (Dragons + Dragon Riders)",
+   "style": "Air",
+   "th": [
+    16,
+    18
+   ],
+   "needs": [
+    [
+     4000008,
+     "Dragon"
+    ],
+    [
+     4000065,
+     "Dragon Rider"
+    ]
+   ],
+   "heroes": [
+    28000007
+   ],
+   "gear": [
+    [
+     90000052,
+     "Fire Heart",
+     "Dragon Duke"
+    ]
+   ],
+   "fit": {
+    "shape": {
+     "compact": 1,
+     "boxed": 1,
+     "spread": 3
+    },
+    "core": {
+     "strong": 1,
+     "weak": 2
+    },
+    "air": {
+     "open": 3,
+     "tight": 0
+    },
+    "inferno": {
+     "multi": 1,
+     "single": 1
+    },
+    "eagle": {
+     "core": 1,
+     "side": 2
+    },
+    "scout": {
+     "known": 2,
+     "new": 1
+    }
+   },
+   "safe": 2,
+   "army": "Dragons and Dragon Riders together, with an Inferno Dragon or Balloons for support and the Dragon Duke leading.",
+   "spells": "Freeze for Infernos and Monolith, Rage for the main group, and Invisibility if the Duke needs it.",
+   "plan": [
+    "Dragon Duke opens one side solo. Keep him enraged and away from Air Sweepers.",
+    "Clear both edges of the funnel so the Dragons don't drift around the outside.",
+    "Drop Dragons and Dragon Riders as one wide group behind the Duke's path.",
+    "Freeze Infernos and Monolith as the group reaches them; Rage in the core."
+   ],
+   "why": {
+    "air": {
+     "open": "there's a clear air path and the Air Sweepers are manageable"
+    },
+    "shape": {
+     "spread": "Dragons don't need perfect ground pathing on a spread-out base"
+    }
+   }
+  },
+  {
+   "id": "rcdrag",
+   "name": "RC Walk Dragons",
+   "style": "Air",
+   "th": [
+    15,
+    17
+   ],
+   "needs": [
+    [
+     4000008,
+     "Dragon"
+    ]
+   ],
+   "heroes": [
+    28000004
+   ],
+   "gear": [],
+   "fit": {
+    "shape": {
+     "compact": 2,
+     "boxed": 1,
+     "spread": 2
+    },
+    "core": {
+     "strong": 1,
+     "weak": 2
+    },
+    "air": {
+     "open": 3,
+     "tight": 0
+    },
+    "inferno": {
+     "multi": 1,
+     "single": 1
+    },
+    "eagle": {
+     "core": 1,
+     "side": 2
+    },
+    "scout": {
+     "known": 1,
+     "new": 2
+    }
+   },
+   "safe": 2,
+   "army": "Mass Dragons with a couple of Balloons or Rocket Balloons to clear Air Defenses; Clan Castle: Dragon or Balloons.",
+   "spells": "Rage, Freeze and Lightning or Zap to take out an Air Defense.",
+   "plan": [
+    "Royal Champion walks one side, clearing defenses for the funnel.",
+    "Remove one Air Defense with spells before the Dragons arrive.",
+    "Drop Dragons in a wide line behind the Champion's path.",
+    "Rage as they reach the core; Freeze Infernos."
+   ],
+   "why": {
+    "air": {
+     "open": "Air Defenses are reachable"
+    },
+    "scout": {
+     "new": "it's the easiest air army to learn"
+    }
+   }
+  },
+  {
+   "id": "thrower",
+   "name": "Throwers + Healers (Warden walk)",
+   "style": "Ground",
+   "th": [
+    17,
+    18
+   ],
+   "needs": [
+    [
+     4000132,
+     "Thrower"
+    ],
+    [
+     4000007,
+     "Healer"
+    ]
+   ],
+   "heroes": [
+    28000002
+   ],
+   "gear": [],
+   "fit": {
+    "shape": {
+     "compact": 1,
+     "boxed": 0,
+     "spread": 2
+    },
+    "core": {
+     "strong": 1,
+     "weak": 2
+    },
+    "air": {
+     "open": 1,
+     "tight": 2
+    },
+    "inferno": {
+     "multi": 0,
+     "single": 2
+    },
+    "eagle": {
+     "core": 1,
+     "side": 1
+    },
+    "scout": {
+     "known": 2,
+     "new": 1
+    }
+   },
+   "safe": 2,
+   "army": "Throwers as the damage, with Healers keeping them alive, plus a Log Launcher to break compartments.",
+   "spells": "Earthquakes to open compartments, Rage, and Freeze for Infernos.",
+   "plan": [
+    "Earthquake the Clan Castle compartment and nearby walls.",
+    "Queen and Dragon Duke make funnels on opposite sides.",
+    "Throwers go in behind the funnel with Healers; the Log Launcher opens the way to the core.",
+    "Keep the Healers safe from Air Defenses and stop the Throwers drifting outside the funnel."
+   ],
+   "why": {
+    "shape": {
+     "spread": "ground sections can be reached through wall openings"
+    },
+    "inferno": {
+     "single": "Single Infernos can only lock one Thrower at a time"
+    }
+   }
+  },
+  {
+   "id": "sbowl",
+   "name": "Dragon Duke + Super Bowlers",
+   "style": "Ground",
+   "th": [
+    17,
+    18
+   ],
+   "needs": [
+    [
+     4000022,
+     "Bowler (for Super Bowler)"
+    ]
+   ],
+   "heroes": [
+    28000007
+   ],
+   "gear": [
+    [
+     90000052,
+     "Fire Heart",
+     "Dragon Duke"
+    ]
+   ],
+   "fit": {
+    "shape": {
+     "compact": 3,
+     "boxed": 2,
+     "spread": 0
+    },
+    "core": {
+     "strong": 3,
+     "weak": 1
+    },
+    "air": {
+     "open": 0,
+     "tight": 2
+    },
+    "inferno": {
+     "multi": 2,
+     "single": 0
+    },
+    "eagle": {
+     "core": 2,
+     "side": 1
+    },
+    "scout": {
+     "known": 2,
+     "new": 1
+    }
+   },
+   "safe": 2,
+   "army": "Super Bowlers as the core push, with Ice Golems or Yetis as tanks and the Dragon Duke opening the funnel.",
+   "spells": "Rage and Freeze for the core push, plus Earthquakes if walls are thick.",
+   "plan": [
+    "The Dragon Duke clears one edge of the funnel.",
+    "The Queen or Royal Champion clears the other.",
+    "Super Bowlers go in a tight group behind the tanks; their bounce hits rows of buildings.",
+    "Rage and Freeze in the core."
+   ],
+   "why": {
+    "core": {
+     "strong": "it's a powerful push for a strong core"
+    },
+    "shape": {
+     "compact": "bounces shine on compact rows of buildings"
+    }
+   }
+  },
+  {
+   "id": "edrag",
+   "name": "Electro Dragons",
+   "style": "Air",
+   "th": [
+    13,
+    18
+   ],
+   "needs": [
+    [
+     4000059,
+     "Electro Dragon"
+    ]
+   ],
+   "heroes": [],
+   "gear": [],
+   "fit": {
+    "shape": {
+     "compact": 3,
+     "boxed": 2,
+     "spread": 0
+    },
+    "core": {
+     "strong": 1,
+     "weak": 1
+    },
+    "air": {
+     "open": 2,
+     "tight": 0
+    },
+    "inferno": {
+     "multi": 1,
+     "single": 1
+    },
+    "eagle": {
+     "core": 1,
+     "side": 1
+    },
+    "scout": {
+     "known": 1,
+     "new": 1
+    }
+   },
+   "safe": 1,
+   "army": "Mass Electro Dragons, with Balloons to clear Air Defenses.",
+   "spells": "Rage, Freeze, and Lightning for an Air Defense.",
+   "plan": [
+    "Check gaps between buildings and the Air Sweeper directions before you start.",
+    "Clear one side with heroes.",
+    "Drop the Electro Dragons in a line so the chain lightning keeps jumping.",
+    "Rage in the core; Freeze Infernos."
+   ],
+   "why": {
+    "shape": {
+     "compact": "buildings are close enough for the lightning to keep jumping"
+    }
+   }
+  },
+  {
+   "id": "meteor",
+   "name": "RC Walk Meteor Golems",
+   "style": "Ground",
+   "th": [
+    17,
+    18
+   ],
+   "needs": [
+    [
+     4000177,
+     "Meteor Golem"
+    ]
+   ],
+   "heroes": [
+    28000004
+   ],
+   "gear": [],
+   "fit": {
+    "shape": {
+     "compact": 2,
+     "boxed": 3,
+     "spread": 1
+    },
+    "core": {
+     "strong": 2,
+     "weak": 1
+    },
+    "air": {
+     "open": 0,
+     "tight": 2
+    },
+    "inferno": {
+     "multi": 2,
+     "single": 0
+    },
+    "eagle": {
+     "core": 1,
+     "side": 1
+    },
+    "scout": {
+     "known": 2,
+     "new": 0
+    }
+   },
+   "safe": 1,
+   "army": "Meteor Golems as the main push, with Royal Champion support and a few Valkyries or Wall Breakers.",
+   "spells": "Rage, Freeze, and Earthquakes for the walls.",
+   "plan": [
+    "The Royal Champion walks one side to set the funnel.",
+    "Meteor Golems go in where useful ground targets sit behind several walls.",
+    "Practise the split-and-merge timing on the layout before war.",
+    "Rage and Freeze in the core."
+   ],
+   "why": {
+    "shape": {
+     "boxed": "useful ground targets sit behind several walls"
+    }
+   }
+  }
+ ],
+ "armies": {
+  "rr": {
+   "troops": [
+    [
+     4000110,
+     8
+    ],
+    [
+     4000012,
+     8
+    ],
+    [
+     4000058,
+     2
+    ],
+    [
+     4000082,
+     3
+    ],
+    [
+     4000097,
+     3
+    ],
+    [
+     4000010,
+     4
+    ]
+   ],
+   "flex": 4000012,
+   "spells": [
+    [
+     26000035,
+     3
+    ],
+    [
+     26000002,
+     2
+    ],
+    [
+     26000005,
+     2
+    ],
+    [
+     26000010,
+     2
+    ]
+   ],
+   "xspell": 26000005,
+   "siege": 4000075,
+   "cc": [
+    [
+     4000110,
+     2
+    ],
+    [
+     4000012,
+     1
+    ],
+    [
+     4000010,
+     1
+    ]
+   ],
+   "ccs": [
+    [
+     26000005,
+     1
+    ],
+    [
+     26000035,
+     1
+    ],
+    [
+     26000010,
+     1
+    ]
+   ],
+   "heroes": {}
+  },
+  "yeti": {
+   "troops": [
+    [
+     4000147,
+     4
+    ],
+    [
+     4000015,
+     9
+    ],
+    [
+     4000058,
+     2
+    ],
+    [
+     4000028,
+     2
+    ],
+    [
+     4000097,
+     2
+    ],
+    [
+     4000010,
+     3
+    ]
+   ],
+   "flex": 4000015,
+   "spells": [
+    [
+     26000002,
+     2
+    ],
+    [
+     26000005,
+     2
+    ],
+    [
+     26000009,
+     1
+    ],
+    [
+     26000010,
+     2
+    ],
+    [
+     26000035,
+     1
+    ],
+    [
+     26000120,
+     1
+    ]
+   ],
+   "xspell": 26000005,
+   "siege": 4000075,
+   "cc": [
+    [
+     4000147,
+     1
+    ],
+    [
+     4000058,
+     1
+    ]
+   ],
+   "ccs": [
+    [
+     26000005,
+     1
+    ],
+    [
+     26000002,
+     1
+    ]
+   ],
+   "heroes": {}
+  },
+  "rret": {
+   "troops": [
+    [
+     4000110,
+     8
+    ],
+    [
+     4000095,
+     3
+    ],
+    [
+     4000058,
+     2
+    ],
+    [
+     4000082,
+     4
+    ],
+    [
+     4000097,
+     1
+    ],
+    [
+     4000010,
+     5
+    ]
+   ],
+   "flex": 4000082,
+   "spells": [
+    [
+     26000002,
+     2
+    ],
+    [
+     26000005,
+     2
+    ],
+    [
+     26000001,
+     2
+    ],
+    [
+     26000120,
+     1
+    ]
+   ],
+   "xspell": 26000005,
+   "siege": 4000092,
+   "cc": [
+    [
+     4000095,
+     1
+    ],
+    [
+     4000053,
+     1
+    ]
+   ],
+   "ccs": [
+    [
+     26000002,
+     1
+    ],
+    [
+     26000005,
+     1
+    ]
+   ],
+   "heroes": {}
+  },
+  "lalo": {
+   "gear": {
+    "28000002": [
+     90000041,
+     90000004
+    ]
+   },
+   "troops": [
+    [
+     4000017,
+     4
+    ],
+    [
+     4000005,
+     26
+    ],
+    [
+     4000007,
+     4
+    ],
+    [
+     4000082,
+     4
+    ],
+    [
+     4000010,
+     5
+    ]
+   ],
+   "flex": 4000005,
+   "spells": [
+    [
+     26000002,
+     3
+    ],
+    [
+     26000011,
+     2
+    ],
+    [
+     26000005,
+     2
+    ],
+    [
+     26000009,
+     1
+    ]
+   ],
+   "xspell": 26000005,
+   "siege": 4000062,
+   "cc": [
+    [
+     4000017,
+     1
+    ],
+    [
+     4000005,
+     4
+    ]
+   ],
+   "ccs": [
+    [
+     26000005,
+     1
+    ],
+    [
+     26000002,
+     1
+    ]
+   ],
+   "heroes": {}
+  },
+  "hydra": {
+   "troops": [
+    [
+     4000008,
+     7
+    ],
+    [
+     4000065,
+     6
+    ],
+    [
+     4000063,
+     2
+    ],
+    [
+     4000005,
+     4
+    ]
+   ],
+   "flex": 4000005,
+   "spells": [
+    [
+     26000005,
+     3
+    ],
+    [
+     26000002,
+     2
+    ],
+    [
+     26000035,
+     3
+    ],
+    [
+     26000120,
+     1
+    ]
+   ],
+   "xspell": 26000005,
+   "siege": 4000188,
+   "cc": [
+    [
+     4000008,
+     2
+    ],
+    [
+     4000005,
+     2
+    ]
+   ],
+   "ccs": [
+    [
+     26000002,
+     1
+    ],
+    [
+     26000005,
+     1
+    ]
+   ],
+   "heroes": {}
+  },
+  "rcdrag": {
+   "troops": [
+    [
+     4000008,
+     14
+    ],
+    [
+     4000005,
+     6
+    ],
+    [
+     4000063,
+     2
+    ]
+   ],
+   "flex": 4000005,
+   "spells": [
+    [
+     26000000,
+     3
+    ],
+    [
+     26000010,
+     1
+    ],
+    [
+     26000002,
+     2
+    ],
+    [
+     26000005,
+     2
+    ],
+    [
+     26000120,
+     1
+    ]
+   ],
+   "xspell": 26000005,
+   "siege": 4000052,
+   "cc": [
+    [
+     4000008,
+     2
+    ],
+    [
+     4000005,
+     2
+    ]
+   ],
+   "ccs": [
+    [
+     26000002,
+     1
+    ],
+    [
+     26000005,
+     1
+    ]
+   ],
+   "heroes": {}
+  },
+  "thrower": {
+   "troops": [
+    [
+     4000132,
+     12
+    ],
+    [
+     4000007,
+     4
+    ],
+    [
+     4000058,
+     2
+    ],
+    [
+     4000097,
+     2
+    ],
+    [
+     4000082,
+     3
+    ],
+    [
+     4000010,
+     2
+    ]
+   ],
+   "flex": 4000082,
+   "spells": [
+    [
+     26000010,
+     3
+    ],
+    [
+     26000002,
+     2
+    ],
+    [
+     26000005,
+     2
+    ],
+    [
+     26000120,
+     1
+    ],
+    [
+     26000035,
+     1
+    ]
+   ],
+   "xspell": 26000005,
+   "siege": 4000087,
+   "cc": [
+    [
+     4000132,
+     2
+    ],
+    [
+     4000053,
+     1
+    ]
+   ],
+   "ccs": [
+    [
+     26000002,
+     1
+    ],
+    [
+     26000005,
+     1
+    ]
+   ],
+   "heroes": {}
+  },
+  "sbowl": {
+   "troops": [
+    [
+     4000080,
+     6
+    ],
+    [
+     4000058,
+     2
+    ],
+    [
+     4000053,
+     2
+    ],
+    [
+     4000012,
+     6
+    ],
+    [
+     4000097,
+     2
+    ],
+    [
+     4000010,
+     3
+    ]
+   ],
+   "flex": 4000012,
+   "spells": [
+    [
+     26000002,
+     2
+    ],
+    [
+     26000005,
+     2
+    ],
+    [
+     26000010,
+     3
+    ],
+    [
+     26000120,
+     1
+    ],
+    [
+     26000035,
+     1
+    ]
+   ],
+   "xspell": 26000005,
+   "siege": 4000092,
+   "cc": [
+    [
+     4000080,
+     1
+    ],
+    [
+     4000053,
+     1
+    ],
+    [
+     4000010,
+     1
+    ]
+   ],
+   "ccs": [
+    [
+     26000002,
+     1
+    ],
+    [
+     26000005,
+     1
+    ]
+   ],
+   "heroes": {}
+  },
+  "edrag": {
+   "troops": [
+    [
+     4000059,
+     9
+    ],
+    [
+     4000005,
+     8
+    ],
+    [
+     4000017,
+     1
+    ]
+   ],
+   "flex": 4000005,
+   "spells": [
+    [
+     26000002,
+     3
+    ],
+    [
+     26000005,
+     3
+    ],
+    [
+     26000000,
+     2
+    ]
+   ],
+   "xspell": 26000005,
+   "siege": 4000052,
+   "cc": [
+    [
+     4000059,
+     1
+    ],
+    [
+     4000008,
+     1
+    ]
+   ],
+   "ccs": [
+    [
+     26000002,
+     1
+    ],
+    [
+     26000005,
+     1
+    ]
+   ],
+   "heroes": {}
+  },
+  "meteor": {
+   "troops": [
+    [
+     4000177,
+     4
+    ],
+    [
+     4000012,
+     6
+    ],
+    [
+     4000058,
+     2
+    ],
+    [
+     4000097,
+     1
+    ],
+    [
+     4000053,
+     2
+    ],
+    [
+     4000082,
+     2
+    ],
+    [
+     4000095,
+     1
+    ],
+    [
+     4000010,
+     1
+    ]
+   ],
+   "flex": 4000012,
+   "spells": [
+    [
+     26000010,
+     3
+    ],
+    [
+     26000002,
+     2
+    ],
+    [
+     26000005,
+     2
+    ],
+    [
+     26000120,
+     1
+    ],
+    [
+     26000035,
+     1
+    ]
+   ],
+   "xspell": 26000005,
+   "siege": 4000092,
+   "cc": [
+    [
+     4000177,
+     1
+    ],
+    [
+     4000012,
+     1
+    ],
+    [
+     4000010,
+     1
+    ]
+   ],
+   "ccs": [
+    [
+     26000002,
+     1
+    ],
+    [
+     26000005,
+     1
+    ]
+   ],
+   "heroes": {}
+  }
+ }
+}

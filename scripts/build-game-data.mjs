@@ -9,7 +9,7 @@ import { writeFile } from "node:fs/promises";
 // dataset you trust. Each item needs its game id (e.g. 1000008) and a levels array with the
 // Town Hall required, upgrade time and cost per level.
 const SRC = process.env.GAME_DATA_URL;
-if (!SRC) { console.error("Set GAME_DATA_URL to a Clash game-data JSON first (see README step 7)."); process.exit(1); }
+if (!SRC) { console.log("GAME_DATA_URL is not set, so there is nothing to build. Max levels are built into the app; this only adds times and costs."); process.exit(0); }
 
 const num = (x) => { const n = Number(x); return Number.isFinite(n) ? n : undefined; };
 const pick = (o, keys) => { for (const k of keys) if (o && o[k] != null) return o[k]; };

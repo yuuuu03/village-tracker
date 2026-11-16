@@ -54,7 +54,7 @@ Open `https://YOUR-USERNAME.github.io/village-tracker/keys.html` and tap **Make 
 
 ## 4 · Deploy the three server functions
 
-No installs needed: **Edge Functions → Deploy a new function → Via Editor**, paste each `index.ts`, and add the secrets under **Edge Functions → Secrets**. Turn **off** JWT verification for `send-reminders` and `calendar` (check again after every redeploy). The CLI route below does the same thing.
+No installs needed: **Edge Functions → Deploy a new function → Via Editor**, paste each `index.ts`, and add the secrets under **Edge Functions → Secrets**. Turn **off** JWT verification for all three functions (check again after every redeploy). `coc` checks your sign-in and the allow-list itself. The CLI route below does the same thing.
 
 ```bash
 npx supabase login
@@ -65,7 +65,7 @@ npx supabase secrets set \
   VAPID_PRIVATE="private-key-from-step-3" \
   VAPID_CONTACT="you@example.com" \
   CRON_SECRET="any-long-random-text"
-npx supabase functions deploy coc
+npx supabase functions deploy coc --no-verify-jwt
 npx supabase functions deploy send-reminders --no-verify-jwt
 npx supabase functions deploy calendar --no-verify-jwt
 ```
@@ -111,7 +111,6 @@ Commit the filled-in `public/config.js`; the site redeploys automatically. Then 
 - **Add a privacy policy** if other people use it: you store their player tags and village data.
 
 ## Never commit these
-
 The Supabase **service role** key, the **VAPID private** key, the **Clash API token** and the **CRON_SECRET**. They live only in Supabase secrets.
 
 ## Checklist after deploying

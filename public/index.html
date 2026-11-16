@@ -918,6 +918,139 @@ body.gated>*:not(#gateWrap):not(#ground):not(.grain):not(#toast){visibility:hidd
 .lvqr.cur{background:color-mix(in srgb,var(--gold) 14%,transparent)}.lvqr.cur span{color:var(--ink);font-weight:600}
 .lvv .seg button svg{width:14px;height:14px}
 @media (max-width:700px){.lxt{--nw:132px;--yw:48px;--cw:36px}.lxn{font-size:11.5px;gap:6px}.lxn .ico{width:22px;height:22px}.lxc{font-size:11px;min-height:34px}.lvkey{margin-left:0}}
+
+/* ---- attacks left (Clash API) ---- */
+.atkb{margin-top:8px}
+.atkh{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.atkh .glink{display:inline-flex;align-items:center;gap:6px;font-size:12px}
+.atkh .glink svg{width:13px;height:13px}
+.akr{display:grid;grid-template-columns:minmax(150px,1.3fr) repeat(3,minmax(0,1fr));gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.akhd{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding-top:4px}
+.akn{display:grid;grid-template-columns:auto 1fr;column-gap:10px;align-items:center;text-decoration:none;color:var(--ink)}
+.akn i{grid-row:1/3;width:10px;height:10px;border-radius:50%;background:var(--c);box-shadow:0 0 8px var(--c)}
+.akn b{font-size:13.5px}.akn small{font-size:11px;color:var(--muted)}
+.ak{display:inline-flex;align-items:baseline;gap:6px;justify-self:start;padding:6px 12px;border-radius:999px;box-shadow:inset 0 0 0 1px var(--line-2);font-size:12px;color:var(--ink-2)}
+.ak b{font-family:var(--display);font-weight:800;font-size:18px;line-height:1;color:var(--ink)}
+.ak small{font-size:11px;color:var(--muted)}
+.ak em{font-style:normal;font-size:10.5px;color:var(--muted)}
+.ak svg{width:14px;height:14px;align-self:center;color:var(--ok)}
+.ak.ok{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--ok) 45%,transparent)}
+.ak.todo{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--gold) 55%,transparent);background:color-mix(in srgb,var(--gold) 8%,transparent)}
+.ak.todo b{color:var(--gold)}
+.ak.hot{box-shadow:inset 0 0 0 1px var(--hot);background:color-mix(in srgb,var(--hot) 12%,transparent);animation:alarm 2s infinite}
+.ak.hot b{color:var(--hot)}
+.ak.none{color:var(--muted);box-shadow:none;padding-left:0}
+.apisync{display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--muted);margin:0 0 12px}
+.apisync svg{width:14px;height:14px;flex:none;color:var(--gold);margin-top:2px}
+.apisync b{color:var(--ink-2);font-weight:600}
+.ak2s{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.ak2{font-size:12px;color:var(--ink-2);padding:5px 11px;border-radius:999px;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--gold) 50%,transparent)}
+.ak2 b{color:var(--gold);margin-right:6px}
+.ak2.ok{box-shadow:inset 0 0 0 1px var(--line-2)}.ak2.ok b{color:var(--ok)}
+@media (max-width:700px){.akr{grid-template-columns:1fr repeat(3,auto);gap:6px}.ak{padding:5px 8px}.ak em{display:none}.akn small{display:none}}
+
+/* ---- attack advisor ---- */
+.advv{display:grid;gap:22px;padding-top:28px}
+.advin{display:grid;gap:12px;padding:18px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.advrow{display:grid;grid-template-columns:170px 1fr;gap:14px;align-items:center}
+.advrow>div,.advrow>label{min-width:0}
+.advrow .seg{justify-self:start}
+.advrow:has(.advth){grid-template-columns:170px auto 1fr}
+.advl{font-size:12.5px;color:var(--muted)}
+.advth{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+.advth select{font:inherit;color:var(--ink);background:transparent;border:0;box-shadow:inset 0 0 0 1px var(--line-2);border-radius:99px;padding:5px 10px}
+.tchips{display:flex;gap:8px;flex-wrap:wrap}
+.tchip{font-size:12.5px;font-weight:600;color:var(--ink-2);padding:7px 13px;border-radius:99px;box-shadow:inset 0 0 0 1px var(--line-2);transition:background .2s,color .2s,box-shadow .2s}
+.tchip:hover{color:var(--ink);box-shadow:inset 0 0 0 1px var(--gold)}
+.tchip[aria-pressed="true"]{background:var(--gold);color:#1a1405;box-shadow:none}
+.advreset{justify-self:start;font-size:12px}
+.advhint{margin:-6px 0 0}
+.advres{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.advc{display:grid;gap:12px;align-content:start;padding:20px;border-radius:18px;box-shadow:inset 0 0 0 1px var(--line-2)}
+.advc.best{box-shadow:inset 0 0 0 1.5px var(--gold),0 12px 40px -20px color-mix(in srgb,var(--gold) 60%,transparent);background:linear-gradient(180deg,color-mix(in srgb,var(--gold) 6%,transparent),transparent 40%)}
+.advc header{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:baseline}
+.advrank{grid-column:1/-1;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+.advc h3{margin:0;font-family:var(--display);font-weight:800;font-size:28px;line-height:1}
+.advtag{font-size:11px;color:var(--muted);padding:2px 9px;border-radius:99px;box-shadow:inset 0 0 0 1px var(--line-2)}
+.advwhy,.advwarn{display:flex;gap:8px;margin:0;font-size:12.5px;line-height:1.45}
+.advwhy{color:var(--ok)}.advwarn{color:var(--hot)}
+.advwhy svg,.advwarn svg{width:14px;height:14px;flex:none;margin-top:2px}
+.advwhy span,.advwarn span{color:var(--ink-2)}
+.advc dl{display:grid;grid-template-columns:72px 1fr;gap:6px 12px;margin:0;font-size:13px}
+.advc dt{color:var(--muted);font-size:11.5px;padding-top:1px}
+.advc dd{margin:0;color:var(--ink)}
+.axt{display:grid;gap:2px;font-size:13px}
+.axhd{display:flex;justify-content:space-between;align-items:baseline;margin:10px 0 4px;padding-bottom:4px;border-bottom:1px solid var(--line-2);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.axhd:first-child{margin-top:0}
+.axhd b{font-size:12px;color:var(--ink);letter-spacing:0}
+.axr{display:grid;grid-template-columns:26px 1fr auto 34px;gap:8px;align-items:center;padding:3px 0}
+.axr .ico{width:26px;height:26px}
+.axr.miss{opacity:.55}
+.axn b{font-family:var(--mono);color:var(--gold);margin-right:2px}
+.axn .sup{font-style:normal;font-size:10px;padding:1px 5px;border-radius:6px;background:color-mix(in srgb,var(--gold) 18%,transparent);color:var(--gold);margin-left:4px}
+.axl{font-size:11px;color:var(--muted)}
+.axh{text-align:right;font-size:11.5px;color:var(--ink-2)}
+.axnote{margin:4px 0 0;font-size:12px;color:var(--muted)}
+.axg{display:grid;grid-template-columns:26px auto 1fr;gap:8px;align-items:center;padding:3px 0}
+.axg .ico{width:26px;height:26px}
+.axg span{color:var(--ink-2);font-size:12.5px}
+.axg small{color:var(--muted);margin-left:2px}
+.axg{grid-template-columns:26px auto 1fr auto}
+.axg.bench{opacity:.45}
+.axbench{font-style:normal;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.advshot{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:start;padding:14px;border-radius:14px;box-shadow:inset 0 0 0 1px var(--line-2);background:color-mix(in srgb,var(--gold) 5%,transparent);margin-bottom:6px}
+.advshot.open{display:grid;grid-template-columns:1fr;gap:10px}
+.shotbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.shotsp{flex:1}
+.shotk{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:0;border-radius:999px;font:inherit;font-size:12.5px;font-weight:600;color:var(--ink-2);background:transparent;box-shadow:inset 0 0 0 1px var(--line-2);cursor:pointer}
+.shotk i{width:10px;height:10px;border-radius:50%;background:var(--c)}
+.shotk small{color:var(--muted);font-size:10.5px}
+.shotk[aria-pressed=true]{box-shadow:inset 0 0 0 2px var(--c);color:var(--ink)}
+.shothint{margin:0}
+.shotwrap{width:100%;line-height:0;text-align:center;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.shotmob{display:none}@media (max-width:640px){.shotmob{display:inline}}
+.shotwrap canvas{border-radius:10px}
+.shotwrap canvas{cursor:crosshair;touch-action:manipulation;max-width:100%}
+.advcam{display:grid;place-items:center;width:40px;height:40px;border-radius:10px;background:color-mix(in srgb,var(--gold) 18%,transparent);color:var(--gold)}
+.advshotb{display:grid;gap:4px;min-width:0}
+.advshotb b{font-size:14px}
+.advnotes{margin:4px 0 0;padding-left:18px;display:grid;gap:3px;font-size:12.5px;color:var(--ink-2)}
+.advup{cursor:pointer;white-space:nowrap}
+@media (max-width:640px){.advshot{grid-template-columns:auto 1fr}.advup{grid-column:1/-1;justify-self:start}}
+.advlr{display:flex;gap:8px;align-items:flex-start;margin:0;font-size:12.5px;color:var(--ink-2);padding:8px 10px;border-radius:10px;background:color-mix(in srgb,var(--gold) 10%,transparent)}
+.advlr svg{width:14px;height:14px;color:var(--gold);flex:none;margin-top:2px}
+.advlog{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding-top:10px;border-top:1px solid var(--line-2);font-size:12.5px;color:var(--muted)}
+.advlog span{flex-basis:100%}
+.advlog input{width:70px;padding:7px 10px;border-radius:10px;border:0;box-shadow:inset 0 0 0 1px var(--line-2);background:transparent;color:var(--ink);font:inherit}
+.advlogt,.advlogd{display:grid;gap:2px;font-size:13px}
+.alr{display:grid;grid-template-columns:1fr auto auto auto;gap:14px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line-2)}
+.alh{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.alr small{color:var(--muted)}
+.advlogd summary{cursor:pointer;color:var(--muted);font-size:12.5px;margin:8px 0}
+.advlogd .alr{grid-template-columns:1fr auto auto}
+.shotsteps{display:grid;gap:6px;padding:12px 14px;border-radius:12px;background:color-mix(in srgb,#3ee08f 8%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,#3ee08f 30%,transparent)}
+.shotsteps ol{margin:0;padding-left:20px;display:grid;gap:5px;font-size:13px;color:var(--ink-2)}
+.shotsteps .note{margin:0}
+.ptest{display:grid;gap:6px;margin:-4px 0 10px;padding:12px;border-radius:12px;box-shadow:inset 0 0 0 1px var(--line-2)}
+.ptr{display:grid;grid-template-columns:20px 1fr;gap:8px;font-size:13px}
+.ptr i{font-style:normal;font-weight:800;text-align:center}
+.ptr.ok i{color:#3ee08f}.ptr.bad i{color:#ff6b6b}.ptr.wait i{color:var(--gold)}
+.ptr span{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.advls{display:block;font-size:10.5px;color:var(--muted);margin-top:2px}
+.tgts{display:flex;flex-wrap:wrap;gap:6px}
+.tgt{display:grid;justify-items:center;gap:1px;min-width:44px;padding:6px 6px 5px;border-radius:10px;border:0;background:var(--chip,rgba(127,127,127,.12));color:var(--ink);cursor:pointer;font:inherit;box-shadow:inset 0 0 0 1px var(--line-2)}
+.tgt b{font-size:13px}.tgt small{font-size:10px;color:var(--muted)}.tgt i{font-style:normal;font-size:9px;letter-spacing:1px;color:var(--gold)}
+.tgt.done{opacity:.45}
+.tgt.mir{box-shadow:inset 0 0 0 1px var(--gold)}
+.tgt[aria-pressed=true]{background:var(--gold);color:#1a1408;box-shadow:none}.tgt[aria-pressed=true] small,.tgt[aria-pressed=true] i{color:#1a1408}
+.axg .axwhy{display:block;margin:1px 0 0;color:var(--muted);font-size:11px}
+.advsum{margin:0;font-size:12.5px;color:var(--muted)}
+.advplan{margin:0;padding-left:20px;display:grid;gap:6px;font-size:13px;color:var(--ink-2)}
+.advplan li::marker{color:var(--gold);font-family:var(--mono);font-size:11px}
+.advalt{display:flex;gap:8px;flex-wrap:wrap}
+.advmini{display:grid;gap:1px;padding:8px 14px;border-radius:12px;box-shadow:inset 0 0 0 1px var(--line)}
+.advmini b{font-size:13px}.advmini small{font-size:11px;color:var(--muted)}
+@media (max-width:900px){.advres{grid-template-columns:1fr}.advrow,.advrow:has(.advth){grid-template-columns:1fr;gap:6px}}
 </style>
 </head>
 <body>
@@ -1141,7 +1274,7 @@ async function persist(acc){
       saveLocalAll();
     }
   } else if(S.source==="supa"){
-    try{ await supaSave(acc); }catch(e){ toast("Couldn't save online just now, so this change is kept on this device."); saveLocalAll(); }
+    try{ await supaSave(acc); }catch(e){ toast(`Couldn't save online: ${typeof saveWhy==="function"?saveWhy(e):"unknown error"}. This change is kept on this device.`); saveLocalAll(); }
   } else saveLocalAll();
   render();
 }
@@ -1657,7 +1790,7 @@ function route(){ const h=hashRaw(); return h.endsWith("-bb")?h.slice(0,-3):h; }
 function isBB(){ return hashRaw().endsWith("-bb"); }
 function renderNav(accs){
   const r=route(), now=Date.now();
-  $("#nav").innerHTML = `<a href="#overview" ${r==="overview"?'aria-current="page"':""}><span class="n">00</span>All</a><a href="#calendar" ${r==="calendar"?'aria-current="page"':""}><span class="n">${glyph("cal")}</span>Calendar</a><a href="#levels" ${r==="levels"?'aria-current="page"':""}><span class="n">${glyph("star")}</span>Levels</a>` + (accs.length>1?`<a href="#compare" ${r==="compare"?'aria-current="page"':""}><span class="n">⇄</span>Compare</a>`:"") +
+  $("#nav").innerHTML = `<a href="#overview" ${r==="overview"?'aria-current="page"':""}><span class="n">00</span>All</a><a href="#calendar" ${r==="calendar"?'aria-current="page"':""}><span class="n">${glyph("cal")}</span>Calendar</a><a href="#levels" ${r==="levels"?'aria-current="page"':""}><span class="n">${glyph("star")}</span>Levels</a><a href="#attack" ${r==="attack"?'aria-current="page"':""}><span class="n">${glyph("sword")}</span>Attack</a>` + (accs.length>1?`<a href="#compare" ${r==="compare"?'aria-current="page"':""}><span class="n">⇄</span>Compare</a>`:"") +
     accs.map((a,i)=>{ const x=analyze(a,now); const alarm=x.idle>0||(x.hasLab&&!x.lab);
       return `<a href="#${a.id}" style="--acc:${colorOf(a)}" ${r===a.id?'aria-current="page"':""}><span class="n">${String(i+1).padStart(2,"0")}</span>${esc(a.nick)}${alarm?'<i class="alarm" aria-label="needs attention"></i>':""}</a>`; }).join("");
   const s=$("#sync");
@@ -1672,6 +1805,7 @@ function render(){
   const hr=hashRaw();
   if(hr.startsWith("share-")){ v.innerHTML=shareView(hr.slice(6)); return; }
   if(hr==="calendar"){ v.innerHTML=demo+calendarView(accs); document.body.classList.remove("nightmode"); return; }
+  if(hr==="attack"){ v.innerHTML=demo+advisorView(accs); document.body.classList.remove("nightmode"); if(typeof drawShot==="function") requestAnimationFrame(drawShot); return; }
   if(hr==="levels"||hr==="levels-bb"){ v.innerHTML=demo+levelsView(accs,hr==="levels-bb"); document.body.classList.toggle("nightmode",hr==="levels-bb"); setTimeout(scrollLvToCurrent,30); return; }
   if(hr==="welcome"){ v.innerHTML=gateView(true); document.body.classList.remove("nightmode"); return; }
   if(hr==="compare"){ v.innerHTML=compareView(S.accounts.length?list():accs); document.body.classList.remove("nightmode"); return; }
@@ -1702,7 +1836,7 @@ function overviewView(accs){
   const axis=TICKS.map(([ms,l,minor])=>`<span class="${minor?"minor":""}" style="left:${pct(ms?xOf(ms):0)}">${l}</span>`).join("");
   const grid=TICKS.map(([ms],i)=>`<i class="${i?"":"now"}" style="left:${pct(ms?xOf(ms):0)}"></i>`).join("");
   const lanes=an.map(([a,x],li)=>lane(a,x,li,grid,now)).join("");
-  return kpis+`<section class="river rv" style="--i:4">
+  return kpis+attackBoard(accs)+`<section class="river rv" style="--i:4">
     <div class="rhead"><h2>Time river</h2><div class="axis">${axis}</div></div>
     ${lanes}
     <div class="legend"><span><i></i>Builder</span><span><i class="l"></i>Lab</span><span><i class="p"></i>Pets</span><span><i class="b"></i>Builder Base</span></div>
@@ -2230,8 +2364,17 @@ const CFG = window.VT_CONFIG || null;
 const STANDALONE = !(window.claude && typeof window.claude.use === "function") && /^https?:/.test(location.protocol);
 const HAS_SUPA = !!(CFG && CFG.supabaseUrl && CFG.supabaseAnonKey && window.supabase);
 
+// plain-words reason for a failed online save
+function saveWhy(e){ const m=String((e&&(e.message||e.code))||""); const c=e&&e.code;
+  if(c==="42501"||/row-level security|permission denied/i.test(m)) return "Your email isn't on the allow-list yet (allowed_emails, deploy guide Step 3)";
+  if(c==="42P01"||/does not exist/i.test(m)) return "The database tables are missing. Run schema.sql in Supabase";
+  if(/JWT|expired|401/i.test(m)) return "Your sign-in expired. Sign out and back in";
+  if(/fetch|network|Failed to/i.test(m)) return "No connection to Supabase right now";
+  return "Supabase said: "+m.slice(0,90); }
 async function supaSave(acc){
-  const { error } = await S.sb.from("villages").upsert({ id: acc.id, data: JSON.parse(JSON.stringify(acc)), updated_at: new Date().toISOString() });
+  const row={ id: acc.id, data: JSON.parse(JSON.stringify(acc)), updated_at: new Date().toISOString() };
+  if(S.user&&S.user.id) row.user_id=S.user.id;
+  const { error } = await S.sb.from("villages").upsert(row,{ onConflict:"user_id,id" });
   if(error) throw error;
   syncReminders(acc).catch(()=>{});
 }
@@ -2376,8 +2519,12 @@ async function fillStats(a){
     const p=await coc(`/players/${enc(a.tag)}`);
     const ach=n=>((p.achievements||[]).find(x=>x.name===n)||{}).value;
     const tile=(k,v,s="")=>`<div class="st"><span>${k}</span><b class="num">${v??"–"}</b>${s?`<small>${s}</small>`:""}</div>`;
-    box.innerHTML=`<div class="sts">${tile("Trophies",p.trophies,`best ${p.bestTrophies}`)}${tile("War stars",p.warStars)}${tile("Attack wins",p.attackWins,"this season")}${tile("Donated",p.donations,`received ${p.donationsReceived}`)}${tile("Gold looted",ach("Gold Grab")!=null?fmtNum(ach("Gold Grab")):"–","lifetime")}${tile("Exp level",p.expLevel)}</div>
+    const lg=(p.leagueTier&&p.leagueTier.name)||(p.league&&p.league.name)||"";
+    const atk=API_ATK.get(a.id)||{}, now=Date.now(), at=(o,l)=>o?`<span class="ak2 ${o.max-o.used===0?"ok":""}"><b>${l}</b>${o.inLineup===false?"bench":o.max-o.used===0?"done":`${o.max-o.used} left · ${fmtLeft((o.state==="preparation"?o.start:o.end)-now)}`}</span>`:"";
+    box.innerHTML=`<p class="apisync" id="apisync"></p><div class="sts">${tile("Trophies",p.trophies,lg||`best ${p.bestTrophies}`)}${tile("War stars",p.warStars)}${tile("Attack wins",p.attackWins,"this season")}${tile("Donated",p.donations,`received ${p.donationsReceived}`)}${tile("Capital gold",p.clanCapitalContributions!=null?fmtNum(p.clanCapitalContributions):"–","contributed")}${tile("Builder Base",p.builderBaseTrophies,"trophies")}</div>
+      ${atk.war||atk.cwl||atk.raid?`<div class="ak2s">${at(atk.war,"War")}${at(atk.cwl,"CWL")}${at(atk.raid,"Raids")}</div>`:""}
       ${p.clan?`<div class="clanrow">${p.clan.badgeUrls?``:""}<div><b>${esc(p.clan.name)}</b><span>${esc(p.clan.tag)} · ${esc((p.role||"").replace("admin","elder").replace("coLeader","co-leader"))}</span></div><a class="lnk2" href="#clan-${a.id.slice(4)}">Open clan page</a></div>`:`<p class="note">Not in a clan.</p>`}`;
+    fillSyncLine();
     if(p.name&&!a.pname){ persist({...a,pname:p.name,clanTag:p.clan&&p.clan.tag}); }
   }catch(e){ box.innerHTML=`<p class="note">Live stats aren't available right now. Check the API key in Supabase (see the setup guide).</p>`; }
 }
@@ -2495,6 +2642,8 @@ function openSettings(){
       <form class="srow" data-form="setpw"><div><b>Password</b><span>Set or change it, so you can sign in without opening your email.</span></div><input id="set-pass" type="password" minlength="8" autocomplete="new-password" placeholder="New password"><button class="paste sm" type="submit">Save</button></form>`
       :`<form class="srow" data-form="signin"><div><b>Sync across devices</b><span>We'll email you a sign-in link. No password.</span></div><input id="si-email" type="email" required placeholder="you@example.com" autocomplete="email"><button class="paste sm" type="submit">Send link</button></form>`):""}
     ${pushOk?`<div class="srow"><div><b>Push reminders</b><span>1 minute before each finish, even with the app closed${/iPhone|iPad/.test(navigator.userAgent)?". On iPhone, add the app to your Home Screen first":""}.</span></div><button class="ghost" type="button" data-set="push">${Notification.permission==="granted"?"Re-enable":"Turn on"}</button></div>`:""}
+    ${pushOk&&signed?`<div class="srow"><div><b>Test notifications</b><span>Checks every step on this device and on the server, then sends you a test push.</span></div><button class="ghost" type="button" data-set="pushtest">Run test</button></div><div id="pushTest" class="ptest" hidden></div>`:""}
+    <div class="srow"><div><b>Auto-import</b><span>When you come back to this tab, pick up a village export you just copied in the game. No pasting.${"clipboard" in navigator&&navigator.clipboard.readText?"":" This browser can't read the clipboard by itself."}</span></div><button class="ghost" type="button" data-set="autoimp" aria-pressed="${autoImpOn()}">${autoImpOn()?"On":"Off"}</button></div>
     <div class="srow"><div><b>Game data</b><span>${GAME?`Loaded: ${Object.keys(GAME.items).length} items. `:""}${STANDALONE?"Built automatically by the weekly GitHub job.":`Max levels per Town Hall are built in (${CAPS_V}). A game-data file adds upgrade times and costs: any Clash data JSON whose items have a game id and per-level time and cost.`}</span></div>${STANDALONE?"":`<label class="ghost filebtn">${GAME?"Replace":"Load file"}<input type="file" id="gdf" accept=".json,application/json" hidden></label>`}</div>
     <div class="srow"><div><b>Max-level celebration</b><span>Plays when an upgrade reaches the max for its Town Hall.</span></div><button class="ghost" type="button" data-set="cele">Preview</button></div>
     <div class="srow"><div><b>Backup</b><span>Save every village to a file, or restore one.</span></div><button class="ghost" type="button" data-set="export">Export</button><label class="ghost filebtn">Import<input type="file" id="imp" accept=".json,application/json" hidden></label></div>
@@ -2503,6 +2652,48 @@ function openSettings(){
   $("#setOvl").classList.add("open");
 }
 function closeSettings(){ $("#setOvl").classList.remove("open"); }
+/* auto-import: read the clipboard when you return to the tab (only if you turned it on) */
+const autoImpOn=()=>{ try{ return localStorage.getItem("cvt.autoimp")==="1"; }catch(e){ return false; } };
+let AUTO_BUSY=false;
+async function autoImport(first){
+  if(!autoImpOn()||AUTO_BUSY||document.visibilityState!=="visible"||!(navigator.clipboard&&navigator.clipboard.readText)) return;
+  AUTO_BUSY=true;
+  try{ const t=(await navigator.clipboard.readText()||"").trim();
+    if(t[0]==="{"&&/"tag"\s*:/.test(t)&&/"buildings"\s*:/.test(t)){
+      let h=0; for(let i=0;i<t.length;i+=7) h=(h*31+t.charCodeAt(i))|0; h=String(h)+":"+t.length;
+      if(localStorage.getItem("cvt.lastclip")!==h){ localStorage.setItem("cvt.lastclip",h); importText(t); render(); }
+    } else if(first) toast("Nothing to import on the clipboard yet.");
+  }catch(e){ if(first) toast("Allow clipboard access when the browser asks, so auto-import can work."); }
+  AUTO_BUSY=false;
+}
+addEventListener("focus",()=>setTimeout(()=>autoImport(false),250));
+document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible") setTimeout(()=>autoImport(false),250); });
+
+/* notification self-test: walks the whole chain and says which link is broken */
+async function pushTest(){
+  const box=$("#pushTest"); if(!box) return; box.hidden=false;
+  const rows=[]; const show=()=>{ box.innerHTML=rows.map(([ok,t,fix])=>`<div class="ptr ${ok===true?"ok":ok===false?"bad":"wait"}"><i>${ok===true?"✓":ok===false?"✕":"…"}</i><div><b>${t}</b>${fix?`<span>${fix}</span>`:""}</div></div>`).join(""); };
+  const step=(ok,t,fix)=>{ rows.push([ok,t,fix]); show(); return ok; };
+  try{
+    if(!step(Notification.permission==="granted","Notifications allowed in this browser",Notification.permission==="granted"?"":"Click the padlock next to the address → Notifications → Allow, then tap Turn on under Push reminders.")) return;
+    const reg=await navigator.serviceWorker.getRegistration(); if(!step(!!reg,"Background worker installed",reg?"":"Tap Turn on under Push reminders (it installs the worker).")) return;
+    const sub=await reg.pushManager.getSubscription(); if(!step(!!sub,"This device is subscribed",sub?"":"Tap Turn on under Push reminders.")) return;
+    const key=sub.options&&sub.options.applicationServerKey; if(key){ const k=btoa(String.fromCharCode(...new Uint8Array(key))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+      if(!step(k===CFG.vapidPublicKey.replace(/=+$/,""),"Subscription matches your current push key",k===CFG.vapidPublicKey.replace(/=+$/,"")?"":"The key in config.js changed since you subscribed. Tap Turn on under Push reminders again.")) return; }
+    const { data:own, error:e1 } = await S.sb.from("push_subs").select("endpoint").eq("endpoint",sub.endpoint);
+    if(!step(!e1&&own&&own.length>0,"Saved on your server",e1?`Server said: ${e1.message}`:"Tap Turn on under Push reminders again so the server knows this device.")) return;
+    const fire=new Date(Date.now()+5000).toISOString();
+    const { data:ins, error:e2 } = await S.sb.from("reminders").insert({ village_id:"test", fire_at:fire, title:"Village Tracker · Test", body:"Notifications are working on this device." }).select("id").single();
+    if(!step(!e2&&ins,"Test reminder queued",e2?`Server said: ${e2.message}`:"")) return;
+    rows.push([null,"Waiting for the server's every-minute job to send it (up to 2 minutes)…",""]); show();
+    const t0=Date.now(); let sent=null;
+    while(Date.now()-t0<130000){ await new Promise(r=>setTimeout(r,6000)); const { data:r } = await S.sb.from("reminders").select("sent_at").eq("id",ins.id).maybeSingle(); if(r&&r.sent_at){ sent=r.sent_at; break; } if(!r){ sent="gone"; break; } }
+    rows.pop();
+    if(!sent){ step(false,"The server never picked it up","The every-minute job isn't running. In Supabase → SQL Editor run supabase/cron.sql again (README step 6), and check the send-reminders function is deployed with Verify JWT off and the CRON_SECRET matches.");
+      await S.sb.from("reminders").delete().eq("id",ins.id); return; }
+    step(true,"Server sent the push","If no notification popped up: check the VAPID_PUBLIC / VAPID_PRIVATE secrets in Supabase match the key in config.js, and that Windows Focus / Do Not Disturb is off and Chrome is allowed to show notifications in system settings.");
+  }catch(e){ step(false,"Test stopped",String(e.message||e)); }
+}
 async function enablePush(){
   try{
     const reg=await navigator.serviceWorker.register("sw.js");
@@ -2522,6 +2713,9 @@ document.addEventListener("click",async e=>{
   if(k==="open") openSettings();
   if(k==="signout"){ await S.sb.auth.signOut(); location.reload(); }
   if(k==="push") enablePush();
+  if(k==="pushtest") pushTest();
+  if(k==="autoimp"){ const on=!autoImpOn(); try{ localStorage.setItem("cvt.autoimp",on?"1":""); }catch(e){} b.textContent=on?"On":"Off"; b.setAttribute("aria-pressed",on);
+    if(on) autoImport(true); toast(on?"Auto-import is on. Copy a village in the game, then come back here.":"Auto-import is off."); }
   if(k==="export") exportBackup();
   if(k==="cele"){ closeSettings(); const a=S.accounts.find(q=>q.id===route())||S.accounts[0]; const x=a&&analyze(a); const it=a&&(a.v.buildings||[]).find(r=>DEF.has(r.data)); celebrate({id:it?it.data:0,title:it?name(it.data):"Cannon",sub:`Level ${it?it.lvl:21} · max for Town Hall ${x?x.th:16}`,kick:"Maxed"}); }
 });
@@ -3353,6 +3547,652 @@ document.addEventListener("mouseover",e=>{
   if(!c||!c.parentElement.dataset.row) return;
   const i=[...c.parentElement.children].indexOf(c); t.querySelectorAll(`.lxr > :nth-child(${i+1})`).forEach(q=>q.classList.add("hcol"));
 });
+
+/* =====================================================================
+   9 · Clash API, put to work: level sync, attacks left, attack reminders
+   (real site only: needs the "coc" function + apiEnabled in config.js)
+   ===================================================================== */
+const API_ON=()=>S.source==="supa"&&CFG&&CFG.apiEnabled;
+const API_P=new Map();      // acc.id -> player json
+const API_ATK=new Map();    // acc.id -> {war, cwl, raid}
+let API_LAST=0, API_BUSY=false;
+const cocTime=s=>s?Date.parse(String(s).replace(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2}).*$/,"$1-$2-$3T$4:$5:$6Z")):0;
+const normName=s=>String(s||"").toLowerCase().replace(/[^a-z0-9]/g,"");
+
+/* 1 · levels from the API -> finish early-done upgrades, keep equipment current */
+function applyApiLevels(a,p){
+  if(!p||a.demo) return {changed:false};
+  const x=analyze(a), v=JSON.parse(JSON.stringify(a.v||{})), done=new Set(a.done||[]), notes=[];
+  const lists=[["units",p.troops],["spells",p.spells],["heroes",p.heroes],["pets",p.troops],["equipment",p.heroEquipment],["siege_machines",p.troops]];
+  let changed=false;
+  for(const [sec,arr] of lists){
+    const rows=v[sec]||[]; if(!rows.length||!arr) continue;
+    const byName=new Map(); rows.forEach(r=>{ const k=normName(name(r.data)); if(!byName.has(k)) byName.set(k,[]); byName.get(k).push(r); });
+    arr.filter(t=>!t.village||t.village==="home").forEach(t=>{
+      const rs=byName.get(normName(t.name)); if(!rs) return;
+      rs.forEach(r=>{
+        // an upgrade we were timing has already finished in game
+        x.active.filter(u=>u.sec===sec&&u.id===r.data&&u.from===r.lvl&&u.to<=t.level).forEach(u=>{ if(!done.has(u.key)){ done.add(u.key); changed=true; notes.push(`${u.name} ${u.to} finished early`); } });
+        const eff=Math.max(r.lvl,...x.ups.filter(u=>u.sec===sec&&u.id===r.data&&u.from===r.lvl&&(u.done||done.has(u.key))).map(u=>u.to));
+        if(t.level>eff&&!r.timer){ notes.push(`${name(r.data)} ${eff} → ${t.level}`); r.lvl=t.level; changed=true; }
+      });
+    });
+  }
+  if(p.townHallLevel&&p.townHallLevel>x.th) notes.push(`Town Hall ${p.townHallLevel}: export to update`);
+  if(!changed) return {changed:false,notes};
+  return {changed:true,notes,acc:{...a,v,done:[...done],apiSync:{t:Date.now(),notes:notes.slice(0,8)}}};
+}
+
+/* 2 · attacks left: war, CWL, raid weekend */
+// the enemy line-up, in map order, with how well each base has been hit so far
+function oppList(side,mine,me){
+  const rank=arr=>[...arr].sort((x,y)=>x.mapPosition-y.mapPosition);
+  const opp=rank(side.members||[]).map((m,i)=>({n:i+1,th:m.townhallLevel,name:m.name,stars:m.bestOpponentAttack?m.bestOpponentAttack.stars:0,pct:m.bestOpponentAttack?Math.round(m.bestOpponentAttack.destructionPercentage):0}));
+  const my=rank(mine.members||[]).findIndex(q=>q.tag===me)+1;
+  return {opp,my};
+}
+async function attacksFor(a,p){
+  const out={war:null,cwl:null,raid:null}; if(!p||!p.clan) return out;
+  const ct=p.clan.tag, me=a.tag;
+  try{ const w=await coc(`/clans/${enc(ct)}/currentwar`);
+    if(w&&(w.state==="inWar"||w.state==="preparation")){ const m=(w.clan.members||[]).find(q=>q.tag===me);
+      if(m) out.war={state:w.state,used:(m.attacks||[]).length,max:w.attacksPerMember||2,end:cocTime(w.endTime),start:cocTime(w.startTime),vs:w.opponent&&w.opponent.name,...oppList(w.opponent||{},w.clan,me)}; } }catch(e){}
+  try{ const g=await coc(`/clans/${enc(ct)}/currentwar/leaguegroup`);
+    if(g&&g.state&&g.state!=="ended"){ const rounds=(g.rounds||[]).filter(r=>(r.warTags||[]).some(t=>t!=="#0")).slice(-2).reverse();
+      outer: for(const r of rounds){ for(const tag of r.warTags){ if(tag==="#0") continue; let w; try{ w=await coc(`/clanwarleagues/wars/${enc(tag)}`); }catch(e){ continue; }
+        const side=w.clan&&w.clan.tag===ct?w.clan:w.opponent&&w.opponent.tag===ct?w.opponent:null; if(!side) continue;
+        if(w.state==="inWar"||w.state==="preparation"){ const m=(side.members||[]).find(q=>q.tag===me); const foe=side===w.clan?w.opponent:w.clan; out.cwl={state:w.state,inLineup:!!m,used:m?(m.attacks||[]).length:0,max:1,end:cocTime(w.endTime),start:cocTime(w.startTime),vs:foe&&foe.name,...oppList(foe||{},side,me)}; break outer; } } } } }catch(e){}
+  try{ const rs=await coc(`/clans/${enc(ct)}/capitalraidseasons?limit=1`); const s=rs&&rs.items&&rs.items[0];
+    if(s&&s.state==="ongoing"){ const m=(s.members||[]).find(q=>q.tag===me); const lim=m?(m.attackLimit||5)+(m.bonusAttackLimit||0):6;
+      out.raid={used:m?m.attacks:0,max:lim,end:cocTime(s.endTime)}; } }catch(e){}
+  return out;
+}
+
+/* 3 · reminders for attacks you haven't used (sent by the same push pipeline) */
+async function syncAttackReminders(a,atk){
+  if(S.source!=="supa"||a.remind===false) return;
+  const vid="atk-"+a.id, now=Date.now(), rows=[];
+  const add=(at,title,body)=>{ if(at>now+60e3) rows.push({village_id:vid,fire_at:new Date(at).toISOString(),title,body}); };
+  const w=atk.war; if(w&&w.state==="inWar"&&w.used<w.max) add(w.end-2*HOURMS,`${a.nick} · War`,`${w.max-w.used} attack${w.max-w.used>1?"s":""} left, war ends in 2 hours`);
+  if(w&&w.state==="preparation"&&w.used<w.max) add(w.start+60e3,`${a.nick} · War`,`Battle day started. ${w.max} attacks to use`);
+  const c=atk.cwl; if(c&&c.inLineup&&c.state==="inWar"&&c.used<1) add(c.end-2*HOURMS,`${a.nick} · CWL`,"Your CWL attack is unused, war ends in 2 hours");
+  const r=atk.raid; if(r&&r.used<r.max) add(r.end-6*HOURMS,`${a.nick} · Raids`,`${r.max-r.used} raid attack${r.max-r.used>1?"s":""} left, Raid Weekend ends in 6 hours`);
+  try{ await S.sb.from("reminders").delete().eq("village_id",vid).is("sent_at",null); if(rows.length) await S.sb.from("reminders").insert(rows); }catch(e){}
+}
+
+/* the sync loop: every account, no game switching */
+async function apiSyncAll(force){
+  if(!API_ON()||API_BUSY) return; if(!force&&Date.now()-API_LAST<5*60e3) return;
+  API_BUSY=true; API_LAST=Date.now(); let finished=[];
+  try{
+    for(const a of S.accounts){
+      let p; try{ APIC.delete(`/players/${enc(a.tag)}`); p=await coc(`/players/${enc(a.tag)}`); }catch(e){ continue; }
+      API_P.set(a.id,p);
+      const res=applyApiLevels(a,p);
+      if(res.changed){ await persist(res.acc); finished=finished.concat(res.notes.filter(n=>/finished early/.test(n)).map(n=>`${a.nick}: ${n}`)); }
+      else if(res.notes&&res.notes.length){ const cur=S.accounts.find(q=>q.id===a.id); if(cur) cur.apiNotes=res.notes; }
+      const atk=await attacksFor(a,p); API_ATK.set(a.id,atk); syncAttackReminders(a,atk);
+    }
+  }finally{ API_BUSY=false; }
+  if(finished.length) toast(`Synced from Clash: ${finished.slice(0,3).join(" · ")}${finished.length>3?` +${finished.length-3} more`:""}`);
+  fillAttackBoard(); fillSyncLine();
+}
+setInterval(()=>apiSyncAll(false),60e3);
+document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible") apiSyncAll(false); });
+
+/* overview: one board for every account */
+function attackBoard(accs){
+  if(!API_ON()||!accs.length||accs.some(a=>a.demo)) return "";
+  setTimeout(()=>{ fillAttackBoard(); apiSyncAll(false); },0);
+  return `<section class="atkb rv" style="--i:3"><div class="atkh"><h2>Attacks left</h2><button type="button" class="glink" data-act="api-sync">${glyph("bolt")}Sync now</button></div><div id="atk"><span class="note">Checking war, CWL and raids…</span></div></section>`;
+}
+function fillAttackBoard(){
+  const box=$("#atk"); if(!box) return; const accs=list(), now=Date.now();
+  if(!accs.some(a=>API_ATK.has(a.id))){ box.innerHTML=`<span class="note">Checking war, CWL and raids…</span>`; return; }
+  const cell=(k,o,label)=>{
+    if(!o) return `<span class="ak none" data-tip="${label}: nothing on right now">–</span>`;
+    if(k==="cwl"&&!o.inLineup) return `<span class="ak none" data-tip="CWL: not in today's lineup">bench</span>`;
+    const left=o.max-o.used, ends=o.state==="preparation"?o.start:o.end;
+    const hot=left>0&&o.state!=="preparation"&&ends-now<6*HOURMS;
+    return `<span class="ak ${left===0?"ok":hot?"hot":"todo"}" data-tip="<b>${label}</b><br>${o.used} of ${o.max} used${o.vs?` · vs ${esc(o.vs)}`:""}<br>${o.state==="preparation"?"Battle day starts ":"Ends "}${esc(fmtWhen(ends))}">${left===0?glyph("check"):`<b class="num">${left}</b><small>left</small>`}<em class="mono">${fmtLeft(ends-now)}</em></span>`;
+  };
+  box.innerHTML=`<div class="akr akhd"><span></span><span>War</span><span>CWL</span><span>Raids</span></div>`+accs.map(a=>{ const t=API_ATK.get(a.id)||{}; const p=API_P.get(a.id);
+    return `<div class="akr" style="--c:${colorOf(a)}"><a class="akn" href="#${a.id}"><i></i><b>${esc(a.nick)}</b><small>${p&&p.clan?esc(p.clan.name):"no clan"}</small></a>${cell("war",t.war,"Clan war")}${cell("cwl",t.cwl,"Clan War League")}${cell("raid",t.raid,"Raid Weekend")}</div>`; }).join("");
+}
+document.addEventListener("click",e=>{ if(e.target.closest("[data-act=api-sync]")){ toast("Syncing from Clash…"); apiSyncAll(true); } });
+
+/* account page: what the API synced */
+function fillSyncLine(){
+  const el=$("#apisync"); if(!el) return; const a=S.accounts.find(q=>q.id===route()); if(!a) return;
+  const s=a.apiSync, extra=(a.apiNotes||[]);
+  el.innerHTML=`${glyph("bolt")}<span>${API_P.has(a.id)?`Levels synced with Clash ${ago(API_LAST)}`:"Syncing levels with Clash…"}${s&&s.notes&&s.notes.length?` · updated: ${esc(s.notes.slice(0,4).join(", "))}`:""}${extra.length?` · ${esc(extra.join(", "))}`:""}. Buildings and running timers still come from your export.</span>`;
+}
+
+/* =====================================================================
+   10 · Attack advisor: built-in rules, no AI calls
+   You describe the base with a few taps; it scores a strategy playbook
+   against those traits and against YOUR troops, heroes and equipment.
+   Playbook distilled from community war guides, autumn 2026.
+   ===================================================================== */
+let PLAYBOOK_V="Nov 2026";
+// housing space (troops) and spell space, from the Clash wiki, Nov 2026
+const HS={4000110:20,4000012:8,4000058:15,4000082:6,4000097:20,4000010:2,4000147:35,4000015:12,4000028:8,4000095:32,4000017:30,4000005:5,4000007:14,
+  4000008:20,4000065:25,4000063:15,4000132:16,4000080:30,4000053:18,4000059:30,4000177:40,4000022:6,4000004:2,4000023:10};
+const SUPER_OF={4000147:4000053,4000028:4000004,4000080:4000022,4000081:4000008,4000026:4000000,4000064:4000012,4000056:4000024}; // super troop -> base troop it needs
+const SPH={26000000:1,26000001:2,26000002:2,26000003:2,26000005:1,26000009:1,26000010:1,26000011:1,26000016:3,26000017:1,26000028:1,26000035:1,26000053:2,26000070:2,26000098:2,26000109:1,26000120:1};
+const SIEGE_ALT=[4000075,4000092,4000087,4000052,4000062,4000188,4000135,4000091,4000051];
+const campCap=th=>th>=18?352:th>=16?340:th===15?325:th===14?315:th===13?305:th===12?300:th===11?260:240;
+const spellCap=th=>th>=18?12:th>=10?11:9;
+const ccCap=th=>th>=18?{t:55,s:4}:th>=16?{t:50,s:3}:th===15?{t:45,s:3}:th>=13?{t:40,s:2}:{t:35,s:2};
+// hero equipment, best first (community meta, Nov 2026); the picker takes the best two you've levelled
+const LOADOUT={28000000:[90000014,90000010,90000008,90000011,90000001,90000032],28000001:[90000039,90000048,90000015,90000020,90000017,90000003],
+  28000002:[90000022,90000004,90000024,90000041,90000034,90000005],28000004:[90000040,90000013,90000006,90000012,90000007,90000009],
+  28000006:[90000043,90000042,90000044,90000047,90000035,90000049],28000007:[90000052,90000053,90000056,90000057,90000059,90000060]};
+function pickGear(a,h,pref){
+  const order=[...new Set([...(pref||[]),...LOADOUT[h],...((typeof HERO_EQ!=="undefined"&&HERO_EQ[h])||[]).map(n=>90000000+n)])];
+  const lv=e=>myLv(a,e), ready=e=>lv(e)>=(EPIC.has(e)?12:9);
+  const pick=order.filter(ready).slice(0,2);
+  for(const e of order.filter(e=>lv(e)&&!pick.includes(e)).sort((x,y)=>lv(y)-lv(x))){ if(pick.length>=2) break; pick.push(e); }
+  const skipped=(pref||[]).filter(e=>!pick.includes(e));
+  return {pick,skipped};
+}
+// exact armies at 340 space / 11 spells / 50+3 Clan Castle; flex = troop that absorbs bigger or smaller camps
+let ARMIES={
+ rr:{troops:[[4000110,8],[4000012,8],[4000058,2],[4000082,3],[4000097,3],[4000010,4]],flex:4000012,spells:[[26000035,3],[26000002,2],[26000005,2],[26000010,2]],xspell:26000005,siege:4000075,cc:[[4000110,2],[4000012,1],[4000010,1]],ccs:[[26000005,1],[26000035,1],[26000010,1]],heroes:{}},
+ yeti:{troops:[[4000147,4],[4000015,9],[4000058,2],[4000028,2],[4000097,2],[4000010,3]],flex:4000015,spells:[[26000002,2],[26000005,2],[26000009,1],[26000010,2],[26000035,1],[26000120,1]],xspell:26000005,siege:4000075,cc:[[4000147,1],[4000058,1]],ccs:[[26000005,1],[26000002,1]],heroes:{}},
+ rret:{troops:[[4000110,8],[4000095,3],[4000058,2],[4000082,4],[4000097,1],[4000010,5]],flex:4000082,spells:[[26000002,2],[26000005,2],[26000001,2],[26000120,1]],xspell:26000005,siege:4000092,cc:[[4000095,1],[4000053,1]],ccs:[[26000002,1],[26000005,1]],heroes:{}},
+ lalo:{gear:{28000002:[90000041,90000004]},troops:[[4000017,4],[4000005,26],[4000007,4],[4000082,4],[4000010,5]],flex:4000005,spells:[[26000002,3],[26000011,2],[26000005,2],[26000009,1]],xspell:26000005,siege:4000062,cc:[[4000017,1],[4000005,4]],ccs:[[26000005,1],[26000002,1]],heroes:{}},
+ hydra:{troops:[[4000008,7],[4000065,6],[4000063,2],[4000005,4]],flex:4000005,spells:[[26000005,3],[26000002,2],[26000035,3],[26000120,1]],xspell:26000005,siege:4000188,cc:[[4000008,2],[4000005,2]],ccs:[[26000002,1],[26000005,1]],heroes:{}},
+ rcdrag:{troops:[[4000008,14],[4000005,6],[4000063,2]],flex:4000005,spells:[[26000000,3],[26000010,1],[26000002,2],[26000005,2],[26000120,1]],xspell:26000005,siege:4000052,cc:[[4000008,2],[4000005,2]],ccs:[[26000002,1],[26000005,1]],heroes:{}},
+ thrower:{troops:[[4000132,12],[4000007,4],[4000058,2],[4000097,2],[4000082,3],[4000010,2]],flex:4000082,spells:[[26000010,3],[26000002,2],[26000005,2],[26000120,1],[26000035,1]],xspell:26000005,siege:4000087,cc:[[4000132,2],[4000053,1]],ccs:[[26000002,1],[26000005,1]],heroes:{}},
+ sbowl:{troops:[[4000080,6],[4000058,2],[4000053,2],[4000012,6],[4000097,2],[4000010,3]],flex:4000012,spells:[[26000002,2],[26000005,2],[26000010,3],[26000120,1],[26000035,1]],xspell:26000005,siege:4000092,cc:[[4000080,1],[4000053,1],[4000010,1]],ccs:[[26000002,1],[26000005,1]],heroes:{}},
+ edrag:{troops:[[4000059,9],[4000005,8],[4000017,1]],flex:4000005,spells:[[26000002,3],[26000005,3],[26000000,2]],xspell:26000005,siege:4000052,cc:[[4000059,1],[4000008,1]],ccs:[[26000002,1],[26000005,1]],heroes:{}},
+ meteor:{troops:[[4000177,4],[4000012,6],[4000058,2],[4000097,1],[4000053,2],[4000082,2],[4000095,1],[4000010,1]],flex:4000012,spells:[[26000010,3],[26000002,2],[26000005,2],[26000120,1],[26000035,1]],xspell:26000005,siege:4000092,cc:[[4000177,1],[4000012,1],[4000010,1]],ccs:[[26000002,1],[26000005,1]],heroes:{}}
+};
+// fit a 340-space template to this account's real camp, spell and Clan Castle space
+function buildArmy(id,a,th){
+  const T=ARMIES[id]; if(!T) return null;
+  const cap=campCap(th), troops=T.troops.map(([t,n])=>[t,n]);
+  const used=()=>troops.reduce((s,[t,n])=>s+n*(HS[t]||0),0);
+  const fi=troops.findIndex(([t])=>t===T.flex), fh=HS[T.flex];
+  while(used()>cap&&troops[fi][1]>0) troops[fi][1]--;
+  while(used()+fh<=cap) troops[fi][1]++;
+  let mi=troops.findIndex(([t])=>t===4000010); if(mi<0&&cap-used()>=2){ troops.push([4000010,0]); mi=troops.length-1; }
+  while(mi>=0&&used()+2<=cap) troops[mi][1]++;
+  const sc=spellCap(th), spells=T.spells.map(([t,n])=>[t,n]); let sp=spells.reduce((s,[t,n])=>s+n*SPH[t],0);
+  while(sp>sc){ const k=spells.findIndex(([t,n])=>t===T.xspell&&n>0); const j=k>=0?k:spells.findIndex(([,n])=>n>0); spells[j][1]--; sp-=SPH[spells[j][0]]; }
+  while(sp<sc){ const k=spells.findIndex(([t])=>t===T.xspell); if(k<0) break; spells[k][1]++; sp++; }
+  const cc=ccCap(th), cct=T.cc.map(([t,n])=>[t,n]); let ccu=cct.reduce((s,[t,n])=>s+n*HS[t],0);
+  while(ccu>cc.t){ const k=cct.reduce((b,[t,n],i)=>n>0&&(b<0||HS[t]<HS[cct[b][0]])?i:b,-1); if(k<0) break; const h=HS[cct[k][0]]; if(cct.filter(([,n])=>n>0).length>1||h<=ccu-cc.t){ cct[k][1]--; ccu-=h; } else break; }
+  while(ccu+2<=cc.t){ const k=cct.findIndex(([t])=>t===4000010); if(k<0){ cct.push([4000010,0]); continue; } cct[k][1]++; ccu+=2; }
+  const ccs=T.ccs.map(([t,n])=>[t,n]); let ccsu=ccs.reduce((s,[t,n])=>s+n*SPH[t],0);
+  if(ccsu<cc.s){ const k=ccs.findIndex(([t])=>t===26000005); if(k>=0){ ccs[k][1]+=cc.s-ccsu; ccsu=cc.s; } }
+  // siege: the plan's pick if you have it, otherwise your best unlocked one
+  const has=sid=>myLv(a,sid)>0;
+  let siege=T.siege, siegeNote=""; if(!has(siege)){ const alt=SIEGE_ALT.find(has); siegeNote=`${name(siege)} isn't unlocked`; siege=alt||null; }
+  const pref={...(T.gear||{})}; for(const [eid,,hn] of ((PLAYBOOK.find(q=>q.id===id)||{}).gear||[])){ const h=+Object.keys(LOADOUT).find(k=>name(+k)===hn); if(h) pref[h]=[...new Set([eid,...(pref[h]||[])])]; }
+  const P=PLAYBOOK.find(q=>q.id===id)||{heroes:[]}, hr=h=>{ const c=capAt(h,th); return c?myLv(a,h)/c:0; };
+  const owned=Object.keys(LOADOUT).map(Number).filter(h=>myLv(a,h)>0).sort((x,y)=>(P.heroes.includes(y)-P.heroes.includes(x))||(hr(y)-hr(x)));
+  const gear=owned.map((h,i)=>[h,pickGear(a,h,pref[h]),i<4]);
+  return {troops:troops.filter(([,n])=>n>0),used:used(),cap,spells,sp,sc,cc:cct.filter(([,n])=>n>0),ccu,ccCap:cc,ccs,ccsu,siege,siegeNote,gear};
+}
+const PLAYBOOK_V0=PLAYBOOK_V;
+// traits: shape compact|spread|boxed · core strong|weak · air open|tight · inferno multi|single · eagle core|side · scout known|new
+let PLAYBOOK=[
+ {id:"rr",name:"RC Walk Root Riders",style:"Ground",th:[15,18],
+  needs:[[4000110,"Root Rider"]],heroes:[28000004],gear:[[90000040,"Electro Boots","Royal Champion"]],
+  fit:{shape:{compact:3,boxed:3,spread:1},core:{strong:1,weak:2},air:{open:0,tight:2},inferno:{multi:2,single:0},eagle:{core:1,side:1},scout:{known:1,new:2}},
+  safe:2,
+  army:"Root Riders as the main push, with Valkyries (or Druids) behind them, a Siege Barracks or Battle Drill, and a Root Rider in the Clan Castle.",
+  spells:"2–3 Invisibility for the Royal Champion, Rage + Freeze for the main push, an Earthquake if walls are thick.",
+  plan:["Send the Royal Champion in on one corner and use Invisibility to carry her through key defenses. That sets one side of the funnel.","Use the Queen (or Dragon Duke) to clear the other side so the funnel is wide.","Drop Root Riders in a line through the middle of the funnel, Valkyries right behind them.","Rage when they reach the core, Freeze the Infernos or Monolith as the push arrives.","Keep the Warden with the main group and pop his ability when the core fights start."],
+  why:{shape:{compact:"Root Riders smash walls and walk straight, so tight compartments don't slow them",boxed:"many wall layers are exactly what Root Riders break through"},core:{weak:"a weak core means the Root Riders finish the job once they're in"},air:{tight:"the air defense is strong, so a ground push avoids it"},inferno:{multi:"Multi Infernos do little to a few high-hitpoint Root Riders"},scout:{new:"it's forgiving on a base you haven't seen before"}}},
+ {id:"yeti",name:"Fireball Super Yeti",style:"Ground",th:[15,17],
+  needs:[[4000053,"Yeti (for Super Yeti)"]],heroes:[28000002],gear:[[90000022,"Fireball","Grand Warden"]],
+  fit:{shape:{compact:3,boxed:1,spread:1},core:{strong:3,weak:1},air:{open:0,tight:2},inferno:{multi:2,single:0},eagle:{core:3,side:1},scout:{known:1,new:3}},
+  safe:3,
+  army:"Super Yetis as tanks with Witches behind them, 2 Ice Golems, a Super Wall Breaker and a Super Yeti in the Clan Castle.",
+  spells:"Earthquake, Rage, Freeze and Poison, plus whatever space remains for Rage or Freeze.",
+  plan:["Use the Warden's Fireball to delete 2–3 key defenses: the Eagle/Inferno Artillery and an Inferno are the usual picks.","Make a funnel with the Queen or Royal Champion on one side.","Drop Super Yetis in a line with the Ice Golems in front to soak the first big hits.","Witches go behind the Yetis. The Yetimites they create distract single-target defenses.","Warden walks with the main group. Rage the core and Freeze Monolith/Infernos as you arrive."],
+  why:{core:{strong:"Fireball deletes the core defenses before the push arrives"},eagle:{core:"the Eagle/Inferno Artillery sits where Fireball can reach it"},scout:{new:"it's the safest triple on an unknown base"},shape:{compact:"Yetimites flood compact compartments and overwhelm single-target defenses"}}},
+ {id:"rret",name:"Root Rider + Electro Titan",style:"Ground",th:[16,18],
+  needs:[[4000110,"Root Rider"],[4000095,"Electro Titan"]],heroes:[],gear:[],
+  fit:{shape:{compact:0,boxed:1,spread:3},core:{strong:0,weak:3},air:{open:0,tight:2},inferno:{multi:2,single:0},eagle:{core:0,side:1},scout:{known:1,new:1}},
+  safe:2,
+  army:"Root Riders in front with Electro Titans behind to wipe out whatever survives; Clan Castle: a Root Rider or Electro Titan.",
+  spells:"Rage and Freeze for the push, Healing if the defense is spread out.",
+  plan:["Clear one side with the Queen to create a straight path.","Root Riders go in first and carve a line through the walls.","Electro Titans follow to clean up everything left near the line.","Rage and Freeze as the group reaches the strongest defenses."],
+  why:{shape:{spread:"the base is stretched out, and this army steamrolls through the middle"},core:{weak:"it's built for a poorly defended core"}}},
+ {id:"lalo",name:"Queen Charge LavaLoon",style:"Air",th:[13,17],
+  needs:[[4000017,"Lava Hound"],[4000005,"Balloon"]],heroes:[28000001],gear:[[90000048,"Action Figure","Archer Queen"]],
+  fit:{shape:{compact:2,boxed:1,spread:2},core:{strong:3,weak:0},air:{open:3,tight:0},inferno:{multi:0,single:2},eagle:{core:1,side:2},scout:{known:2,new:0}},
+  safe:1,
+  army:"Lava Hounds to tank the Air Defenses, a big wave of Balloons, plus Minions or Headhunters for cleanup.",
+  spells:"Rage and Haste for the Balloons, Freeze for the Infernos and a Poison for the Clan Castle troops.",
+  plan:["Queen Charge with Healers takes out an Air Defense and one side of the base.","Lava Hounds go onto the remaining Air Defenses.","Balloons follow in a wide line behind the Hounds.","Rage and Haste as the Balloons reach the core; Freeze Infernos and the Eagle."],
+  why:{core:{strong:"it's built for bases with a very strong core"},air:{open:"the Air Defenses are reachable"},inferno:{single:"Single Infernos struggle against a big Balloon swarm"}}},
+ {id:"hydra",name:"Hydra (Dragons + Dragon Riders)",style:"Air",th:[16,18],
+  needs:[[4000008,"Dragon"],[4000065,"Dragon Rider"]],heroes:[28000007],gear:[[90000052,"Fire Heart","Dragon Duke"]],
+  fit:{shape:{compact:1,boxed:1,spread:3},core:{strong:1,weak:2},air:{open:3,tight:0},inferno:{multi:1,single:1},eagle:{core:1,side:2},scout:{known:2,new:1}},
+  safe:2,
+  army:"Dragons and Dragon Riders together, with an Inferno Dragon or Balloons for support and the Dragon Duke leading.",
+  spells:"Freeze for Infernos and Monolith, Rage for the main group, and Invisibility if the Duke needs it.",
+  plan:["Dragon Duke opens one side solo. Keep him enraged and away from Air Sweepers.","Clear both edges of the funnel so the Dragons don't drift around the outside.","Drop Dragons and Dragon Riders as one wide group behind the Duke's path.","Freeze Infernos and Monolith as the group reaches them; Rage in the core."],
+  why:{air:{open:"there's a clear air path and the Air Sweepers are manageable"},shape:{spread:"Dragons don't need perfect ground pathing on a spread-out base"}}},
+ {id:"rcdrag",name:"RC Walk Dragons",style:"Air",th:[15,17],
+  needs:[[4000008,"Dragon"]],heroes:[28000004],gear:[],
+  fit:{shape:{compact:2,boxed:1,spread:2},core:{strong:1,weak:2},air:{open:3,tight:0},inferno:{multi:1,single:1},eagle:{core:1,side:2},scout:{known:1,new:2}},
+  safe:2,
+  army:"Mass Dragons with a couple of Balloons or Rocket Balloons to clear Air Defenses; Clan Castle: Dragon or Balloons.",
+  spells:"Rage, Freeze and Lightning or Zap to take out an Air Defense.",
+  plan:["Royal Champion walks one side, clearing defenses for the funnel.","Remove one Air Defense with spells before the Dragons arrive.","Drop Dragons in a wide line behind the Champion's path.","Rage as they reach the core; Freeze Infernos."],
+  why:{air:{open:"Air Defenses are reachable"},scout:{new:"it's the easiest air army to learn"}}},
+ {id:"thrower",name:"Throwers + Healers (Warden walk)",style:"Ground",th:[17,18],
+  needs:[[4000132,"Thrower"],[4000007,"Healer"]],heroes:[28000002],gear:[],
+  fit:{shape:{compact:1,boxed:0,spread:2},core:{strong:1,weak:2},air:{open:1,tight:2},inferno:{multi:0,single:2},eagle:{core:1,side:1},scout:{known:2,new:1}},
+  safe:2,
+  army:"Throwers as the damage, with Healers keeping them alive, plus a Log Launcher to break compartments.",
+  spells:"Earthquakes to open compartments, Rage, and Freeze for Infernos.",
+  plan:["Earthquake the Clan Castle compartment and nearby walls.","Queen and Dragon Duke make funnels on opposite sides.","Throwers go in behind the funnel with Healers; the Log Launcher opens the way to the core.","Keep the Healers safe from Air Defenses and stop the Throwers drifting outside the funnel."],
+  why:{shape:{spread:"ground sections can be reached through wall openings"},inferno:{single:"Single Infernos can only lock one Thrower at a time"}}},
+ {id:"sbowl",name:"Dragon Duke + Super Bowlers",style:"Ground",th:[17,18],
+  needs:[[4000022,"Bowler (for Super Bowler)"]],heroes:[28000007],gear:[[90000052,"Fire Heart","Dragon Duke"]],
+  fit:{shape:{compact:3,boxed:2,spread:0},core:{strong:3,weak:1},air:{open:0,tight:2},inferno:{multi:2,single:0},eagle:{core:2,side:1},scout:{known:2,new:1}},
+  safe:2,
+  army:"Super Bowlers as the core push, with Ice Golems or Yetis as tanks and the Dragon Duke opening the funnel.",
+  spells:"Rage and Freeze for the core push, plus Earthquakes if walls are thick.",
+  plan:["The Dragon Duke clears one edge of the funnel.","The Queen or Royal Champion clears the other.","Super Bowlers go in a tight group behind the tanks; their bounce hits rows of buildings.","Rage and Freeze in the core."],
+  why:{core:{strong:"it's a powerful push for a strong core"},shape:{compact:"bounces shine on compact rows of buildings"}}},
+ {id:"edrag",name:"Electro Dragons",style:"Air",th:[13,18],
+  needs:[[4000059,"Electro Dragon"]],heroes:[],gear:[],
+  fit:{shape:{compact:3,boxed:2,spread:0},core:{strong:1,weak:1},air:{open:2,tight:0},inferno:{multi:1,single:1},eagle:{core:1,side:1},scout:{known:1,new:1}},
+  safe:1,
+  army:"Mass Electro Dragons, with Balloons to clear Air Defenses.",
+  spells:"Rage, Freeze, and Lightning for an Air Defense.",
+  plan:["Check gaps between buildings and the Air Sweeper directions before you start.","Clear one side with heroes.","Drop the Electro Dragons in a line so the chain lightning keeps jumping.","Rage in the core; Freeze Infernos."],
+  why:{shape:{compact:"buildings are close enough for the lightning to keep jumping"}}},
+ {id:"meteor",name:"RC Walk Meteor Golems",style:"Ground",th:[17,18],
+  needs:[[4000177,"Meteor Golem"]],heroes:[28000004],gear:[],
+  fit:{shape:{compact:2,boxed:3,spread:1},core:{strong:2,weak:1},air:{open:0,tight:2},inferno:{multi:2,single:0},eagle:{core:1,side:1},scout:{known:2,new:0}},
+  safe:1,
+  army:"Meteor Golems as the main push, with Royal Champion support and a few Valkyries or Wall Breakers.",
+  spells:"Rage, Freeze, and Earthquakes for the walls.",
+  plan:["The Royal Champion walks one side to set the funnel.","Meteor Golems go in where useful ground targets sit behind several walls.","Practise the split-and-merge timing on the layout before war.","Rage and Freeze in the core."],
+  why:{shape:{boxed:"useful ground targets sit behind several walls"}}}
+];
+// the playbook can be refreshed without a rebuild: edit public/playbook.json on the site
+(async()=>{ try{ if(!/^https?:/.test(location.protocol)) return; const r=await fetch("playbook.json",{cache:"no-cache"}); if(!r.ok) return;
+  const j=await r.json(); if(!Array.isArray(j.strategies)||!j.armies) return;
+  PLAYBOOK=j.strategies; ARMIES=j.armies; if(j.version) PLAYBOOK_V=j.version;
+  if(hashRaw()==="attack") render(); }catch(e){} })();
+const TRAITS=[
+ ["shape","Base shape",[["compact","Compact"],["spread","Spread out / ring"],["boxed","Many wall layers"]]],
+ ["core","Core",[["strong","Strong core"],["weak","Weak core"]]],
+ ["air","Air defense",[["open","Easy to reach"],["tight","Deep / well covered"]]],
+ ["inferno","Infernos",[["multi","Multi"],["single","Single"]]],
+ ["eagle","Eagle / Inferno Artillery",[["core","In the core"],["side","Near an edge"]]],
+ ["scout","Layout",[["new","Never seen it"],["known","Scouted / known"]]]
+];
+let ADV={acc:null,opTh:null,traits:{},goal:"triple"};
+try{ ADV={...ADV,...JSON.parse(localStorage.getItem("cvt.adv")||"{}")}; }catch(e){}
+const advSave=()=>{ try{ localStorage.setItem("cvt.adv",JSON.stringify(ADV)); }catch(e){} };
+
+function myLv(a,id){ const x=analyze(a); for(const sec of ["units","spells","heroes","pets","equipment","siege_machines"]){ const r=effRows(a,x,sec).find(q=>q.data===id); if(r) return r.lvl; } return 0; }
+/* your own results: every logged attack nudges that plan up or down for bases like it */
+function learned(pid,th,opTh){
+  const L=(ADV.log||[]).filter(e=>e.plan===pid); if(!L.length) return null;
+  let w=0, st=0, pc=0, n=0;
+  for(const e of L){ const keys=Object.keys(ADV.traits).filter(k=>e.traits&&e.traits[k]!=null); const sim=keys.length?keys.filter(k=>e.traits[k]===ADV.traits[k]).length/keys.length:.5;
+    const gap=Math.abs(((e.opTh||e.myTh)-e.myTh)-((opTh||th)-th)); const ww=(.25+sim)*(gap<=1?1:.5); w+=ww; st+=ww*e.stars; pc+=ww*e.pct; n++; }
+  return {stars:st/w,pct:pc/w,n,w};
+}
+function scoreArmy(p,a,opTh){
+  const x=analyze(a), th=x.th, why=[], warn=[]; let s=0;
+  if(th<p.th[0]||th>p.th[1]+0) s-=4;
+  for(const [k,v] of Object.entries(ADV.traits)){ const w=(p.fit[k]||{})[v]; if(w!=null){ s+=w; const r=(p.why[k]||{})[v]; if(r&&w>=2) why.push(r); } }
+  if(ADV.goal==="safe") s+=p.safe*1.5;
+  // your troops: unlocked and how close to max for your Town Hall
+  for(const [id,label] of p.needs){ const l=myLv(a,id), cap=capAt(id,th);
+    if(!l){ s-=8; warn.push(`${label} isn't unlocked on this account`); continue; }
+    const pct=cap?l/cap:1; s+=(pct-.8)*6; if(cap&&pct<.85) warn.push(`${label} ${l} of ${cap}: underlevelled`); else if(cap&&l>=cap) why.push(`your ${label.replace(/ \(.*\)/,"")}s are maxed`); }
+  // the plan's key hero carries it: a very low one sinks the plan
+  for(const hid of p.heroes){ const l=myLv(a,hid), cap=capAt(hid,th); if(!l){ s-=5; warn.push(`needs the ${name(hid)}`); } else if(cap){ const r=l/cap; if(r<.6){ s-=3.5; warn.push(`${name(hid)} ${l} of ${cap}: too low to carry this plan`); } else if(r<.8){ s-=1.5; warn.push(`${name(hid)} ${l} of ${cap}: low for this plan`); } } }
+  // the plan's key equipment: barely levelled gear barely does its job
+  for(const [eid,ename,hero] of p.gear){ const l=myLv(a,eid); if(!l){ s-=3; warn.push(`${ename} for the ${hero} isn't unlocked`); } else if(l<9){ s-=4; warn.push(`${ename} only level ${l}: it won't do its job yet`); } else if(l<15){ s-=1; warn.push(`${ename} only level ${l}`); } }
+  const A=ARMIES[p.id]; if(A){ for(const [t] of A.troops){ const base=SUPER_OF[t]||t; if(!myLv(a,base)&&!p.needs.some(([n])=>n===base)){ s-=2; warn.push(`${name(t)} isn't unlocked: swap it for something you have`); } } }
+  if(opTh&&opTh>th){ s-=(opTh-th)*1.5*(p.safe>=2?.6:1); }
+  const lr=learned(p.id,th,opTh); if(lr){ const conf=Math.min(1,lr.w/2.5); s+=(lr.stars-2.2)*2.2*conf+(lr.pct-85)/15*conf; }
+  return {p,s,why:[...new Set(why)].slice(0,4),warn,lr};
+}
+function armyTable(id,a,th){
+  const A=buildArmy(id,a,th); if(!A) return "";
+  const row=(t,n,h,extra="")=>{ const base=SUPER_OF[t], lv=myLv(a,base||t), cap=capAt(base||t,th);
+    return `<div class="axr ${lv?"":"miss"}">${ico(t)}<span class="axn"><b>${n}×</b> ${esc(name(t))}${base?` <em class="sup">super</em>`:""}</span><span class="axl mono">${lv?`lv ${lv}${cap&&lv<cap?`/${cap}`:""}`:"locked"}</span><span class="axh mono">${h}${extra}</span></div>`; };
+  const tr=A.troops.map(([t,n])=>row(t,n,n*HS[t])).join("");
+  const sp=A.spells.map(([t,n])=>row(t,n,n*SPH[t])).join("");
+  const cc=A.cc.map(([t,n])=>row(t,n,n*HS[t])).join("")+A.ccs.map(([t,n])=>row(t,n,n*SPH[t])).join("");
+  const hero=A.gear.map(([h,{pick,skipped},bring])=>`<div class="axg ${bring?"":"bench"}">${ico(h)}<b>${esc(name(h))}</b><span>${pick.map(e=>`${esc(name(e))} <small class="mono">lv ${myLv(a,e)}</small>`).join(" + ")||"no equipment yet"}${skipped.length&&bring?`<small class="axwhy">level ${skipped.map(e=>esc(name(e))).join(" and ")} for this plan</small>`:""}</span>${bring?"":`<em class="axbench">bench</em>`}</div>`).join("");
+  const sup=A.troops.filter(([t])=>SUPER_OF[t]).map(([t])=>name(t));
+  return `<div class="axt">
+    <div class="axhd"><span>Troops</span><b class="mono">${A.used} / ${A.cap}</b></div>${tr}
+    <div class="axhd"><span>Spells</span><b class="mono">${A.sp} / ${A.sc}</b></div>${sp}
+    <div class="axhd"><span>Siege machine</span></div>${A.siege?row(A.siege,1,"",""):`<p class="note">No siege machine unlocked.</p>`}${A.siegeNote?`<p class="axnote">${esc(A.siegeNote)}, so this uses your best unlocked one.</p>`:""}
+    <div class="axhd"><span>Clan Castle request</span><b class="mono">${A.ccu}/${A.ccCap.t} · ${A.ccsu}/${A.ccCap.s}</b></div>${cc}
+    ${hero?`<div class="axhd"><span>Heroes and equipment</span><b class="mono">bring ${Math.min(4,A.gear.length)}</b></div><div class="axgs">${hero}</div>`:""}
+    ${sup.length?`<p class="axnote">Boost ${sup.map(esc).join(" and ")} before attacking (max 2 Super Troops at once).</p>`:""}
+  </div>`;
+}
+/* screenshot reader, all on this device: you tap the key buildings, the page measures the picture
+   (base size, how packed it is, where the core is) and turns that into the base details, a start side and spell spots */
+const SHOT_T=[["th","Town Hall",1,"#f5c542",1.5],["ad","Air Defense",4,"#4fb3ff",1],["eagle","Eagle / Inferno Artillery",1,"#ff6b4a",2],["inf","Inferno Tower",3,"#ff9f1a",2],["scat","Scattershot",2,"#c38bff",1.5],["sweep","Air Sweeper",2,"#9ef0ff",.5],["cc","Clan Castle",1,"#7dff9a",1]];
+const MK={th:"TH",ad:"AD",eagle:"EA",inf:"IN",scat:"SC",sweep:"SW",cc:"CC"};
+const SHT=Object.fromEntries(SHOT_T.map(([k,l,n,c,w])=>[k,{l,n,c,w}]));
+let SHOT=null; // {img,url,w,h,marks:[{t,x,y}],mode,an}
+async function loadShot(file){
+  if(!file||!/^image\//.test(file.type)) return;
+  const url=URL.createObjectURL(file), img=new Image(); img.src=url; await img.decode();
+  SHOT={img,url,w:img.naturalWidth,h:img.naturalHeight,marks:[],mode:"th",an:null,px:pixels(img)};
+  SHOT.D0=findMap(SHOT.px,SHOT.px.W/2,SHOT.px.H*.55,SHOT.px.W*.22); rerAdv(); autoFind();
+}
+// colour of every pixel, at a small working size
+function pixels(img){
+  const W=320, H=Math.round(W*img.naturalHeight/img.naturalWidth), c=document.createElement("canvas"); c.width=W; c.height=H;
+  const g=c.getContext("2d",{willReadFrequently:true}); g.drawImage(img,0,0,W,H); const d=g.getImageData(0,0,W,H).data;
+  const hue=new Uint8Array(W*H), sat=new Float32Array(W*H), val=new Float32Array(W*H);
+  for(let i=0;i<W*H;i++){ const r=d[i*4]/255,gg=d[i*4+1]/255,b=d[i*4+2]/255, mx=Math.max(r,gg,b), mn=Math.min(r,gg,b), dl=mx-mn;
+    let h=0; if(dl){ h=mx===r?((gg-b)/dl)%6:mx===gg?(b-r)/dl+2:(r-gg)/dl+4; h*=60; if(h<0) h+=360; }
+    hue[i]=Math.floor(h/10)%36; sat[i]=mx?dl/mx:0; val[i]=mx; }
+  return {W,H,hue,sat,val};
+}
+// The map is a diamond of grass. Find the grass colour around the tapped buildings, then the grass region
+// joined to the middle of the base, and take its left/right/top/bottom corners.
+function findMap(P,tx,ty,rad){
+  const bins=new Array(36).fill(0);
+  for(let y=0;y<P.H;y++) for(let x=0;x<P.W;x++){ const i=y*P.W+x; if(P.sat[i]<.15||P.val[i]<.2||Math.hypot(x-tx,(y-ty)*1.7)>rad) continue; bins[P.hue[i]]++; }
+  const tot=bins.reduce((a,b)=>a+b,0), gb=bins.indexOf(Math.max(...bins)), share=(bins[(gb+35)%36]+bins[gb]+bins[(gb+1)%36])/(tot||1);
+  const isG=new Uint8Array(P.W*P.H); for(let i=0;i<P.W*P.H;i++){ const dd=Math.min(Math.abs(P.hue[i]-gb),36-Math.abs(P.hue[i]-gb)); isG[i]=dd<=1&&P.sat[i]>.12&&P.val[i]>.2?1:0; }
+  if(share<.18) return {isG,ok:false};
+  // coarse cells: a cell is "map" if there's grass nearby (buildings sit on grass, lava doesn't)
+  const C=4, CW=Math.ceil(P.W/C), CH=Math.ceil(P.H/C), fr=new Float32Array(CW*CH);
+  for(let cy=0;cy<CH;cy++) for(let cx=0;cx<CW;cx++){ let g=0,n=0; for(let y=cy*C;y<Math.min(P.H,cy*C+C);y++) for(let x=cx*C;x<Math.min(P.W,cx*C+C);x++){ g+=isG[y*P.W+x]; n++; } fr[cy*CW+cx]=g/n; }
+  const map=new Uint8Array(CW*CH);
+  for(let cy=0;cy<CH;cy++) for(let cx=0;cx<CW;cx++){ let s=0,n=0; for(let dy=-1;dy<=1;dy++) for(let dx=-1;dx<=1;dx++){ const X=cx+dx,Y=cy+dy; if(X<0||Y<0||X>=CW||Y>=CH) continue; s+=fr[Y*CW+X]; n++; } map[cy*CW+cx]=s/n>.18?1:0; }
+  // flood fill from the middle of the tapped buildings
+  const seen=new Uint8Array(CW*CH), st=[Math.floor(ty/C)*CW+Math.floor(tx/C)]; let L=[1e9,0],R=[-1,0],T=[0,1e9],B=[0,-1],cnt=0,touchT=false,touchB=false;
+  while(st.length){ const i=st.pop(); if(seen[i]) continue; seen[i]=1; const cx=i%CW, cy=(i/CW)|0; if(!map[i]&&cnt>0) continue; cnt++;
+    const x=cx*C+C/2, y=cy*C+C/2; if(x<L[0]) L=[x,y]; if(x>R[0]) R=[x,y]; if(y<T[1]) T=[x,y]; if(y>B[1]) B=[x,y]; if(cy===0) touchT=true; if(cy===CH-1) touchB=true;
+    if(cx>0) st.push(i-1); if(cx<CW-1) st.push(i+1); if(cy>0) st.push(i-CW); if(cy<CH-1) st.push(i+CW); }
+  if(cnt<30) return {isG,ok:false};
+  const mx=(L[0]+R[0])/2, my=(L[1]+R[1])/2, hx=(R[0]-L[0])/2;
+  let hy=touchT&&touchB?hx/1.7:touchT?B[1]-my:touchB?my-T[1]:Math.max(my-T[1],B[1]-my);
+  hy=Math.max(hx/2.2,Math.min(hx/1.2,hy));
+  return {isG,ok:true,mx,my,hx,hy};
+}
+/* auto-find: every building you tap is saved on this device as a tiny 16×16 picture, sized to the map.
+   On a new screenshot the page slides those pictures over the base and keeps the strongest matches
+   (normalised cross-correlation: plain maths, no AI). More bases tapped = better matches. */
+const TPL_N=16, TPL_PER=8;
+let TPL=(()=>{ try{ return JSON.parse(localStorage.getItem("cvt.tpl")||"[]"); }catch(e){ return []; } })();
+const tplSave=()=>{ try{ localStorage.setItem("cvt.tpl",JSON.stringify(TPL)); }catch(e){} };
+const mapScale=()=>{ const D=SHOT&&((SHOT.an&&SHOT.an.ok&&SHOT.an.D)||(SHOT.D0&&SHOT.D0.ok&&SHOT.D0)); return D?2*D.hx*(SHOT.w/SHOT.px.W):null; };
+function clip(cx,cy,side){ const c=document.createElement("canvas"); c.width=c.height=TPL_N; const g=c.getContext("2d",{willReadFrequently:true});
+  g.drawImage(SHOT.img,cx-side/2,cy-side/2,side,side,0,0,TPL_N,TPL_N); const d=g.getImageData(0,0,TPL_N,TPL_N).data, out=new Array(TPL_N*TPL_N*3);
+  for(let i=0,j=0;i<d.length;i+=4){ out[j++]=d[i]; out[j++]=d[i+1]; out[j++]=d[i+2]; } return out; }
+function learnTpl(m){
+  const W=mapScale(); if(!W) return; const side=W*.065;
+  const px=clip(m.x*SHOT.w,m.y*SHOT.h,side), mean=px.reduce((a,b)=>a+b,0)/px.length, sd=Math.sqrt(px.reduce((a,b)=>a+(b-mean)**2,0)/px.length);
+  if(sd<8) return; // flat patch: nothing to learn
+  TPL.push({t:m.t,d:btoa(String.fromCharCode(...px))});
+  const kinds={}; TPL=TPL.reverse().filter(q=>(kinds[q.t]=(kinds[q.t]||0)+1)<=TPL_PER).reverse(); tplSave();
+}
+async function autoFind(){
+  const D=SHOT.D0; if(!TPL.length||!D||!D.ok) return;
+  SHOT.finding=true; rerAdv(); await new Promise(r=>setTimeout(r,30));
+  const K=SHOT.w/SHOT.px.W, mw=2*D.hx*K, side=mw*.065, sc=TPL_N/side;
+  const x0=Math.max(0,(D.mx-D.hx*1.05)*K), y0=Math.max(0,(D.my-D.hy*1.05)*K), x1=Math.min(SHOT.w,(D.mx+D.hx*1.05)*K), y1=Math.min(SHOT.h,(D.my+D.hy*1.05)*K);
+  const W=Math.round((x1-x0)*sc), H=Math.round((y1-y0)*sc); if(W<TPL_N*2||H<TPL_N*2){ SHOT.finding=false; return; }
+  const c=document.createElement("canvas"); c.width=W; c.height=H; const g=c.getContext("2d",{willReadFrequently:true}); g.drawImage(SHOT.img,x0,y0,x1-x0,y1-y0,0,0,W,H);
+  const d=g.getImageData(0,0,W,H).data, rgb=new Float32Array(W*H*3); for(let i=0,j=0;i<d.length;i+=4){ rgb[j++]=d[i]; rgb[j++]=d[i+1]; rgb[j++]=d[i+2]; }
+  // running sums for each window's mean and spread
+  const S1=new Float64Array((W+1)*(H+1)), S2=new Float64Array((W+1)*(H+1));
+  for(let y=0;y<H;y++){ let r1=0,r2=0; for(let x=0;x<W;x++){ const o=(y*W+x)*3, v=rgb[o]+rgb[o+1]+rgb[o+2], q=rgb[o]*rgb[o]+rgb[o+1]*rgb[o+1]+rgb[o+2]*rgb[o+2]; r1+=v; r2+=q; S1[(y+1)*(W+1)+x+1]=S1[y*(W+1)+x+1]+r1; S2[(y+1)*(W+1)+x+1]=S2[y*(W+1)+x+1]+r2; } }
+  const box=(A,x,y)=>A[(y+TPL_N)*(W+1)+x+TPL_N]-A[y*(W+1)+x+TPL_N]-A[(y+TPL_N)*(W+1)+x]+A[y*(W+1)+x];
+  const n=TPL_N*TPL_N*3;
+  const tp=TPL.map(q=>{ const b=atob(q.d), v=new Float32Array(n); let m=0; for(let i=0;i<n;i++){ v[i]=b.charCodeAt(i); m+=v[i]; } m/=n; let ss=0; for(let i=0;i<n;i++){ v[i]-=m; ss+=v[i]*v[i]; } return {t:q.t,v,nrm:Math.sqrt(ss)}; }).filter(q=>q.nrm>1);
+  const hits=[];
+  for(let y=0;y<=H-TPL_N;y+=2){
+    for(let x=0;x<=W-TPL_N;x+=2){
+      const cxN=(x0+(x+TPL_N/2)/sc)/K, cyN=(y0+(y+TPL_N/2)/sc)/K; if(Math.abs(cxN-D.mx)/D.hx+Math.abs(cyN-D.my)/D.hy>1.02) continue;
+      const s1=box(S1,x,y), s2=box(S2,x,y), wn=Math.sqrt(Math.max(1e-6,s2-s1*s1/n)); if(wn<40) continue;
+      let best=-1, bt=null;
+      for(const q of tp){ let dot=0, k=0; const v=q.v; for(let r=0;r<TPL_N;r++){ let o=((y+r)*W+x)*3; for(let cI=0;cI<TPL_N*3;cI++) dot+=rgb[o++]*v[k++]; } const sc2=dot/(wn*q.nrm); if(sc2>best){ best=sc2; bt=q.t; } }
+      if(best>.62) hits.push({x,y,s:best,t:bt});
+    }
+    if(y%16===0) await new Promise(r=>setTimeout(r,0));
+  }
+  // keep the best matches, no two on top of each other, no more than the game allows of each kind
+  hits.sort((p,q)=>q.s-p.s); const keep=[], cnt={};
+  for(const h of hits){ if((cnt[h.t]||0)>=SHT[h.t].n) continue; if(keep.some(k=>Math.hypot(k.x-h.x,k.y-h.y)<TPL_N*.9)) continue; keep.push(h); cnt[h.t]=(cnt[h.t]||0)+1; }
+  if(!SHOT){ return; }
+  for(const h of keep) SHOT.marks.push({t:h.t,x:(x0+(h.x+TPL_N/2)/sc)/SHOT.w,y:(y0+(h.y+TPL_N/2)/sc)/SHOT.h,auto:true});
+  SHOT.finding=false; SHOT.found=keep.length; shotUpdate(); rerAdv();
+}
+function shotAnalyze(){
+  if(!SHOT) return null; const M=SHOT.marks;
+  if(!M.some(m=>m.t==="th")||M.length<3) return null;
+  const P=SHOT.px, k=P.W/SHOT.w;
+  const tx=M.reduce((s,m)=>s+m.x*P.W,0)/M.length, ty=M.reduce((s,m)=>s+m.y*P.H,0)/M.length;
+  const rad=Math.max(...M.map(m=>Math.hypot(m.x*P.W-tx,(m.y*P.H-ty)*1.7)))*1.1||P.W*.2;
+  let D=findMap(P,tx,ty,rad);
+  if(!D.ok){ D={...D,mx:tx,my:ty,hx:rad*1.35,hy:rad*1.35/1.7}; }
+  // the base usually fills the map; if every tapped building is well inside, shrink the outline to fit
+  const nrm=(x,y)=>({u:(x-D.mx)/D.hx,v:(y-D.my)/D.hy});
+  const far=Math.max(...M.map(m=>{ const q=nrm(m.x*P.W,m.y*P.H); return Math.abs(q.u)+Math.abs(q.v); }));
+  const S=Math.max(.6,Math.min(1,far*1.25));
+  const P2=M.map(m=>{ const q=nrm(m.x*P.W,m.y*P.H); return {...m,u:q.u,v:q.v,r:(Math.abs(q.u)+Math.abs(q.v))/S,a:Math.atan2(q.v,q.u)}; });
+  // how packed it is: share of non-grass inside the outline, middle vs core
+  let st=0,n=0,core=0,cn=0,midS=0,midN=0;
+  for(let y=0;y<P.H;y++) for(let x=0;x<P.W;x++){ const q=nrm(x,y), r=(Math.abs(q.u)+Math.abs(q.v))/S; if(r>1) continue; const v=1-D.isG[y*P.W+x]; st+=v; n++; if(r<.35){ core+=v; cn++; } else if(r<.8){ midS+=v; midN++; } }
+  const fill=n?st/n:null, mid=cn&&midN?(midS/midN)/((core/cn)||.01):null;
+  const of=t=>P2.filter(m=>m.t===t), traits={}, notes=[];
+  const keyIn=P2.filter(m=>["th","eagle","inf","scat"].includes(m.t)&&m.r<.4).length;
+  traits.core=keyIn>=3?"strong":"weak"; notes.push(`${keyIn} key defense${keyIn===1?"":"s"} in the core`);
+  const ads=of("ad"); if(ads.length>=2){ const mr=ads.reduce((s,m)=>s+m.r,0)/ads.length; traits.air=mr>=.62?"open":"tight"; notes.push(`Air Defenses ${mr>=.62?"sit towards the edges":"are tucked inside"} (${Math.round(Math.min(1,mr)*100)}% of the way out on average)`); }
+  const e=of("eagle")[0]; if(e){ if(e.r<.42) traits.eagle="core"; else if(e.r>.55) traits.eagle="side"; }
+  const th=of("th")[0]; if(th) notes.push(`Town Hall is ${th.r<.3?"in the middle":th.r<.75?"off-centre":"near an edge"}`);
+  if(D.ok&&fill!=null){ traits.shape=fill>.62&&mid>.8?"compact":(mid<.65||fill<.45)?"spread":"boxed"; notes.push(`Base looks ${traits.shape==="compact"?"packed tight":traits.shape==="spread"?"spread out with gaps":"walled into many sections"} (picture estimate)`); }
+  return {D,S,P:P2,traits,notes,fill,ok:D.ok};
+}
+// where to start: the 4 corners and 4 sides of the diamond. Ground armies take the side with the least firepower,
+// air armies the one where Air Defenses are reachable first.
+const DIRS=[["right corner",0],["bottom-right side",Math.PI/4],["bottom corner",Math.PI/2],["bottom-left side",Math.PI*3/4],["left corner",Math.PI],["top-left side",-Math.PI*3/4],["top corner",-Math.PI/2],["top-right side",-Math.PI/4]];
+function entryFor(an,style){
+  let best=null;
+  for(const [nm,th] of DIRS){ let threat=0, ad=0, sw=0;
+    for(const m of an.P){ const c=Math.cos(m.a-th);
+      if(m.t==="sweep"){ const f=m.f!=null?m.f:m.a, cf=Math.cos(f-th); if(cf>.55&&m.r>.25) sw+=cf; continue; }
+      if(c<=0) continue; const w=SHT[m.t].w*c*Math.min(1,m.r+.2); if(m.t==="ad") ad+=c*m.r; else threat+=w; if(m.t==="ad"&&style!=="Air") threat+=w*.3; }
+    const s=style==="Air"?ad*2-threat*.5-sw*2.5:-threat; if(!best||s>best.s) best={s,th,nm,sw}; }
+  return best;
+}
+// a point at "radius" f (1 = the outline) in direction a, in screen pixels of the original picture
+const dpt=(an,a,f)=>{ const c=Math.cos(a), s=Math.sin(a), L=Math.abs(c)+Math.abs(s), K=SHOT.w/SHOT.px.W; return [(an.D.mx+an.D.hx*an.S*f*c/L)*K,(an.D.my+an.D.hy*an.S*f*s/L)*K]; };
+function drawShot(){
+  const cv=document.getElementById("shotcv"); if(!cv||!SHOT) return;
+  const box=cv.parentElement.getBoundingClientRect(), k=box.width<600?Math.min(1,Math.max(box.width,720)/SHOT.w):Math.min(1,box.width/SHOT.w,Math.min(560,innerHeight*.7)/SHOT.h), W=Math.round(SHOT.w*k), H=Math.round(SHOT.h*k), dpr=devicePixelRatio||1;
+  cv.width=W*dpr; cv.height=H*dpr; cv.style.width=W+"px"; cv.style.height=H+"px";
+  const g=cv.getContext("2d"); g.setTransform(dpr*k,0,0,dpr*k,0,0); g.drawImage(SHOT.img,0,0);
+  const an=SHOT.an, u=SHOT.w/600;
+  if(an){
+    const dia=f=>{ g.beginPath(); [0,Math.PI/2,Math.PI,-Math.PI/2].forEach((a,i)=>{ const [x,y]=dpt(an,a,f); i?g.lineTo(x,y):g.moveTo(x,y); }); g.closePath(); g.stroke(); };
+    g.save(); g.setLineDash([8*u,6*u]); g.lineWidth=2*u; g.strokeStyle="rgba(255,255,255,.65)"; dia(1); g.strokeStyle="rgba(255,90,70,.8)"; dia(.4); g.restore();
+    if(an.entry){ const a=an.entry.th, o=dpt(an,a,1.22), t=dpt(an,a,.62);
+      g.save(); g.lineWidth=7*u; g.strokeStyle="#3ee08f"; g.lineCap="round"; g.beginPath(); g.moveTo(...o); g.lineTo(...t); g.stroke();
+      const ang=Math.atan2(t[1]-o[1],t[0]-o[0]); g.fillStyle="#3ee08f"; g.beginPath(); g.moveTo(t[0]+Math.cos(ang)*14*u,t[1]+Math.sin(ang)*14*u);
+      g.lineTo(t[0]+Math.cos(ang+2.4)*16*u,t[1]+Math.sin(ang+2.4)*16*u); g.lineTo(t[0]+Math.cos(ang-2.4)*16*u,t[1]+Math.sin(ang-2.4)*16*u); g.fill(); g.restore(); }
+    for(const s of an.spots||[]){ g.save(); g.lineWidth=3*u; g.strokeStyle=s.c; g.setLineDash([5*u,4*u]); g.beginPath(); g.ellipse(s.x,s.y,s.r,s.r*.6,0,0,Math.PI*2); g.stroke(); g.restore(); }
+    if(an.path&&an.path.length>1){ g.save(); g.strokeStyle="#f5c542"; g.lineWidth=4*u; g.setLineDash([10*u,7*u]); g.lineCap="round"; g.beginPath(); an.path.forEach(([x,y],i)=>i?g.lineTo(x,y):g.moveTo(x,y)); g.stroke();
+      const [x1,y1]=an.path[an.path.length-2], [x2,y2]=an.path[an.path.length-1], ang=Math.atan2(y2-y1,x2-x1); g.setLineDash([]); g.fillStyle="#f5c542"; g.beginPath(); g.moveTo(x2-Math.cos(ang)*14*u,y2-Math.sin(ang)*14*u);
+      g.lineTo(x2-Math.cos(ang)*30*u+Math.cos(ang+1.57)*9*u,y2-Math.sin(ang)*30*u+Math.sin(ang+1.57)*9*u); g.lineTo(x2-Math.cos(ang)*30*u-Math.cos(ang+1.57)*9*u,y2-Math.sin(ang)*30*u-Math.sin(ang+1.57)*9*u); g.fill(); g.restore(); }
+    for(const m of an.marks2||[]){ g.save(); g.fillStyle=m.c; g.strokeStyle="#000"; g.lineWidth=2*u; g.beginPath(); g.arc(m.x,m.y,7*u,0,Math.PI*2); g.fill(); g.stroke(); g.restore(); }
+  }
+  SHOT.marks.forEach(m=>{ const x=m.x*SHOT.w,y=m.y*SHOT.h,c=SHT[m.t].c;
+    if(m.t==="sweep"){ const P=an&&an.P.find(q=>q.x===m.x&&q.y===m.y), f=m.f!=null?m.f:P?P.a:-Math.PI/2, D=an?an.D:{hx:1,hy:.6}, dx=Math.cos(f)*D.hx, dy=Math.sin(f)*D.hy, L=Math.hypot(dx,dy)||1;
+      g.save(); g.strokeStyle=c; g.lineWidth=3*u; g.beginPath(); g.moveTo(x,y); g.lineTo(x+dx/L*34*u,y+dy/L*34*u); g.stroke(); g.globalAlpha=.18; g.fillStyle=c; g.beginPath(); g.moveTo(x,y);
+      const a0=Math.atan2(dy,dx); g.arc(x,y,60*u,a0-.6,a0+.6); g.closePath(); g.fill(); g.restore(); }
+    g.save(); g.fillStyle=c; g.strokeStyle=m.auto?"#fff":"#000"; g.lineWidth=2*u; if(m.auto) g.setLineDash([3*u,2*u]);
+    g.beginPath(); g.arc(x,y,10*u,0,Math.PI*2); g.fill(); g.stroke(); g.fillStyle="#111"; g.font=`700 ${9.5*u}px system-ui`; g.textAlign="center"; g.textBaseline="middle";
+    g.fillText(MK[m.t],x,y+.5*u); g.restore(); });
+  if(an&&an.entry){ const o=dpt(an,an.entry.th,1.22); lbl(g,o[0],o[1]+(Math.sin(an.entry.th)>.3?16:-16)*u,"START",u,"#3ee08f"); }
+  for(const m of (an&&an.marks2)||[]) lbl(g,m.x,m.y+(m.dy||-16)*u,m.l,u,m.c);
+  const used=[]; for(const s of (an&&an.spots)||[]){ let x=s.x, y=s.y+s.r*.6+14*u; while(used.some(q=>Math.abs(q[0]-x)<90*u&&Math.abs(q[1]-y)<20*u)) y+=20*u; used.push([x,y]); lbl(g,x,y,s.l,u,s.c); }
+}
+function lbl(g,x,y,t,u,c){ g.save(); g.font=`800 ${12*u}px system-ui`; g.textAlign="center"; const w=g.measureText(t).width+12*u;
+  x=Math.max(w/2+4*u,Math.min(SHOT.w-w/2-4*u,x)); y=Math.max(14*u,Math.min(SHOT.h-12*u,y));
+  g.fillStyle="rgba(0,0,0,.72)"; g.fillRect(x-w/2,y-10*u,w,18*u); g.fillStyle=c; g.textBaseline="middle"; g.fillText(t,x,y-1*u); g.restore(); }
+// after the advisor picks a plan: start side, and where Rage and Freeze go along the way in
+function shotPlan(p,a,th){
+  const an=SHOT&&SHOT.an; if(!an) return; const style=p.style; an.entry=entryFor(an,style); const E=an.entry.th, spots=[], R=an.D.hx*an.S*(SHOT.w/SHOT.px.W);
+  const A=dpt(an,E,1), O=dpt(an,E,0), at=m=>[m.x*SHOT.w,m.y*SHOT.h];
+  const onPath=list=>list.map(m=>{ const [X,Y]=at(m), vx=O[0]-A[0], vy=O[1]-A[1], t=Math.max(0,Math.min(1,((X-A[0])*vx+(Y-A[1])*vy)/(vx*vx+vy*vy))); return {m,X,Y,t,d:Math.hypot(X-(A[0]+vx*t),Y-(A[1]+vy*t))}; }).sort((q,w)=>q.d-w.d);
+  const key=onPath(an.P.filter(m=>m.t==="inf"||m.t==="eagle"||m.t==="scat"));
+  const thm=an.P.find(m=>m.t==="th"), eag=an.P.find(m=>m.t==="eagle"), cc=an.P.find(m=>m.t==="cc");
+  if(key[0]) spots.push({x:key[0].X,y:key[0].Y,r:R*.09,l:"FREEZE",c:"#7fd8ff"});
+  const rg=dpt(an,E,style==="Air"?.55:.4); spots.push({x:rg[0],y:rg[1],r:R*.13,l:"RAGE",c:"#d070ff"});
+  if(thm) spots.push({x:at(thm)[0],y:at(thm)[1],r:R*.1,l:style==="Air"?"RAGE 2":"WARDEN ABILITY",c:"#f5c542"});
+  // funnel either side of the start, siege at the start
+  const fl=dpt(an,E-.55,1.02), fr=dpt(an,E+.55,1.02), sg=dpt(an,E,1.08);
+  const A2=buildArmy(p.id,a,th), siege=A2&&A2.siege?name(A2.siege):null;
+  an.marks2=[{x:fl[0],y:fl[1],l:"FUNNEL",c:"#ffd27a"},{x:fr[0],y:fr[1],l:"FUNNEL",c:"#ffd27a"}].concat(siege?[{x:sg[0],y:sg[1],l:siege.toUpperCase(),c:"#ffffff",dy:22}]:[]);
+  // heroes: in at the start, through the first big defense on the way, then to the Town Hall
+  const tgt=style==="Air"?(eag||thm):(thm||eag);
+  an.path=[dpt(an,E,1.12)].concat(key[0]&&key[0].t<.9?[[key[0].X,key[0].Y]]:[dpt(an,E,.5)]).concat(tgt?[at(tgt)]:[]);
+  an.spots=spots;
+  // the attack, step by step, for this base
+  const side=an.entry.nm, kn=key[0]?SHT[key[0].m.t].l:"the first big defense", steps=[];
+  if(cc){ const c=Math.cos(cc.a-E); steps.push(cc.r>.55&&c>.4?`Lure the Clan Castle first: it's near your start (${side}). Kill its troops away from your army.`:cc.r<.4?"The Clan Castle is in the core: keep a Poison or Freeze for its troops when your army gets there.":`Lure the Clan Castle from its closest edge before the main push.`); }
+  if(style==="Air"){
+    steps.push(`Start at the ${side}: drop your tanks (Lava Hounds or heroes) first, then the main air army behind them.`);
+    if(siege) steps.push(`Drop the ${siege} at the start so it carries the Grand Warden or Clan Castle troops toward the ${tgt?SHT[tgt.t].l:"core"}.`);
+    steps.push(`Freeze the ${kn} as your troops reach it; Rage over the main group at RAGE.`);
+    if(an.entry.sw) steps.push("An Air Sweeper faces this side: take it out early with your heroes or siege."); else if(an.P.some(m=>m.t==="sweep")) steps.push("This start keeps you out of the Air Sweepers' push.");
+  }else{
+    steps.push(`Funnel first: drop a few troops at both FUNNEL marks so your main army goes into the base, not around it.`);
+    steps.push(`When the funnel is clear, drop the main army at START (${side})${siege?` with the ${siege}`:""}.`);
+    steps.push(`Send your heroes along the gold line toward the ${tgt?SHT[tgt.t].l:"core"}.`);
+    steps.push(`Freeze the ${kn} when your army reaches it; Rage at RAGE; use the Grand Warden's ability at the Town Hall.`);
+  }
+  an.steps=steps;
+  an.notes=an.notes.filter(n=>!/^Start from/.test(n)).concat(`Start from the ${side}`);
+}
+function rerAdv(){ if(hashRaw()==="attack"){ const y=scrollY; render(); scrollTo(0,y); } }
+function shotBox(){
+  if(!SHOT) return `<div class="advshot"><span class="advcam">${glyph("bolt")}</span><div class="advshotb"><b>Read a base screenshot</b><span class="note">Upload or paste (Ctrl+V) a scout screenshot, tap the key buildings, and the page works out the rest here on your device. No AI, nothing sent anywhere.</span></div><label class="ghost advup"><input type="file" accept="image/*" data-advshot hidden>Upload screenshot</label></div>`;
+  const cnt=t=>SHOT.marks.filter(m=>m.t===t).length, an=SHOT.an;
+  return `<div class="advshot open">
+    <div class="shotbar">${SHOT_T.map(([k,l,n,c])=>`<button type="button" class="shotk" data-shotk="${k}" aria-pressed="${SHOT.mode===k}" style="--c:${c}"><i></i>${l}<small class="mono">${cnt(k)}/${n}</small></button>`).join("")}
+      <span class="shotsp"></span><button type="button" class="glink" data-shotx="undo">Undo</button><button type="button" class="glink" data-shotx="close">Remove picture</button></div>
+    ${SHOT.finding?`<p class="note shothint">Looking for buildings from your saved examples…</p>`:SHOT.found!=null?`<p class="note shothint">${SHOT.found?`Found ${SHOT.found} building${SHOT.found>1?"s":""} from your saved examples (dashed markers). Tap any wrong one with its kind selected to remove it.`:"No buildings matched your saved examples on this picture. Tap them in; the page learns from every tap."}</p>`:""}
+    <p class="note shothint">${SHOT.mode==="sweep"?"Tap an Air Sweeper to place it. Tap it again to turn the way it faces (the shaded cone).":an?"Tap more buildings to sharpen it. Tapping a marker of the selected kind removes it.":`Tap the <b>${esc(SHT[SHOT.mode].l)}</b> on the picture. Town Hall plus two more is enough to start.`}<span class="shotmob"> Swipe the picture sideways to see all of it.</span>${an&&!an.ok?" This scenery's ground colour is hard to read, so base shape is left for you to pick.":""}</p>
+    <div class="shotwrap"><canvas id="shotcv" data-shotcv></canvas></div>
+    ${an?`<ul class="advnotes">${an.notes.map(n=>`<li>${esc(n)}</li>`).join("")}</ul>
+    ${an.steps?`<div class="shotsteps"><b>The attack, on this base</b><ol>${an.steps.map(t=>`<li>${esc(t)}</li>`).join("")}</ol><p class="note">Green arrow: start. Gold line: hero path. Yellow dots: funnel. Rings: spells.</p></div>`:""}`:""}
+  </div>`;
+}
+function shotUpdate(){ if(!SHOT) return; SHOT.an=shotAnalyze(); if(SHOT.an){ for(const [k,v] of Object.entries(SHOT.an.traits)) ADV.traits[k]=v; advSave(); } }
+document.addEventListener("change",e=>{ if(e.target.matches&&e.target.matches("[data-advshot]")){ const f=e.target.files&&e.target.files[0]; if(f) loadShot(f); } });
+document.addEventListener("paste",e=>{ if(hashRaw()!=="attack") return; const it=[...(e.clipboardData&&e.clipboardData.items||[])].find(i=>i.type.startsWith("image/")); if(it){ e.preventDefault(); loadShot(it.getAsFile()); } });
+document.addEventListener("click",e=>{
+  const k=e.target.closest("[data-shotk]"), x=e.target.closest("[data-shotx]"), cv=e.target.closest("[data-shotcv]");
+  if(!SHOT||(!k&&!x&&!cv)) return;
+  if(k) SHOT.mode=k.dataset.shotk;
+  if(x&&x.dataset.shotx==="undo") SHOT.marks.pop();
+  if(x&&x.dataset.shotx==="close"){ URL.revokeObjectURL(SHOT.url); SHOT=null; return rerAdv(); }
+  if(cv){ const r=cv.getBoundingClientRect(), nx=(e.clientX-r.left)/r.width, ny=(e.clientY-r.top)/r.height;
+    const hit=SHOT.marks.findIndex(m=>m.t===SHOT.mode&&Math.hypot((m.x-nx)*r.width,(m.y-ny)*r.height)<14);
+    if(hit>=0&&SHOT.mode==="sweep"){ const m=SHOT.marks[hit], P=SHOT.an&&SHOT.an.P.find(q=>q.x===m.x&&q.y===m.y); m.f=(m.f!=null?m.f:P?P.a:-Math.PI/2)+Math.PI/4; if(m.auto){ m.auto=false; learnTpl(m); } }
+    else if(hit>=0) SHOT.marks.splice(hit,1);
+    else{ const m={t:SHOT.mode,x:nx,y:ny}; SHOT.marks.push(m); learnTpl(m); const T=SHT[SHOT.mode];
+      if(SHOT.marks.filter(m=>m.t===SHOT.mode).length>=T.n){ const nxt=SHOT_T.find(([q,,n])=>SHOT.marks.filter(m=>m.t===q).length<n); if(nxt) SHOT.mode=nxt[0]; } } }
+  shotUpdate(); rerAdv();
+});
+addEventListener("resize",()=>{ if(SHOT&&hashRaw()==="attack") drawShot(); });
+function logView(){
+  const L=ADV.log||[]; if(!L.length) return `<div class="sub">Your attack log</div><p class="note">Log a result under a plan after you use it. Every result teaches the advisor which plans work for you on which kinds of base.</p>`;
+  const by={}; for(const e of L){ (by[e.plan]=by[e.plan]||[]).push(e); }
+  const pn=id=>(PLAYBOOK.find(q=>q.id===id)||{name:id}).name;
+  const rows=Object.entries(by).map(([id,es])=>({id,n:es.length,st:es.reduce((a,e)=>a+e.stars,0)/es.length,pc:es.reduce((a,e)=>a+e.pct,0)/es.length,tr:es.filter(e=>e.stars===3).length})).sort((p,q)=>q.st-p.st);
+  return `<div class="sub">Your attack log <small class="mono">${L.length} attack${L.length>1?"s":""}</small></div>
+  <div class="advlogt"><div class="alr alh"><span>Plan</span><span>Used</span><span>Avg</span><span>3★</span></div>${rows.map(r=>`<div class="alr"><span>${esc(pn(r.id))}</span><span class="mono">${r.n}</span><span class="mono">${r.st.toFixed(1)}★ · ${Math.round(r.pc)}%</span><span class="mono">${Math.round(r.tr/r.n*100)}%</span></div>`).join("")}</div>
+  <details class="advlogd"><summary>Last attacks</summary>${L.slice(-12).reverse().map((e,i)=>`<div class="alr"><span>${esc(pn(e.plan))}<small> · TH${e.myTh} vs TH${e.opTh||e.myTh} · ${new Date(e.at).toLocaleDateString()}</small></span><span class="mono">${e.stars}★ ${e.pct}%</span><button type="button" class="glink" data-logdel="${e.at}">Remove</button></div>`).join("")}</details>`;
+}
+function advisorView(accs){
+  const real=accs.filter(a=>!a.demo); const a=real.find(q=>q.id===ADV.acc)||real[0]||accs[0];
+  if(!a) return `<div class="empty">Paste an export first.</div>`;
+  const x=analyze(a), th=x.th;
+  // live war: show the enemy line-up so one tap sets the target (needs the Clash API)
+  const atk=API_ATK.get(a.id)||{}, wv=[atk.cwl,atk.war].find(w=>w&&w.opp&&w.opp.length);
+  const tgt=wv&&(wv.opp.find(o=>o.n===ADV.tgt)||(ADV.tgt==null&&wv.my?wv.opp[wv.my-1]:null));
+  const opTh=ADV.opTh||(tgt&&tgt.th)||th;
+  const answered=Object.keys(ADV.traits).length;
+  const res=PLAYBOOK.map(p=>scoreArmy(p,a,opTh)).sort((p,q)=>q.s-p.s);
+  const top=res.slice(0,2), alt=res.slice(2,5);
+  if(SHOT&&SHOT.an) shotPlan(top[0].p,a,th);
+  const chips=(k,opts)=>opts.map(([v,l])=>`<button type="button" class="tchip" data-trait="${k}" data-v="${v}" aria-pressed="${ADV.traits[k]===v}">${l}</button>`).join("");
+  const opPick=(()=>{ return `<label class="advth"><span>Opponent Town Hall</span><select data-adv="opth">${Array.from({length:8},(_,i)=>11+i).map(t=>`<option ${t===opTh?"selected":""}>${t}</option>`).join("")}</select></label>`; })();
+  const card=(r,i)=>{ const p=r.p;
+    return `<article class="advc ${i===0?"best":""} rv" style="--i:${i}">
+      <header><span class="advrank mono">${i===0?"Best fit":"Option 2"}</span><h3>${esc(p.name)}</h3><span class="advtag">${p.style}</span></header>
+      ${r.why.length?`<p class="advwhy">${glyph("check")}<span>${esc(r.why.join(" · "))}</span></p>`:""}
+      ${r.warn.length?`<p class="advwarn">${glyph("bolt")}<span>${esc(r.warn.join(" · "))}</span></p>`:""}
+      ${r.lr?`<p class="advlr">${glyph("star")}<span>Your record with this plan on bases like this: <b>${r.lr.stars.toFixed(1)}★</b> · ${Math.round(r.lr.pct)}% average over ${r.lr.n} attack${r.lr.n>1?"s":""}</span></p>`:""}
+      ${armyTable(p.id,a,th)}
+      <p class="advsum">${esc(p.army)}</p>
+      <ol class="advplan">${p.plan.map(s=>`<li>${esc(s)}</li>`).join("")}</ol>
+      <form class="advlog" data-advlog="${p.id}"><span>Used it? Log the result:</span>
+        <div class="seg sm" role="group" aria-label="Stars">${[0,1,2,3].map(n=>`<button type="button" data-logstar="${n}" aria-pressed="false">${n}★</button>`).join("")}</div>
+        <input type="number" min="0" max="100" inputmode="numeric" placeholder="%" aria-label="Destruction %" name="pct"><button class="ghost" type="submit">Save</button></form>
+    </article>`; };
+  return `<section class="advv rv">
+    <header class="calh"><div><h1 class="calt">Attack</h1><p class="lvsub">Describe the base in a few taps. The advice is worked out here from a built-in strategy playbook (${PLAYBOOK_V}) and your own troop, hero and equipment levels. No AI, no cost.</p></div></header>
+    <div class="advin">
+      ${shotBox()}
+      <div class="advrow"><span class="advl">Attacking with</span><div class="lvaccs">${real.map(q=>`<button type="button" class="calacc ${q===a?"":"off"}" style="--c:${colorOf(q)}" data-advacc="${q.id}" aria-pressed="${q===a}"><i></i>${esc(q.nick)}<small class="mono">TH${analyze(q).th}</small></button>`).join("")}</div></div>
+      ${wv?`<div class="advrow"><span class="advl">${wv===atk.cwl?"CWL":"War"} vs ${esc(wv.vs||"")}<small class="advls">gold ring = your mirror</small></span><div class="tgts">${wv.opp.map(o=>`<button type="button" class="tgt ${o.stars===3?"done":""} ${o.n===wv.my?"mir":""}" data-tgt="${o.n}" aria-pressed="${tgt&&tgt.n===o.n}" title="${esc(o.name)}"><b class="mono">${o.n}</b><small class="mono">TH${o.th}</small><i>${"★".repeat(o.stars)}${"☆".repeat(3-o.stars)}</i></button>`).join("")}</div></div>`:""}
+      <div class="advrow"><span class="advl">Opponent</span>${opPick}<div class="seg sm" role="group" aria-label="Goal"><button type="button" data-goal="triple" aria-pressed="${ADV.goal!=="safe"}">Go for 3★</button><button type="button" data-goal="safe" aria-pressed="${ADV.goal==="safe"}">Safe 2★</button></div></div>
+      ${TRAITS.map(([k,l,opts])=>`<div class="advrow"><span class="advl">${l}</span><div class="tchips">${chips(k,opts)}</div></div>`).join("")}
+      ${answered?`<button type="button" class="glink advreset" data-adv="reset">Clear answers</button>`:""}
+    </div>
+    ${answered<2?`<p class="note advhint">Tap at least two things about the base to get advice that fits it. Until then, these are the best armies for your account in general.</p>`:""}
+    <div class="advres">${top.map(card).join("")}</div>
+    ${alt.length?`<div class="sub">Also possible</div><div class="advalt">${alt.map(r=>`<span class="advmini" data-tip="${esc(r.p.army)}"><b>${esc(r.p.name)}</b><small>${r.p.style}${r.warn.length?" · "+esc(r.warn[0]):""}</small></span>`).join("")}</div>`:""}
+    ${logView()}
+    <p class="note">The playbook reflects community war guides as of ${PLAYBOOK_V}. After a balance update the meta can shift, and the playbook may need a refresh.</p>
+  </section>`;
+}
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-trait]"), ac=e.target.closest("[data-advacc]"), g=e.target.closest("[data-goal]"), r=e.target.closest("[data-adv=reset]"), tg=e.target.closest("[data-tgt]");
+  if(!t&&!ac&&!g&&!r&&!tg) return;
+  if(tg){ ADV.tgt=+tg.dataset.tgt; ADV.opTh=null; }
+  if(t){ const k=t.dataset.trait,v=t.dataset.v; if(ADV.traits[k]===v) delete ADV.traits[k]; else ADV.traits[k]=v; }
+  if(ac){ ADV.acc=ac.dataset.advacc; ADV.opTh=null; ADV.tgt=null; }
+  if(g) ADV.goal=g.dataset.goal;
+  if(r){ ADV.traits={}; ADV.tgt=null; ADV.opTh=null; }
+  advSave(); const y=scrollY; render(); scrollTo(0,y);
+});
+document.addEventListener("click",e=>{
+  const st=e.target.closest("[data-logstar]"); if(st){ const f=st.closest("form"); f.querySelectorAll("[data-logstar]").forEach(b=>b.setAttribute("aria-pressed",b===st)); f.dataset.stars=st.dataset.logstar; return; }
+  const del=e.target.closest("[data-logdel]"); if(del){ ADV.log=(ADV.log||[]).filter(q=>String(q.at)!==del.dataset.logdel); advSave(); rerAdv(); }
+});
+document.addEventListener("submit",e=>{
+  const f=e.target.closest("[data-advlog]"); if(!f) return; e.preventDefault();
+  if(f.dataset.stars==null){ toast("Pick how many stars you got."); return; }
+  const accs=list().filter(q=>!q.demo), a=accs.find(q=>q.id===ADV.acc)||accs[0]; if(!a) return;
+  const th=analyze(a).th, stars=+f.dataset.stars, pct=Math.max(0,Math.min(100,+(f.elements.pct.value||(stars===3?100:stars===2?75:stars===1?50:20))));
+  ADV.log=(ADV.log||[]).concat({plan:f.dataset.advlog,acc:a.id,myTh:th,opTh:ADV.opTh||th,traits:{...ADV.traits},stars,pct,at:Date.now()}).slice(-300);
+  advSave(); toast(`Saved: ${stars}★ ${pct}%. The advisor will use it.`); rerAdv();
+});
+document.addEventListener("change",e=>{ if(e.target.dataset.adv==="opth"){ ADV.opTh=+e.target.value; advSave(); const y=scrollY; render(); scrollTo(0,y); } });
 
 /* ---------- boot ---------- */
 render();
