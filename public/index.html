@@ -1048,6 +1048,21 @@ body.gated>*:not(#gateWrap):not(#ground):not(.grain):not(#toast){visibility:hidd
 .think ol{margin:8px 0 2px;padding-left:20px;display:grid;gap:7px;font-size:13px;color:var(--ink-2);line-height:1.45}
 .think b{color:var(--ink)}
 .simst{font-size:12px;color:var(--muted)}
+.aup{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px}
+.aupr{display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;box-shadow:inset 0 0 0 1px var(--line-2)}
+.aupr .ico{width:30px;height:30px}.aupr b{display:block;font-size:13px}.aupr span{font-size:12px;color:var(--muted)}
+.warin{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));align-items:end;margin-bottom:12px}
+.warin label{display:grid;gap:4px;font-size:12px;color:var(--muted)}
+.warin input,.warin select{padding:9px 12px;border-radius:10px;border:0;box-shadow:inset 0 0 0 1px var(--line-2);background:transparent;color:var(--ink);font:inherit;font-size:13px}
+.warac{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12px;color:var(--muted)}
+.warac label{display:inline-flex;grid-template-columns:none;cursor:pointer}
+.warmode{display:inline-flex;width:auto;margin:0 0 10px}
+.wart{display:grid;gap:2px;font-size:13px;overflow-x:auto}
+.wtr{display:grid;grid-template-columns:minmax(140px,1.2fr) minmax(90px,.8fr) minmax(110px,.8fr) minmax(170px,1.2fr) 80px;gap:12px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line-2);min-width:620px}
+.wth{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.wtt{font-weight:700}
+.wtr .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.wtr small{color:var(--muted)}
 .advls{display:block;font-size:10.5px;color:var(--muted);margin-top:2px}
 .tgts{display:flex;flex-wrap:wrap;gap:6px}
 .tgt{display:grid;justify-items:center;gap:1px;min-width:44px;padding:6px 6px 5px;border-radius:10px;border:0;background:var(--chip,rgba(127,127,127,.12));color:var(--ink);cursor:pointer;font:inherit;box-shadow:inset 0 0 0 1px var(--line-2)}
@@ -1986,6 +2001,7 @@ function accountView(a, idx){
       ${statsView(a)}
       <section class="blk rv" style="--i:2"><h2>Working <sup>${x.active.length}</sup></h2><div class="work">${work||`<div class="empty">Nothing running</div>`}</div></section>
       ${nextUpView(a,x)}
+      ${a.demo?"":`<section class="blk rv"><h2>Upgrade for your attacks</h2>${attackUpView(a,x.th)}</section>`}
       ${plannerView(a,x)}
       ${idleView(a,x)}
       ${remainingView(a,x)}
@@ -2412,7 +2428,9 @@ async function loadSupa(session){
   const { data, error } = await S.sb.from("villages").select("data");
   if(error){ useLocal("supa-error"); toast("Couldn't load your villages online. Showing this device's copy."); return; }
   S.source="supa";
-  S.accounts=(data||[]).map(r=>r.data).filter(Boolean);
+  const rows=(data||[]).map(r=>r.data).filter(Boolean);
+  const brain=rows.find(d=>d.kind==="advisor"); if(brain&&typeof mergeAdvisor==="function") mergeAdvisor(brain);
+  S.accounts=rows.filter(d=>d.kind!=="advisor");
   const loc=loadLocal().filter(l=>!S.accounts.some(a=>a.id===l.id));
   if(loc.length){ for(const a of loc){ S.accounts.push(a); try{ await supaSave(a); }catch(e){} } toast(`Moved ${loc.length} village${loc.length>1?"s":""} from this device to your account.`); }
   render();
@@ -3949,7 +3967,18 @@ const TRAITS=[
 ];
 let ADV={acc:null,opTh:null,traits:{},goal:"triple"};
 try{ ADV={...ADV,...JSON.parse(localStorage.getItem("cvt.adv")||"{}")}; }catch(e){}
-const advSave=()=>{ try{ localStorage.setItem("cvt.adv",JSON.stringify(ADV)); }catch(e){} };
+const advSave=()=>{ try{ localStorage.setItem("cvt.adv",JSON.stringify(ADV)); }catch(e){} advSync(); };
+/* your attack log and the building pictures the page learned are saved with your villages, so phone and PC share them */
+let ADV_T=null;
+function advSync(){ clearTimeout(ADV_T); ADV_T=setTimeout(async()=>{ if(S.source!=="supa"||!S.sb) return;
+  const row={id:"__advisor",data:{kind:"advisor",id:"__advisor",log:ADV.log||[],tpl:typeof TPL!=="undefined"?TPL:[],walls:typeof WALLC!=="undefined"?WALLC:[]},updated_at:new Date().toISOString()}; if(S.user&&S.user.id) row.user_id=S.user.id;
+  try{ await S.sb.from("villages").upsert(row,{onConflict:"user_id,id"}); }catch(e){} },1500); }
+function mergeAdvisor(d){
+  const seen=new Set((ADV.log||[]).map(e=>e.at)); ADV.log=(ADV.log||[]).concat((d.log||[]).filter(e=>!seen.has(e.at))).sort((p,q)=>p.at-q.at).slice(-300);
+  try{ localStorage.setItem("cvt.adv",JSON.stringify(ADV)); }catch(e){}
+  if(typeof TPL!=="undefined"){ const have=new Set(TPL.map(q=>q.d)); for(const q of d.tpl||[]) if(!have.has(q.d)) TPL.push(q); try{ localStorage.setItem("cvt.tpl",JSON.stringify(TPL)); }catch(e){} }
+  if(typeof WALLC!=="undefined"&&Array.isArray(d.walls)){ for(const c of d.walls) if(!WALLC.some(w=>w.join()===c.join())) WALLC.push(c); WALLC=WALLC.slice(-8); try{ localStorage.setItem("cvt.wallc",JSON.stringify(WALLC)); }catch(e){} }
+}
 
 function myLv(a,id){ const x=analyze(a); for(const sec of ["units","spells","heroes","pets","equipment","siege_machines"]){ const r=effRows(a,x,sec).find(q=>q.data===id); if(r) return r.lvl; } return 0; }
 /* your own results: every logged attack nudges that plan up or down for bases like it */
@@ -3990,6 +4019,7 @@ function renderArmy(A,a,th){
   const sup=A.troops.filter(([t])=>SUPER_OF[t]).map(([t])=>name(t));
   return `<div class="axt">
     <div class="axhd"><span>Troops</span><b class="mono">${A.used} / ${A.cap}</b></div>${tr}
+    ${(()=>{ const C=campInfo(a,th); return C.n?`<p class="axnote">Space from your ${C.n} Army Camp${C.n>1?"s":""} (level ${[...new Set(C.lv)].join("/")})${C.full>C.now?`. Upgrading them to level ${C.mx} adds ${C.full-C.now} space.`:"."}</p>`:""; })()}
     <div class="axhd"><span>Spells</span><b class="mono">${A.sp} / ${A.sc}</b></div>${sp}
     <div class="axhd"><span>Siege machine</span></div>${A.siege?(myLv(a,A.siege)?row(A.siege,1,"",""):`<div class="axr">${ico(A.siege)}<span class="axn"><b>1×</b> ${esc(name(A.siege))}</span><span class="axl mono">clan castle</span><span class="axh mono"></span></div>`):`<p class="note">No siege machine unlocked.</p>`}${A.siegeNote?`<p class="axnote">${esc(A.siegeNote)}.</p>`:""}
     <div class="axhd"><span>Clan Castle request</span><b class="mono">${A.ccu}/${A.ccCap.t} · ${A.ccsu}/${A.ccCap.s}</b></div>${cc}
@@ -4000,8 +4030,8 @@ function renderArmy(A,a,th){
 }
 /* screenshot reader, all on this device: you tap the key buildings, the page measures the picture
    (base size, how packed it is, where the core is) and turns that into the base details, a start side and spell spots */
-const SHOT_T=[["th","Town Hall",1,"#f5c542",1.5],["ad","Air Defense",4,"#4fb3ff",1],["eagle","Eagle / Inferno Artillery",1,"#ff6b4a",2],["inf","Inferno Tower",3,"#ff9f1a",2],["scat","Scattershot",2,"#c38bff",1.5],["sweep","Air Sweeper",2,"#9ef0ff",.5],["cc","Clan Castle",1,"#7dff9a",1]];
-const MK={th:"TH",ad:"AD",eagle:"EA",inf:"IN",scat:"SC",sweep:"SW",cc:"CC"};
+const SHOT_T=[["th","Town Hall",1,"#f5c542",1.5],["ad","Air Defense",4,"#4fb3ff",1],["eagle","Eagle / Inferno Artillery",1,"#ff6b4a",2],["inf","Inferno Tower",3,"#ff9f1a",2],["scat","Scattershot",2,"#c38bff",1.5],["sweep","Air Sweeper",2,"#9ef0ff",.5],["cc","Clan Castle",1,"#7dff9a",1],["wall","Wall (tap 1–2 pieces)",2,"#e8e8e8",0]];
+const MK={th:"TH",ad:"AD",eagle:"EA",inf:"IN",scat:"SC",sweep:"SW",cc:"CC",wall:"W"};
 const SHT=Object.fromEntries(SHOT_T.map(([k,l,n,c,w])=>[k,{l,n,c,w}]));
 let SHOT=null; // {img,url,w,h,marks:[{t,x,y}],mode,an}
 async function loadShot(file){
@@ -4014,11 +4044,11 @@ async function loadShot(file){
 function pixels(img){
   const W=320, H=Math.round(W*img.naturalHeight/img.naturalWidth), c=document.createElement("canvas"); c.width=W; c.height=H;
   const g=c.getContext("2d",{willReadFrequently:true}); g.drawImage(img,0,0,W,H); const d=g.getImageData(0,0,W,H).data;
-  const hue=new Uint8Array(W*H), sat=new Float32Array(W*H), val=new Float32Array(W*H);
-  for(let i=0;i<W*H;i++){ const r=d[i*4]/255,gg=d[i*4+1]/255,b=d[i*4+2]/255, mx=Math.max(r,gg,b), mn=Math.min(r,gg,b), dl=mx-mn;
+  const hue=new Uint8Array(W*H), sat=new Float32Array(W*H), val=new Float32Array(W*H), rgb=new Uint8Array(W*H*3);
+  for(let i=0;i<W*H;i++){ rgb[i*3]=d[i*4]; rgb[i*3+1]=d[i*4+1]; rgb[i*3+2]=d[i*4+2]; const r=d[i*4]/255,gg=d[i*4+1]/255,b=d[i*4+2]/255, mx=Math.max(r,gg,b), mn=Math.min(r,gg,b), dl=mx-mn;
     let h=0; if(dl){ h=mx===r?((gg-b)/dl)%6:mx===gg?(b-r)/dl+2:(r-gg)/dl+4; h*=60; if(h<0) h+=360; }
     hue[i]=Math.floor(h/10)%36; sat[i]=mx?dl/mx:0; val[i]=mx; }
-  return {W,H,hue,sat,val};
+  return {W,H,hue,sat,val,rgb};
 }
 // The map is a diamond of grass. Find the grass colour around the tapped buildings, then the grass region
 // joined to the middle of the base, and take its left/right/top/bottom corners.
@@ -4049,13 +4079,13 @@ function findMap(P,tx,ty,rad){
    (normalised cross-correlation: plain maths, no AI). More bases tapped = better matches. */
 const TPL_N=16, TPL_PER=8;
 let TPL=(()=>{ try{ return JSON.parse(localStorage.getItem("cvt.tpl")||"[]"); }catch(e){ return []; } })();
-const tplSave=()=>{ try{ localStorage.setItem("cvt.tpl",JSON.stringify(TPL)); }catch(e){} };
+const tplSave=()=>{ try{ localStorage.setItem("cvt.tpl",JSON.stringify(TPL)); }catch(e){} advSync(); };
 const mapScale=()=>{ const D=SHOT&&((SHOT.an&&SHOT.an.ok&&SHOT.an.D)||(SHOT.D0&&SHOT.D0.ok&&SHOT.D0)); return D?2*D.hx*(SHOT.w/SHOT.px.W):null; };
 function clip(cx,cy,side){ const c=document.createElement("canvas"); c.width=c.height=TPL_N; const g=c.getContext("2d",{willReadFrequently:true});
   g.drawImage(SHOT.img,cx-side/2,cy-side/2,side,side,0,0,TPL_N,TPL_N); const d=g.getImageData(0,0,TPL_N,TPL_N).data, out=new Array(TPL_N*TPL_N*3);
   for(let i=0,j=0;i<d.length;i+=4){ out[j++]=d[i]; out[j++]=d[i+1]; out[j++]=d[i+2]; } return out; }
 function learnTpl(m){
-  const W=mapScale(); if(!W) return; const side=W*.065;
+  if(m.t==="wall") return; const W=mapScale(); if(!W) return; const side=W*.065;
   const px=clip(m.x*SHOT.w,m.y*SHOT.h,side), mean=px.reduce((a,b)=>a+b,0)/px.length, sd=Math.sqrt(px.reduce((a,b)=>a+(b-mean)**2,0)/px.length);
   if(sd<8) return; // flat patch: nothing to learn
   TPL.push({t:m.t,d:btoa(String.fromCharCode(...px))});
@@ -4093,6 +4123,37 @@ async function autoFind(){
   for(const h of keep) SHOT.marks.push({t:h.t,x:(x0+(h.x+TPL_N/2)/sc)/SHOT.w,y:(y0+(h.y+TPL_N/2)/sc)/SHOT.h,auto:true});
   SHOT.finding=false; SHOT.found=keep.length; shotUpdate(); rerAdv();
 }
+/* walls: tap a wall piece once; the page takes its colour, finds every pixel of that colour inside the base,
+   and counts how many wall layers stand between each edge and the core. Colours are remembered for next time. */
+let WALLC=(()=>{ try{ return JSON.parse(localStorage.getItem("cvt.wallc")||"[]"); }catch(e){ return []; } })();
+// walls are thin, so they're measured on a sharper copy of the picture (twice the working size)
+function sharp(){ if(SHOT.px2) return SHOT.px2; const W=Math.min(SHOT.w,640), H=Math.round(W*SHOT.h/SHOT.w), c=document.createElement("canvas"); c.width=W; c.height=H;
+  const g=c.getContext("2d",{willReadFrequently:true}); g.drawImage(SHOT.img,0,0,W,H); const d=g.getImageData(0,0,W,H).data, rgb=new Uint8Array(W*H*3);
+  for(let i=0,j=0;i<d.length;i+=4){ rgb[j++]=d[i]; rgb[j++]=d[i+1]; rgb[j++]=d[i+2]; } return SHOT.px2={W,H,rgb}; }
+function wallColour(P,m){ const Q=sharp(), cx=Math.round(m.x*Q.W), cy=Math.round(m.y*Q.H), px=[];
+  for(let dy=-1;dy<=1;dy++) for(let dx=-1;dx<=1;dx++){ const i=(cy+dy)*Q.W+cx+dx; if(i<0||i>=Q.W*Q.H) continue; px.push([Q.rgb[i*3],Q.rgb[i*3+1],Q.rgb[i*3+2]]); }
+  const med=k=>px.map(p=>p[k]).sort((a,b)=>a-b)[px.length>>1]; return [med(0),med(1),med(2)]; }
+function wallMap(P,D,S,cols){
+  const Q=sharp(), f=Q.W/P.W, C=new Uint8Array(Q.W*Q.H); let area=0;
+  for(let y=0;y<Q.H;y++) for(let x=0;x<Q.W;x++){ const u=(x/f-D.mx)/D.hx, v=(y/f-D.my)/D.hy; if(Math.abs(u)+Math.abs(v)>S*.97) continue; area++; const i=y*Q.W+x;
+    if(D.isG&&D.isG[Math.min(P.H-1,Math.floor(y/f))*P.W+Math.min(P.W-1,Math.floor(x/f))]){ const r=Q.rgb[i*3],g=Q.rgb[i*3+1],b=Q.rgb[i*3+2]; if(Math.abs(r-g)<40&&g>b) continue; }   // grass is never wall
+    for(const c of cols){ const d=Math.abs(Q.rgb[i*3]-c[0])+Math.abs(Q.rgb[i*3+1]-c[1])+Math.abs(Q.rgb[i*3+2]-c[2]); if(d<48){ C[i]=1; break; } } }
+  // walls run in long straight lines along the two diagonal directions: keep colour matches that form such lines
+  const M2=new Uint8Array(Q.W*Q.H), slopes=[.4,.48,.56,.64,.72,.8,.9];
+  const run=(x,y,sx,sl)=>{ let len=0, miss=0; for(let k=1;k<70;k++){ const X=x+k*sx, Y=Math.round(y+k*sl*sx); if(X<1||Y<1||X>=Q.W-1||Y>=Q.H-1) break; const i=Y*Q.W+X; if(C[i]||C[i-Q.W]||C[i+Q.W]){ len++; miss=0; } else if(++miss>3) break; } return len; };
+  let n=0; for(let y=1;y<Q.H-1;y++) for(let x=1;x<Q.W-1;x++){ const i=y*Q.W+x; if(!C[i]) continue;
+    for(const sl of slopes){ if(run(x,y,1,sl)+run(x,y,-1,sl)>=16||run(x,y,1,-sl)+run(x,y,-1,-sl)>=16){ M2[i]=1; n++; break; } } }
+  // back to the working size
+  const M=new Uint8Array(P.W*P.H); for(let y=0;y<Q.H;y++) for(let x=0;x<Q.W;x++) if(M2[y*Q.W+x]){ const X=Math.min(P.W-1,Math.floor(x/f)), Y=Math.min(P.H-1,Math.floor(y/f)); M[Y*P.W+X]=1; }
+  return {M,share:area?n/area:0};
+}
+function wallLayers(P,D,S,M){
+  const out=[]; for(let k=0;k<16;k++){ const a=k/16*Math.PI*2, c=Math.cos(a), s=Math.sin(a), L=Math.abs(c)+Math.abs(s); let layers=0, inWall=false, gap=0;
+    for(let f=1;f>=.12;f-=.006){ const x=Math.round(D.mx+D.hx*S*f*c/L), y=Math.round(D.my+D.hy*S*f*s/L); if(x<0||y<0||x>=P.W||y>=P.H){ continue; }
+      const w=M[y*P.W+x]||M[y*P.W+x+1]||M[y*P.W+x-1]||M[(y+1)*P.W+x]||M[(y-1)*P.W+x]||0; if(w&&!inWall&&gap>=2){ layers++; inWall=true; gap=0; } else if(!w){ if(inWall) inWall=false; gap++; } }
+    out.push(layers); }
+  out.sort((p,q)=>p-q); return Math.round((out[8]+out[11]+out[12])/3);   // typical of the better-walled directions
+}
 function shotAnalyze(){
   if(!SHOT) return null; const M=SHOT.marks;
   if(!M.some(m=>m.t==="th")||M.length<3) return null;
@@ -4117,7 +4178,16 @@ function shotAnalyze(){
   const e=of("eagle")[0]; if(e){ if(e.r<.42) traits.eagle="core"; else if(e.r>.55) traits.eagle="side"; }
   const th=of("th")[0]; if(th) notes.push(`Town Hall is ${th.r<.3?"in the middle":th.r<.75?"off-centre":"near an edge"}`);
   if(D.ok&&fill!=null){ traits.shape=fill>.62&&mid>.8?"compact":(mid<.65||fill<.45)?"spread":"boxed"; notes.push(`Base looks ${traits.shape==="compact"?"packed tight":traits.shape==="spread"?"spread out with gaps":"walled into many sections"} (picture estimate)`); }
-  return {D,S,P:P2,traits,notes,fill,ok:D.ok};
+  // walls
+  const tapped=of("wall").map(m=>wallColour(P,m)); let walls=null;
+  if(tapped.length){ for(const c of tapped) if(!WALLC.some(w=>Math.abs(w[0]-c[0])+Math.abs(w[1]-c[1])+Math.abs(w[2]-c[2])<24)) WALLC.push(c); WALLC=WALLC.slice(-8); try{ localStorage.setItem("cvt.wallc",JSON.stringify(WALLC)); }catch(e){} if(typeof advSync==="function") advSync(); }
+  const cols=tapped.length?tapped:WALLC;
+  if(cols.length&&D.ok){ const wm=wallMap(P,D,S,cols);
+    if(wm.share>.002&&wm.share<.25){ const ly=wallLayers(P,D,S,wm.M); walls={M:wm.M,layers:ly,share:wm.share,learned:!tapped.length};
+      notes.push(`About ${ly} wall layer${ly===1?"":"s"} between the edge and the core${tapped.length?"":" (walls found with colours you tapped before)"}`);
+      if(ly>=4) traits.shape="boxed"; else if(traits.shape==="boxed"&&ly<=2) traits.shape=fill>.6?"compact":"spread"; }
+    else if(tapped.length) notes.push(wm.share>=.25?"That wall colour matches too much of the picture; tap the light top edge of a wall":"Couldn't trace walls from that spot; tap right on the top edge of a wall"); }
+  return {D,S,P:P2,traits,notes,fill,ok:D.ok,walls};
 }
 // where to start: the 4 corners and 4 sides of the diamond. Ground armies take the side with the least firepower,
 // air armies the one where Air Defenses are reachable first.
@@ -4143,6 +4213,9 @@ function drawShot(){
   if(SHOT.view==="sim"&&typeof drawSim==="function"&&SIM){ drawSim(); return; }
   const g=drawShotBase(cv);
   const an=SHOT.an, u=SHOT.w/600, plan=an&&SHOT.view==="plan";
+  if(an&&an.walls&&SHOT.mode==="wall"&&!plan){ if(!SHOT.wallImg||SHOT.wallImg.src!==an.walls){ const P=SHOT.px, c=document.createElement("canvas"); c.width=P.W; c.height=P.H; const gg=c.getContext("2d"), im=gg.createImageData(P.W,P.H);
+      for(let i=0;i<P.W*P.H;i++) if(an.walls.M[i]){ im.data[i*4]=0; im.data[i*4+1]=255; im.data[i*4+2]=200; im.data[i*4+3]=170; } gg.putImageData(im,0,0); SHOT.wallImg={c,src:an.walls}; }
+    g.drawImage(SHOT.wallImg.c,0,0,SHOT.w,SHOT.h); }
   if(an&&!plan){ g.save(); g.setLineDash([6*u,6*u]); g.lineWidth=1.2*u; g.strokeStyle="rgba(255,255,255,.35)"; g.beginPath(); [0,Math.PI/2,Math.PI,-Math.PI/2].forEach((a,i)=>{ const [x,y]=dpt(an,a,1); i?g.lineTo(x,y):g.moveTo(x,y); }); g.closePath(); g.stroke(); g.restore(); }
   if(plan){
     const dia=f=>{ g.beginPath(); [0,Math.PI/2,Math.PI,-Math.PI/2].forEach((a,i)=>{ const [x,y]=dpt(an,a,f); i?g.lineTo(x,y):g.moveTo(x,y); }); g.closePath(); g.stroke(); };
@@ -4214,7 +4287,7 @@ function shotBox(){
     <div class="shotbar">${SHOT_T.map(([k,l,n,c])=>`<button type="button" class="shotk" data-shotk="${k}" aria-pressed="${SHOT.mode===k}" style="--c:${c}"><i></i>${l}<small class="mono">${cnt(k)}/${n}</small></button>`).join("")}
       <span class="shotsp"></span>${SHOT.view==="sim"?`<span id="simstate" class="mono simst"></span><button type="button" class="glink" data-sim="pause">Pause</button><button type="button" class="glink" data-sim="speed">1×</button><button type="button" class="shotview on" data-sim="stop">Stop</button>`:""}${an&&SHOT.view!=="sim"?`<button type="button" class="shotview ${SHOT.view==="plan"?"on":""}" data-shotx="view">${SHOT.view==="plan"?"Back to tapping":"Show the plan"}</button>`:""}<button type="button" class="glink" data-shotx="zoom">${SHOT.zoom?"Zoom out":"Zoom in"}</button><button type="button" class="glink" data-shotx="undo">Undo</button><button type="button" class="glink" data-shotx="close">Remove picture</button></div>
     ${SHOT.finding?`<p class="note shothint">Looking for buildings from your saved examples…</p>`:SHOT.found!=null?`<p class="note shothint">${SHOT.found?`Found ${SHOT.found} building${SHOT.found>1?"s":""} from your saved examples (dashed markers). Tap any wrong one with its kind selected to remove it.`:"No buildings matched your saved examples on this picture. Tap them in; the page learns from every tap."}</p>`:""}
-    <p class="note shothint">${SHOT.mode==="sweep"?"Tap an Air Sweeper to place it. Tap it again to turn the way it faces (the shaded cone).":an?(SHOT.view==="plan"?"The plan for the best army below. Tap the picture or a building type to go back to tapping.":"Tap more buildings to sharpen it, then press Show the plan. Tapping a marker of the selected kind removes it."):`Tap the <b>${esc(SHT[SHOT.mode].l)}</b> on the picture. Town Hall plus two more is enough to start.`}<span class="shotmob"> Swipe the picture sideways to see all of it.</span>${an&&!an.ok?" This scenery's ground colour is hard to read, so base shape is left for you to pick.":""}</p>
+    <p class="note shothint">${SHOT.mode==="wall"?"Tap one or two wall pieces (different wall levels have different colours). Found walls show in green; the page remembers the colours for your next screenshots.":SHOT.mode==="sweep"?"Tap an Air Sweeper to place it. Tap it again to turn the way it faces (the shaded cone).":an?(SHOT.view==="plan"?"The plan for the best army below. Tap the picture or a building type to go back to tapping.":"Tap more buildings to sharpen it, then press Show the plan. Tapping a marker of the selected kind removes it."):`Tap the <b>${esc(SHT[SHOT.mode].l)}</b> on the picture. Town Hall plus two more is enough to start.`}<span class="shotmob"> Swipe the picture sideways to see all of it.</span>${an&&!an.ok?" This scenery's ground colour is hard to read, so base shape is left for you to pick.":""}</p>
     <div class="shotwrap"><canvas id="shotcv" data-shotcv></canvas></div>
     ${an?`<ul class="advnotes">${an.notes.map(n=>`<li>${esc(n)}</li>`).join("")}</ul>
     ${an.steps?`<div class="shotsteps"><b>The attack, on this base</b><ol>${an.steps.map(t=>`<li>${esc(t)}</li>`).join("")}</ol><p class="note">Green arrow: start. Gold line: hero path. Yellow dots: funnel. Rings: spells.</p></div>`:""}`:""}
@@ -4292,6 +4365,8 @@ function advisorView(accs){
     </div>
     ${answered<2?`<p class="note advhint">Tap at least two things about the base to get advice that fits it. Until then, these are the best armies for your account in general.</p>`:""}
     <div class="advres one">${PC}</div>
+    <div class="sub">Upgrade next for your attacks <small class="mono">${esc(a.nick)}</small></div>${attackUpView(a,th)}
+    ${warView(accs)}
     <div class="sub">Known strategies that fit your account</div>
     <div class="advres">${top.map(card).join("")}</div>
     ${alt.length?`<div class="sub">Also possible</div><div class="advalt">${alt.map(r=>`<span class="advmini" data-tip="${esc(r.p.army)}"><b>${esc(r.p.name)}</b><small>${r.p.style}${r.warn.length?" · "+esc(r.warn[0]):""}</small></span>`).join("")}</div>`:""}
@@ -4319,7 +4394,8 @@ document.addEventListener("submit",e=>{
   const accs=list().filter(q=>!q.demo), a=accs.find(q=>q.id===ADV.acc)||accs[0]; if(!a) return;
   const th=analyze(a).th, stars=+f.dataset.stars, pct=Math.max(0,Math.min(100,+(f.elements.pct.value||(stars===3?100:stars===2?75:stars===1?50:20))));
   const sty=f.dataset.style||(PLAYBOOK.find(q=>q.id===f.dataset.advlog)||{}).style;
-  ADV.log=(ADV.log||[]).concat({plan:f.dataset.advlog,style:sty,acc:a.id,myTh:th,opTh:ADV.opTh||th,traits:{...ADV.traits},stars,pct,at:Date.now()}).slice(-300);
+  const lp=window.__lastPlan, army=(/^custom:/.test(f.dataset.advlog)&&lp&&lp.plan.id===f.dataset.advlog)?lp.plan.A:buildArmy(f.dataset.advlog,a,th);
+  ADV.log=(ADV.log||[]).concat({army:army?army.troops.concat(army.spells):[],heroes:army?army.gear.filter(g=>g[2]).map(g=>[g[0],g[1].pick]):[],plan:f.dataset.advlog,style:sty,acc:a.id,myTh:th,opTh:ADV.opTh||th,traits:{...ADV.traits},stars,pct,at:Date.now()}).slice(-300);
   advSave(); toast(`Saved: ${stars}★ ${pct}%. The advisor will use it.`); rerAdv();
 });
 document.addEventListener("change",e=>{ if(e.target.dataset.adv==="opth"){ ADV.opTh=+e.target.value; advSave(); const y=scrollY; render(); scrollTo(0,y); } });
@@ -4484,7 +4560,7 @@ const SIMK={defEvery:3,troopF:1.05,defF:1};
 function simSetup(plan,a,th){
   const an=SHOT.an, D=an.D, K=SHOT.w/SHOT.px.W, tile=(2*D.hx*K)/46, opF=.45+.55*Math.min(1,(ADV.opTh||th)/17), P=SHOT.px;
   const B=[];
-  for(const m of an.P){ const d=SDEF[m.t]; B.push({k:m.t,x:m.x*SHOT.w,y:m.y*SHOT.h,hp:d.hp*opF,max:d.hp*opF,...d,dps:d.dps*opF*SIMK.defF,frz:0}); }
+  for(const m of an.P){ const d=SDEF[m.t]; if(!d) continue; B.push({k:m.t,x:m.x*SHOT.w,y:m.y*SHOT.h,hp:d.hp*opF,max:d.hp*opF,...d,dps:d.dps*opF*SIMK.defF,frz:0}); }
   // other buildings: where the picture isn't grass inside the base, every ~3 tiles; some are generic defenses
   const step=Math.max(6,Math.round(3*tile/K)); let i=0;
   for(let y=0;y<P.H;y+=Math.max(2,Math.round(step*.6))) for(let x=0;x<P.W;x+=step){
@@ -4507,8 +4583,12 @@ function simSetup(plan,a,th){
   // spells: the planner's spots
   const spots=[]; shotPlan({style:plan.style},a,th,A); for(const s of an.spots||[]) spots.push({...s,used:false});
   const nsp=id=>(A.spells.find(([q])=>q===id)||[0,0])[1];
-  return {B,T,t:0,tile,spells:{rage:nsp(26000002),freeze:nsp(26000005),heal:nsp(26000001),zap:nsp(26000000)+nsp(26000010)},spots,fx:[],zones:[],boxed:ADV.traits.shape==="boxed",shots:[],start:S,ccOut:false};
+  // walls from the picture: each wall pixel has hit points; Wall Breakers blow holes, Jump lets troops over
+  let wall=null, whp=null; if(an.walls){ wall=an.walls.M; whp=new Float32Array(wall.length); for(let i=0;i<wall.length;i++) if(wall[i]) whp[i]=900*opF; }
+  return {B,T,t:0,tile,K,PW:P.W,PH:P.H,wall,whp,broken:[],spells:{rage:nsp(26000002),freeze:nsp(26000005),heal:nsp(26000001),zap:nsp(26000000)+nsp(26000010),jump:nsp(26000003)},spots,fx:[],zones:[],boxed:!an.walls&&ADV.traits.shape==="boxed",shots:[],start:S,ccOut:false};
 }
+const wallAt=(W,x,y)=>{ if(!W.wall) return -1; const X=Math.round(x/W.K), Y=Math.round(y/W.K); if(X<0||Y<0||X>=W.PW||Y>=W.PH) return -1; for(const [dx,dy] of [[0,0],[1,0],[0,1],[-1,0],[0,-1]]){ const i=(Y+dy)*W.PW+X+dx; if(W.wall[i]&&W.whp[i]>0) return i; } return -1; };
+const breakWall=(W,x,y,r)=>{ const X=Math.round(x/W.K), Y=Math.round(y/W.K), R=Math.max(1,Math.round(r/W.K)); for(let dy=-R;dy<=R;dy++) for(let dx=-R;dx<=R;dx++){ if(dx*dx+dy*dy>R*R) continue; const i=(Y+dy)*W.PW+X+dx; if(i>=0&&i<W.whp.length&&W.whp[i]>0){ W.whp[i]=0; W.broken.push(i); } } };
 function simStep(W,dt){
   W.t+=dt; const live=W.T.filter(q=>q.hp>0&&q.at<=W.t), bl=W.B.filter(b=>b.hp>0);
   // zap the nearest Air Defense at the start
@@ -4519,6 +4599,7 @@ function simStep(W,dt){
       s.used=true; if(kind==="rage") W.spells.rage--; else W.spells.freeze--; W.zones.push({x:s.x,y:s.y,r:s.r*1.6,c:kind==="rage"?"#d070ff":"#7fd8ff",kind,until:W.t+(kind==="rage"?8:5)}); } }
   // freeze any Inferno or Eagle the army is fighting, if Freezes are left
   if(W.spells.freeze>0) for(const b of bl){ if((b.k==="inf"||b.k==="eagle")&&!b.frz&&live.filter(q=>Math.hypot(q.x-b.x,q.y-b.y)<b.r*W.tile*.6).length>=3){ W.spells.freeze--; b.frz=W.t+5; W.zones.push({x:b.x,y:b.y,r:W.tile*3.5,c:"#7fd8ff",kind:"freeze",until:W.t+5}); break; } }
+  if(W.spells.jump>0&&W.wall){ const stuck=live.filter(q=>(q.blocked||0)>2); if(stuck.length>=4){ const cx=stuck.reduce((s,q)=>s+q.x,0)/stuck.length, cy=stuck.reduce((s,q)=>s+q.y,0)/stuck.length; W.spells.jump--; W.zones.push({x:cx,y:cy,r:W.tile*4.5,c:"#3ee08f",kind:"jump",until:W.t+20}); stuck.forEach(q=>q.blocked=0); } }
   const zones=W.zones.filter(z=>z.until>W.t);
   // heal when the main group is hurting
   if(W.spells.heal>0){ const hurt=live.filter(q=>(q.jump||q.def)&&q.hp<q.max*.6); if(hurt.length>=4){ const cx=hurt.reduce((s,q)=>s+q.x,0)/hurt.length, cy=hurt.reduce((s,q)=>s+q.y,0)/hurt.length; W.spells.heal--; W.zones.push({x:cx,y:cy,r:W.tile*5,c:"#ffe066",kind:"heal",until:W.t+6}); } }
@@ -4529,12 +4610,19 @@ function simStep(W,dt){
   const W0=W.T.filter(q=>q.wb&&q.hp>0).length;
   for(const q of live){
     if(q.heal){ const f=live.filter(o=>o!==q&&!o.heal).sort((p,o)=>Math.hypot(p.x-q.x,p.y-q.y)-Math.hypot(o.x-q.x,o.y-q.y))[0]; if(f){ const d=Math.hypot(f.x-q.x,f.y-q.y); if(d>q.r){ q.x+=(f.x-q.x)/d*q.sp*dt; q.y+=(f.y-q.y)/d*q.sp*dt; } for(const o of live) if(!o.air&&Math.hypot(o.x-f.x,o.y-f.y)<2*W.tile) o.hp=Math.min(o.max,o.hp+60*dt); } continue; }
-    if(q.wb){ const t=bl.sort((p,o)=>Math.hypot(p.x-q.x,p.y-q.y)-Math.hypot(o.x-q.x,o.y-q.y))[0]; if(t){ const d=Math.hypot(t.x-q.x,t.y-q.y); if(d<W.tile){ q.hp=0; } else { q.x+=(t.x-q.x)/d*q.sp*dt; q.y+=(t.y-q.y)/d*q.sp*dt; } } continue; }
+    if(q.wb){ const t=bl.sort((p,o)=>Math.hypot(p.x-q.x,p.y-q.y)-Math.hypot(o.x-q.x,o.y-q.y))[0]; if(t){ const d=Math.hypot(t.x-q.x,t.y-q.y);
+        if(W.wall&&wallAt(W,q.x+(t.x-q.x)/d*q.sp*dt*2,q.y+(t.y-q.y)/d*q.sp*dt*2)>=0){ breakWall(W,q.x,q.y,W.tile*1.6); q.hp=0; W.zones.push({x:q.x,y:q.y,r:W.tile*1.6,c:"#ffffff",until:W.t+.4}); }
+        else if(d<W.tile){ q.hp=0; } else { q.x+=(t.x-q.x)/d*q.sp*dt; q.y+=(t.y-q.y)/d*q.sp*dt; } } continue; }
     if(!q.tgt||q.tgt.hp<=0){ const pool=bl.filter(b=>b.hp>0&&b.k!=="ccdef"&&(q.siege?b.k==="th"||b.k==="eagle":q.def?b.dps>0||b.k==="th"||b.k==="ad":true)); const list=pool.length?pool:bl.filter(b=>b.hp>0);
       q.tgt=list.sort((p,o)=>Math.hypot(p.x-q.x,p.y-q.y)-Math.hypot(o.x-q.x,o.y-q.y))[0]||null; }
     const t=q.tgt; if(!t) continue; const d=Math.hypot(t.x-q.x,t.y-q.y);
     const rage=zones.some(z=>z.kind==="rage"&&Math.hypot(q.x-z.x,q.y-z.y)<z.r)?1.5:1;
-    if(d>q.r){ let v=q.sp*(rage>1?1.3:1); if(!q.air&&!q.jump&&W.boxed&&W.t>10&&!W0) v*=.6; q.x+=(t.x-q.x)/d*v*dt; q.y+=(t.y-q.y)/d*v*dt; }
+    if(d>q.r){ let v=q.sp*(rage>1?1.3:1); if(!q.air&&!q.jump&&W.boxed&&W.t>10&&!W0) v*=.6;
+      const nx=q.x+(t.x-q.x)/d*v*dt, ny=q.y+(t.y-q.y)/d*v*dt;
+      const jumped=zones.some(z=>z.kind==="jump"&&Math.hypot(q.x-z.x,q.y-z.y)<z.r);
+      const wi=(!q.air&&!q.jump&&!jumped&&!q.siege)?wallAt(W,nx,ny):-1;
+      if(wi>=0){ W.whp[wi]-=q.dps*rage*dt*(q.hero?1:.8); q.blocked=(q.blocked||0)+dt; if(W.whp[wi]<=0){ breakWall(W,nx,ny,W.tile*.4); } }
+      else { q.x=nx; q.y=ny; q.blocked=0; } }
     else { t.hp-=q.dps*rage*dt; if(Math.random()<.08) W.shots.push({x1:q.x,y1:q.y,x2:t.x,y2:t.y,c:q.air?"#9ef0ff":"#ffd27a",until:W.t+.15}); }
   }
   // defenses
@@ -4578,6 +4666,7 @@ function drawSim(){
     const c=SHT[b.k]?SHT[b.k].c:"#fff"; g.save(); g.globalAlpha=b.hp>0?1:.35; g.fillStyle=b.hp>0?c:"#333"; g.strokeStyle="#000"; g.lineWidth=1.5*u; g.beginPath(); g.arc(b.x,b.y,6*u,0,Math.PI*2); g.fill(); g.stroke();
     if(b.hp>0&&b.hp<b.max){ g.fillStyle="#000"; g.fillRect(b.x-8*u,b.y-11*u,16*u,2.5*u); g.fillStyle="#3ee08f"; g.fillRect(b.x-8*u,b.y-11*u,16*u*b.hp/b.max,2.5*u); }
     if(b.frz>W.t){ g.strokeStyle="#7fd8ff"; g.lineWidth=2.5*u; g.beginPath(); g.arc(b.x,b.y,9*u,0,Math.PI*2); g.stroke(); } g.restore(); }
+  if(W.broken.length){ g.save(); g.fillStyle="rgba(20,14,8,.75)"; for(const i of W.broken){ const x=(i%W.PW)*W.K, y=Math.floor(i/W.PW)*W.K; g.fillRect(x-W.K/2,y-W.K/2,W.K,W.K); } g.restore(); }
   for(const s of W.shots){ g.save(); g.strokeStyle=s.c; g.globalAlpha=.8; g.lineWidth=1.2*u; g.beginPath(); g.moveTo(s.x1,s.y1); g.lineTo(s.x2,s.y2); g.stroke(); g.restore(); }
   for(const q of W.T){ if(q.at>W.t||q.hp<=0) continue; g.save(); const r=q.hero?5*u:q.siege?4.5*u:Math.max(2.2*u,Math.min(4.5*u,Math.sqrt(HS[q.u]||1)*1.3*u));
     g.fillStyle=q.hero?"#f5c542":q.heal?"#9dff9d":q.air?"#9ef0ff":"#ffffff"; g.strokeStyle="#000"; g.lineWidth=1*u; g.beginPath(); g.arc(q.x,q.y,r,0,Math.PI*2); g.fill(); g.stroke(); g.restore(); }
@@ -4627,6 +4716,78 @@ function plannerCardRaw(a,th){
       <input type="number" min="0" max="100" inputmode="numeric" placeholder="%" aria-label="Destruction %" name="pct"><button class="ghost" type="submit">Save</button></form>
   </article>`;
 }
+
+/* ---------------- 5 · upgrades that matter for how YOU attack ---------------- */
+function campInfo(a,th){ const x=analyze(a), rows=effRows(a,x,"buildings").filter(r=>r.data===1000000), n=rows.reduce((s,r)=>s+(r.cnt||1),0);
+  const mx=capAt(1000000,th)||0, now=rows.reduce((s,r)=>s+campHS(r.lvl)*(r.cnt||1),0), full=n*campHS(mx);
+  return {n,now,full,mx,lv:rows.map(r=>r.lvl)}; }
+function attackUpgrades(a,th){
+  const out=[], mine=(ADV.log||[]).filter(e=>e.acc===a.id&&Array.isArray(e.army)).slice(-20);
+  const use=new Map(), heroUse=new Map(), gearUse=new Map(); let N=0;
+  const addArmy=(army,heroes,w)=>{ N+=w; const tot=army.filter(([u])=>HS[u]).reduce((s,[u,n])=>s+n*HS[u],0)||1;
+    for(const [u,n] of army){ const share=HS[u]?n*HS[u]/tot:SPH[u]?.15:0; use.set(u,(use.get(u)||0)+share*w); }
+    for(const [h,pick] of heroes||[]){ heroUse.set(h,(heroUse.get(h)||0)+w); for(const e of pick||[]) gearUse.set(e,(gearUse.get(e)||0)+w); } };
+  mine.forEach((e,i)=>addArmy(e.army,e.heroes,1+i/20));
+  const P=planFor(a,th); if(P) addArmy(P.A.troops.concat(P.A.spells),P.A.gear.filter(g=>g[2]).map(g=>[g[0],g[1].pick]),mine.length?1:2);
+  const why=mine.length?`in ${mine.length} logged attack${mine.length>1?"s":""}`:"in the plan worked out for you";
+  for(const [u,w] of use){ const base=SUPER_OF[u]||u, l=myLv(a,base), c=capAt(base,th); if(!l||!c||l>=c) continue; const gap=1-l/c, sh=w/N;
+    out.push({id:base,prio:sh*gap*(SPH[u]?6:10),txt:`${name(base)} ${l} → ${c}`,why:`${Math.round(Math.min(1,sh)*100)}% of your army space ${why}`}); }
+  for(const [h,w] of heroUse){ const l=myLv(a,h), c=capAt(h,th); if(!l||!c||l>=c) continue; out.push({id:h,prio:(w/N)*(1-l/c)*8,txt:`${name(h)} ${l} → ${c}`,why:`brought ${why}`}); }
+  for(const [e,w] of gearUse){ const l=myLv(a,e), c=capAt(e,th); if(!l||!c||l>=c) continue; out.push({id:e,prio:(w/N)*(1-l/c)*4,txt:`${name(e)} ${l} → ${c}`,why:`equipped ${why}`}); }
+  const C=campInfo(a,th); if(C.full>C.now) out.push({id:1000000,prio:(C.full-C.now)/C.full*14,txt:`Army Camps → level ${C.mx}`,why:`+${C.full-C.now} troop space for every attack (${C.now} now, ${C.full} at max)`});
+  const cap=capacity(a,th), sc=spellCap(th); if(cap.spells<sc) out.push({id:1000020,prio:(sc-cap.spells)*1.2,txt:"Spell Factory",why:`+${sc-cap.spells} spell space (${cap.spells} now)`});
+  const cc=ccCap(th); if(cap.cc.t<cc.t) out.push({id:1000014,prio:(cc.t-cap.cc.t)/cc.t*5,txt:"Clan Castle",why:`+${cc.t-cap.cc.t} Clan Castle troop space`});
+  return out.sort((p,q)=>q.prio-p.prio).slice(0,7);
+}
+function attackUpView(a,th){
+  const L=attackUpgrades(a,th); if(!L.length) return `<p class="note">Everything your attacks use is maxed for TH${th}.</p>`;
+  return `<div class="aup">${L.map((r,i)=>`<div class="aupr">${ico(r.id)}<div><b>${i+1}. ${esc(r.txt)}</b><span>${esc(r.why)}</span></div></div>`).join("")}</div>`;
+}
+
+/* ---------------- 6 · war targets for all your accounts ---------------- */
+let WARIN=(()=>{ try{ return JSON.parse(localStorage.getItem("cvt.warin")||"{}"); }catch(e){ return {}; } })();
+function expStars(a,th,o){ const d=th-o.th, x=analyze(a), s=thProgress(a,x).pct;
+  const p3=Math.max(0,Math.min(.95,.18+.28*d+.5*(s-.6))), p2=Math.max(0,Math.min(.99,.75+.2*d+.35*(s-.6))), p1=Math.max(.3,Math.min(.995,.95+.1*d));
+  return [p1,p2,p3]; }
+function warPlan(accs){
+  // the enemy line-up: live from the Clash API if any of your accounts is in a war, otherwise typed in
+  let opp=null, src="";
+  for(const a of accs){ const t=API_ATK.get(a.id)||{}; const w=[t.cwl,t.war].find(w=>w&&w.opp&&w.opp.length); if(w){ opp=w.opp.map(o=>({...o})); src=`${t.cwl===w?"CWL":"War"} vs ${w.vs||""}`; break; } }
+  if(!opp&&WARIN.ths){ opp=WARIN.ths.split(/[\s,]+/).filter(Boolean).map((t,i)=>({n:i+1,th:+t,stars:(WARIN.st||"").split(/[\s,]+/)[i]|0,name:""})).filter(o=>o.th>=3&&o.th<=18); src="Typed in"; }
+  if(!opp||!opp.length) return {src:"",rows:[],opp:[]};
+  const att=[]; for(const a of accs){ const t=API_ATK.get(a.id)||{}, w=[t.cwl,t.war].find(w=>w&&w.opp&&w.opp.length); const left=w?Math.max(0,w.max-w.used):(WARIN.accs||[]).includes(a.id)?(+WARIN.per||2):0; for(let i=0;i<left;i++) att.push(a); }
+  const best=opp.map(o=>o.stars||0), rows=[];
+  while(att.length){ let pick=null;
+    for(let i=0;i<att.length;i++){ const a=att[i], th=analyze(a).th; for(let j=0;j<opp.length;j++){ if(rows.some(r=>r.a===a&&r.o===opp[j])) continue; const p=expStars(a,th,opp[j]), cur=best[j];
+      const gain=p.reduce((s,pk,k)=>s+(k+1>cur?pk:0),0)-(cur>0?0:0); const exp=p[0]+p[1]+p[2];
+      const sc=gain-(WARIN.mode==="stars"?0:.8*Math.max(0,th-opp[j].th))+.03*(opp[j].th-th)-.004*opp[j].n;
+      if(!pick||sc>pick.sc) pick={i,a,o:opp[j],j,gain,exp,p,sc}; } }
+    if(!pick||pick.gain<.05) break;
+    rows.push(pick); att.splice(pick.i,1); best[pick.j]=Math.max(best[pick.j],Math.round(pick.exp-.2)); }
+  return {src,rows,opp};
+}
+function warView(accs){
+  const real=accs.filter(a=>!a.demo); if(!real.length) return "";
+  const W=warPlan(real), live=W.src&&W.src!=="Typed in";
+  const form=`<form class="warin" data-warin>${live?"":`<label>Enemy Town Halls, in map order<input name="ths" value="${esc(WARIN.ths||"")}" placeholder="17 17 16 16 16 15 15 14…"></label>
+    <label>Stars already on each (optional)<input name="st" value="${esc(WARIN.st||"")}" placeholder="3 0 2 0 …"></label>
+    <div class="warac"><span>Your accounts in this war</span>${real.map(a=>`<label class="calacc ${(WARIN.accs||[]).includes(a.id)?"":"off"}" style="--c:${colorOf(a)}"><input type="checkbox" name="acc" value="${a.id}" ${(WARIN.accs||[]).includes(a.id)?"checked":""} hidden><i></i>${esc(a.nick)}<small class="mono">TH${analyze(a).th}</small></label>`).join("")}</div>
+    <label>Attacks each<select name="per">${[1,2].map(n=>`<option ${(+WARIN.per||2)===n?"selected":""}>${n}</option>`).join("")}</select></label>
+    <button class="ghost" type="submit">Plan targets</button>`}</form>`;
+  const tot=W.rows.reduce((s,r)=>s+r.gain,0);
+  const mode=`<div class="seg sm warmode" role="group" aria-label="Goal"><button type="button" data-warmode="level" aria-pressed="${WARIN.mode!=="stars"}">Hit your level</button><button type="button" data-warmode="stars" aria-pressed="${WARIN.mode==="stars"}">Most stars (dip if needed)</button></div>`;
+  return `<div class="sub">War targets <small class="mono">${W.src?esc(W.src):"no live war"}</small></div>${mode}
+  ${live?"":`<p class="note">${API_ON?"None of your accounts is in a war right now. ":""}Type the enemy line-up to plan targets for all your accounts. During a war with the Clash API connected, this fills in by itself.</p>${form}`}
+  ${W.rows.length?`<div class="wart"><div class="wtr wth"><span>Account</span><span>Hit</span><span>Their TH</span><span>Chance of 1★ · 2★ · 3★</span><span>New stars</span></div>
+    ${W.rows.map(r=>`<div class="wtr"><span><i class="dot" style="background:${colorOf(r.a)}"></i>${esc(r.a.nick)} <small class="mono">TH${analyze(r.a).th}</small></span><span class="mono">#${r.o.n}${r.o.name?` <small>${esc(r.o.name)}</small>`:""}</span><span class="mono">TH${r.o.th}${r.o.stars?` · ${"★".repeat(r.o.stars)} taken`:""}</span><span class="mono">${r.p.map(x=>Math.round(x*100)+"%").join(" · ")}</span><span class="mono">+${r.gain.toFixed(1)}</span></div>`).join("")}
+    <div class="wtr wtt"><span>Total</span><span></span><span></span><span></span><span class="mono">+${tot.toFixed(1)}★</span></div></div>
+    <p class="note">Each attack goes where it adds the most stars, using your Town Hall gap and how far each account is maxed. Tap a base in the line-up above to plan that attack in detail.</p>`:(W.src?`<p class="note">No attacks left to plan.</p>`:"")}`;
+}
+document.addEventListener("click",e=>{ const m=e.target.closest("[data-warmode]"); if(!m) return; WARIN.mode=m.dataset.warmode; try{ localStorage.setItem("cvt.warin",JSON.stringify(WARIN)); }catch(e){} rerAdv(); });
+document.addEventListener("click",e=>{ const l=e.target.closest(".warac label"); if(!l) return; const cb=l.querySelector("input"); setTimeout(()=>l.classList.toggle("off",!cb.checked),0); });
+document.addEventListener("submit",e=>{ const f=e.target.closest("[data-warin]"); if(!f) return; e.preventDefault();
+  WARIN={mode:WARIN.mode,ths:f.elements.ths.value,st:f.elements.st.value,per:f.elements.per.value,accs:[...f.querySelectorAll('input[name=acc]:checked')].map(i=>i.value)};
+  try{ localStorage.setItem("cvt.warin",JSON.stringify(WARIN)); }catch(e){} rerAdv(); });
 
 
 /* ---------- boot ---------- */
