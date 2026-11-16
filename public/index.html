@@ -1079,6 +1079,12 @@ body.gated>*:not(#gateWrap):not(#ground):not(.grain):not(#toast){visibility:hidd
 .ingl{display:flex;gap:8px;align-items:center}
 .ingl input{flex:1;min-width:0;padding:8px 10px;border-radius:10px;border:0;box-shadow:inset 0 0 0 1px var(--line-2);background:transparent;color:var(--ink);font:12px var(--mono)}
 #ingestBox details{font-size:13px}#ingestBox ol{margin:6px 0 4px;padding-left:20px;display:grid;gap:4px;color:var(--ink-2)}
+.srow.col{display:grid;grid-template-columns:1fr;gap:10px}
+.sumt{display:flex;flex-wrap:wrap;gap:10px;align-items:end}
+.sumt label{display:grid;gap:4px;font-size:12px;color:var(--muted)}
+.sumt input{padding:8px 10px;border-radius:10px;border:0;box-shadow:inset 0 0 0 1px var(--line-2);background:transparent;color:var(--ink);font:inherit;font-size:13px;color-scheme:dark}
+:root[data-eff="light"] .sumt input{color-scheme:light}
+.inst{margin:0;padding-left:20px;display:grid;gap:4px;font-size:13px;color:var(--ink-2)}
 .advls{display:block;font-size:10.5px;color:var(--muted);margin-top:2px}
 .tgts{display:flex;flex-wrap:wrap;gap:6px}
 .tgt{display:grid;justify-items:center;gap:1px;min-width:44px;padding:6px 6px 5px;border-radius:10px;border:0;background:var(--chip,rgba(127,127,127,.12));color:var(--ink);cursor:pointer;font:inherit;box-shadow:inset 0 0 0 1px var(--line-2)}
@@ -2421,7 +2427,7 @@ async function supaSave(acc){
   if(S.user&&S.user.id) row.user_id=S.user.id;
   const { error } = await S.sb.from("villages").upsert(row,{ onConflict:"user_id,id" });
   if(error) throw error;
-  syncReminders(acc).catch(()=>{});
+  syncReminders(acc).catch(()=>{}); syncSummariesSoon();
 }
 async function supaDelete(id){
   await S.sb.from("villages").delete().eq("id", id);
@@ -2450,7 +2456,7 @@ async function loadSupa(session){
   S.accounts=rows.filter(d=>d.kind!=="advisor");
   const loc=loadLocal().filter(l=>!S.accounts.some(a=>a.id===l.id));
   if(loc.length){ for(const a of loc){ S.accounts.push(a); try{ await supaSave(a); }catch(e){} } toast(`Moved ${loc.length} village${loc.length>1?"s":""} from this device to your account.`); }
-  render(); setTimeout(inboxPull,300);
+  render(); setTimeout(inboxPull,300); syncSummariesSoon();
 }
 
 /* =====================================================================
@@ -2689,6 +2695,10 @@ function openSettings(){
       <form class="srow" data-form="setpw"><div><b>Password</b><span>Set or change it, so you can sign in without opening your email.</span></div><input id="set-pass" type="password" minlength="8" autocomplete="new-password" placeholder="New password"><button class="paste sm" type="submit">Save</button></form>`
       :`<form class="srow" data-form="signin"><div><b>Sync across devices</b><span>We'll email you a sign-in link. No password.</span></div><input id="si-email" type="email" required placeholder="you@example.com" autocomplete="email"><button class="paste sm" type="submit">Send link</button></form>`):""}
     ${pushOk?`<div class="srow"><div><b>Push reminders</b><span>1 minute before each finish, even with the app closed${/iPhone|iPad/.test(navigator.userAgent)?". On iPhone, add the app to your Home Screen first":""}.</span></div><button class="ghost" type="button" data-set="push">${Notification.permission==="granted"?"Re-enable":"Turn on"}</button></div>`:""}
+    ${installRow()}
+    ${signed&&pushOk?`<div class="srow col"><div><b>Daily summaries</b><span>A push at each time below: free builders, idle labs, war attacks left and what finishes next, across all your accounts.</span></div>
+      <div class="sumt">${SUM.times.map((t,i)=>`<label>${["Morning","Afternoon","Evening"][i]}<input type="time" value="${esc(t)}" data-sumt="${i}"></label>`).join("")}<button class="ghost" type="button" data-set="sum" aria-pressed="${SUM.on}">${SUM.on?"On":"Off"}</button></div></div>`:""}
+    ${signed&&!pushOk&&isIOS()&&!isStandalone()?`<div class="srow"><div><b>Push reminders and daily summaries</b><span>On iPhone these work once the site is installed (see above).</span></div></div>`:""}
     ${pushOk&&signed?`<div class="srow"><div><b>Test notifications</b><span>Checks every step on this device and on the server, then sends you a test push.</span></div><button class="ghost" type="button" data-set="pushtest">Run test</button></div><div id="pushTest" class="ptest" hidden></div>`:""}
     ${signed?`<div class="srow"><div><b>Auto-upload from your phone</b><span>Copy the export in the game and leave it: your phone sends it here by itself. Works even when this site is closed.</span></div><button class="ghost" type="button" data-set="ingest">Set up</button></div><div id="ingestBox" class="ptest" hidden></div>`:""}
     <div class="srow"><div><b>Auto-import</b><span>When you come back to this tab, pick up a village export you just copied in the game. No pasting.${"clipboard" in navigator&&navigator.clipboard.readText?"":" This browser can't read the clipboard by itself."}</span></div><button class="ghost" type="button" data-set="autoimp" aria-pressed="${autoImpOn()}">${autoImpOn()?"On":"Off"}</button></div>
@@ -2700,6 +2710,54 @@ function openSettings(){
   const o=$("#setOvl"), was=o.classList.contains("open"), y=o.scrollTop; o.classList.add("open"); document.body.classList.add("ovl-lock"); if(was) o.scrollTop=y;
 }
 function closeSettings(){ $("#setOvl").classList.remove("open"); document.body.classList.remove("ovl-lock"); }
+/* install as an app: the browser's own prompt where there is one (Android, desktop Chrome/Edge), steps for iPhone */
+let INSTALL_EVT=null;
+addEventListener("beforeinstallprompt",e=>{ e.preventDefault(); INSTALL_EVT=e; });
+addEventListener("appinstalled",()=>{ INSTALL_EVT=null; toast("Installed. Open Village Tracker from your home screen."); });
+const isStandalone=()=>matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+const isIOS=()=>/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+function installRow(){
+  if(!STANDALONE) return "";
+  if(isStandalone()) return `<div class="srow"><div><b>App</b><span>Installed. You're using it as an app ✓</span></div></div>`;
+  if(INSTALL_EVT) return `<div class="srow"><div><b>Install as an app</b><span>Its own icon on your home screen, opens full-screen, works offline.</span></div><button class="ghost" type="button" data-set="install">Install</button></div>`;
+  if(isIOS()) return `<div class="srow col"><div><b>Install on iPhone</b><span>Needed for push notifications on iPhone.</span></div><ol class="inst"><li>Open this site in <b>Safari</b>.</li><li>Tap <b>Share</b> (the square with the arrow) at the bottom.</li><li>Scroll down, tap <b>Add to Home Screen</b>, then <b>Add</b>.</li><li>Open <b>Village Tracker</b> from your home screen, sign in, then Settings → Push reminders → <b>Turn on</b>.</li></ol></div>`;
+  return `<div class="srow"><div><b>Install as an app</b><span>In your browser's menu choose <b>Install app</b> or <b>Add to Home screen</b>.</span></div></div>`;
+}
+
+document.addEventListener("change",e=>{ const t=e.target.closest&&e.target.closest("[data-sumt]"); if(!t) return; SUM.times[+t.dataset.sumt]=t.value; sumSave(); });
+/* daily summaries: worked out ahead from your timers and scheduled as pushes at the times you pick */
+let SUM=(()=>{ try{ return {on:false,times:["08:00","13:00","20:00"],...JSON.parse(localStorage.getItem("cvt.sum")||"{}")}; }catch(e){ return {on:false,times:["08:00","13:00","20:00"]}; } })();
+const sumSave=()=>{ try{ localStorage.setItem("cvt.sum",JSON.stringify(SUM)); }catch(e){} syncSummariesSoon(); };
+function sumText(T){
+  const accs=S.accounts.filter(a=>!a.demo); if(!accs.length) return null;
+  const free=[], lab=[], pet=[]; let next=null;
+  for(const a of accs){ const x=analyze(a,T);
+    if(x.idle) free.push(`${a.nick} (${x.idle})`);
+    if(x.hasLab&&!x.lab) lab.push(a.nick);
+    if(x.hasPets&&!x.pet) pet.push(a.nick);
+    for(const u of x.active) if(u.end>T&&(!next||u.end<next.u.end)) next={a,u}; }
+  const parts=[];
+  parts.push(free.length?`Builders free: ${free.join(", ")}`:"All builders busy");
+  if(lab.length) parts.push(`Lab idle: ${lab.join(", ")}`);
+  if(pet.length) parts.push(`Pet House idle: ${pet.join(", ")}`);
+  if(typeof API_ATK!=="undefined") for(const a of accs){ const w=(API_ATK.get(a.id)||{}).war; if(w&&w.state==="inWar"&&w.end>T&&w.used<w.max) parts.push(`War: ${a.nick} ${w.max-w.used} attack${w.max-w.used>1?"s":""} left`); }
+  if(next){ const h=Math.max(0,next.u.end-T); parts.push(`Next done in ${h<36e5?Math.round(h/6e4)+"m":Math.round(h/36e5)+"h"}: ${next.a.nick} ${next.u.name}`); }
+  const hr=new Date(T).getHours(), when=hr<12?"Morning":hr<17?"Afternoon":"Evening";
+  return {title:`${when} summary${free.length||lab.length?" · something's idle":""}`,body:parts.join(" · ")};
+}
+let SUM_T=null; function syncSummariesSoon(){ clearTimeout(SUM_T); SUM_T=setTimeout(syncSummaries,3000); }
+async function syncSummaries(){
+  if(S.source!=="supa"||!S.sb) return;
+  try{ await S.sb.from("reminders").delete().eq("village_id","summary").is("sent_at",null);
+    if(!SUM.on) return;
+    const rows=[], now=Date.now();
+    for(let d=0;d<4;d++) for(const t of SUM.times){ const [h,m]=(t||"").split(":").map(Number); if(!(h>=0)) continue;
+      const D=new Date(); D.setDate(D.getDate()+d); D.setHours(h,m||0,0,0); const T=D.getTime(); if(T<now+120000||T>now+3*864e5) continue;
+      const tx=sumText(T); if(tx) rows.push({village_id:"summary",fire_at:new Date(T).toISOString(),title:tx.title,body:tx.body}); }
+    if(rows.length) await S.sb.from("reminders").insert(rows);
+  }catch(e){}
+}
+
 /* inbox: exports your phone sent while the site was closed (see Settings → Auto-upload) */
 let INBOX_BUSY=false;
 async function inboxPull(){
@@ -2817,6 +2875,8 @@ document.addEventListener("click",async e=>{
   if(k==="signout"){ await S.sb.auth.signOut(); location.reload(); }
   if(k==="push") enablePush();
   if(k==="pushtest") pushTest();
+  if(k==="install"&&INSTALL_EVT){ INSTALL_EVT.prompt(); try{ await INSTALL_EVT.userChoice; }catch(e){} INSTALL_EVT=null; openSettings(); }
+  if(k==="sum"){ SUM.on=!SUM.on; sumSave(); b.textContent=SUM.on?"On":"Off"; b.setAttribute("aria-pressed",SUM.on); toast(SUM.on?"Daily summaries on. Make sure Push reminders are on for this device.":"Daily summaries off."); }
   if(k==="ingest") showIngest(false);
   if(k==="ingnew") showIngest(true);
   if(k==="ingcopy"){ const i=$("#ingUrl"); try{ await navigator.clipboard.writeText(i.value); toast("Link copied."); }catch(e){ i.select(); } }
