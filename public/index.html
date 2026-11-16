@@ -1840,6 +1840,93 @@ const P={
   flake:d("M16 2l2.4 6.6L25 6l-2.6 6.6L29 16l-6.6 2.4L25 25l-6.6-2.6L16 29l-2.4-6.6L7 25l2.6-6.6L3 16l6.6-2.4L7 6l6.6 2.6z",`fill="${C.ice}"`)+`<circle cx="16" cy="16" r="3.6" fill="#fff"/>`
 };
 // small accent badges placed in the emblem's corner
+/* ---------- redrawn emblems: small illustrations with their own materials (gold, steel, wood, cloth) ---------- */
+const A={gd:"#edc463",gd2:"#b5832a",gd3:"#fff0bf",st:"#dfe4ea",st2:"#8e99a8",st3:"#5d6674",wd:"#a87444",wd2:"#6e4826",rd:"#cf4a56",rd2:"#8f2433",bl:"#5f93d8",bl2:"#35589a",gn:"#69b877",pu:"#8d73d6",pu2:"#54409a",iv:"#f6eed8",iv2:"#cdbf9c",ink:"#1d1610"};
+const f=(s,c,o="")=>`<path d="${s}" fill="${c}" ${o}/>`, ci=(x,y,r,c,o="")=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${c}" ${o}/>`, ln=(s,c,w,o="")=>`<path d="${s}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" ${o}/>`;
+Object.assign(P,{
+  // Barbarian King: jewelled crown on an ermine band
+  h_king:f("M5.2 21.5 3.6 8.6l6.6 5.6L16 4.6l5.8 9.6 6.6-5.6-1.6 12.9z",A.gd)+f("M16 4.6l5.8 9.6 6.6-5.6-1.6 12.9H16z",A.gd2,'fill-opacity=".55"')+ln("M5.4 20 4.4 10.6l5.6 4.8L16 6.6",A.gd3,.9,'stroke-opacity=".8"')
+    +ci(3.6,8.4,1.9,A.iv)+ci(16,4.4,2.2,A.iv)+ci(28.4,8.4,1.9,A.iv)+ci(15.3,3.8,.7,"#fff")
+    +`<rect x="4.6" y="20.6" width="22.8" height="5" rx="1.2" fill="${A.gd}"/><rect x="4.6" y="23.4" width="22.8" height="2.2" rx="1" fill="${A.gd2}" fill-opacity=".6"/>`
+    +f("M16 20.9l2.6 2.3-2.6 2.3-2.6-2.3z",A.rd)+f("M16 20.9l2.6 2.3H13.4z","#fff",'fill-opacity=".4"')+ci(9.4,23.1,1.35,A.bl)+ci(22.6,23.1,1.35,A.bl)+ci(9,22.7,.45,"#fff",'fill-opacity=".8"')+ci(22.2,22.7,.45,"#fff",'fill-opacity=".8"')
+    +`<rect x="3.8" y="25.4" width="24.4" height="3.6" rx="1.8" fill="${A.iv}"/>`+[7.5,11.7,16,20.3,24.5].map(x=>`<path d="M${x} 26.2v2" stroke="${A.ink}" stroke-width="1" stroke-linecap="round"/>`).join(""),
+  // Archer Queen: drawn recurve bow, arrow nocked, small tiara
+  h_queen:ln("M9.5 27.5 5.5 16 9.5 4.5",A.iv,.9)+ln("M9.5 4.5C13 2.6 16.5 4 17.4 8c.9 4 1.3 5.4 2.4 8-1.1 2.6-1.5 4-2.4 8-.9 4-4.4 5.4-7.9 3.5",A.gd,2.6)+ln("M9.5 4.5C13 2.6 16.5 4 17.4 8",A.gd3,.8,'stroke-opacity=".8"')
+    +`<rect x="18" y="13" width="3" height="6" rx="1.2" fill="${A.rd2}"/>`+ln("M5.5 16H26",A.wd,1.8)+f("M30.2 16l-5.6-3.2v6.4z",A.st)+f("M30.2 16l-5.6 3.2V16z",A.st2)
+    +f("M5.5 16 2.6 13.4h3.2l2.8 2.6z",A.rd)+f("M5.5 16 2.6 18.6h3.2l2.8-2.6z",A.rd2)
+    +f("M21.5 6.5l1.6 2 2-3.2 2 3.2 1.6-2-.6 4.2h-6z",A.gd)+ci(25.1,8.4,.8,A.rd),
+  // Grand Warden: open tome, ribbon, a rune glowing above it
+  h_warden:f("M2.6 10.4C7 8.6 12 9 16 11.6c4-2.6 9-3 13.4-1.2v17.2C25 25.8 20 26.2 16 28.8c-4-2.6-9-3-13.4-1.2z",A.pu2)
+    +f("M4.2 9.2C8.2 7.8 12.4 8.2 16 10.6v16.6c-3.6-2.4-7.8-2.8-11.8-1.4z",A.iv)+f("M27.8 9.2C23.8 7.8 19.6 8.2 16 10.6v16.6c3.6-2.4 7.8-2.8 11.8-1.4z",A.iv2)
+    +ln("M6.6 13c2.4-.6 4.6-.4 6.8.6M6.6 16.4c2.4-.6 4.6-.4 6.8.6M6.6 19.8c2.4-.6 4.6-.4 6.8.6M18.6 13.6c2.2-1 4.4-1.2 6.8-.6M18.6 17c2.2-1 4.4-1.2 6.8-.6M18.6 20.4c2.2-1 4.4-1.2 6.8-.6",A.wd2,.9,'stroke-opacity=".55"')
+    +f("M15.1 10.4h1.8v19l-.9-1.4-.9 1.4z",A.rd)+ci(16,4.6,4.2,A.gd,'fill-opacity=".28"')+f("M16 .6l1.2 2.8 2.8 1.2-2.8 1.2L16 8.6l-1.2-2.8L12 4.6l2.8-1.2z",A.gd3),
+  // Royal Champion: spear behind a round shield
+  h_champ:ln("M5 29 25.5 6",A.wd,2.2)+f("M30.4 1.4l-8 2.4 5.6 5.6z",A.st)+f("M30.4 1.4l-2.4 8-2.8-2.8z",A.st2)+ln("M22.6 7.2l2.4 2.4",A.gd,2)
+    +ci(13,19.4,9.6,A.gd2)+ci(13,19.4,8.6,A.gd)+ci(13,19.4,6.6,"#3f8f88")+f("M13 12.8a6.6 6.6 0 0 1 0 13.2z","#000",'fill-opacity=".22"')
+    +ln("M8.2 15.6a6.4 6.4 0 0 1 4-2.6",A.gd3,1,'stroke-opacity=".9"')+f("M13 14.4l1.5 3.4 3.5 1.6-3.5 1.6L13 24.4l-1.5-3.4L8 19.4l3.5-1.6z",A.gd3)+ci(13,19.4,1.5,A.gd2),
+  // Minion Prince: horned bat, wings spread, crowned
+  h_prince:f("M16 15C13.6 10 8.2 7.8 1.8 9c3 2.4 3.2 5.2 2.2 8.6 3-1 5.2.2 6.2 3.2.8-1.8 2.2-2.8 3.8-3.2z",A.pu)+f("M16 15c2.4-5 7.800-7.200 14.200-6-3 2.400-3.200 5.200-2.200 8.600-3-1-5.200.200-6.200 3.200-.800-1.800-2.200-2.800-3.800-3.200z",A.pu2)
+    +ln("M14 16.6 5 10.800M12.200 17.400 8.200 17M18 16.600l9-5.800M19.800 17.400l4-.400",A.ink,.8,'stroke-opacity=".45"')
+    +f("M12.4 13.200 11 8.400l3.200 2.400zM19.600 13.200 21 8.400l-3.200 2.400z",A.pu2)+`<ellipse cx="16" cy="17.800" rx="4.200" ry="5.400" fill="${A.pu2}"/><ellipse cx="16" cy="19" rx="2.400" ry="3.400" fill="${A.pu}"/>`
+    +ci(14.3,15.6,1,A.gd3)+ci(17.7,15.6,1,A.gd3)+f("M14.800 18.400l1.200 1.400 1.200-1.400z",A.iv)
+    +f("M11.400 3.200l2 2.200L16 1.800l2.600 3.600 2-2.200-.800 4.600h-7.600z",A.gd)+ci(16,5.600,.9,A.rd),
+  // Dragon Duke: crowned dragon head in profile
+  dduke:f("M4 21.500c1.500-6 6.500-10 13-10.300l3.500-5.200 1.700 4.800c3.500 1.200 5.800 3.700 6.800 7.200l-6.600.900 3.200 4.600c-4.600 2.300-10 2.200-14.200.300L8.200 27l-.700-4c-1.700-.300-2.800-.800-3.500-1.500z",A.rd)
+    +f("M11.400 23.800c4.200 1.900 9.600 2 14.200-.300l-3.200-4.600c-3.600 2.600-7.800 3.500-12.800 2.700z",A.rd2)+f("M22.400 18.900l6.600-.900c-.300-1.100-.800-2.100-1.400-3z",A.iv)+ci(20.200,14.600,1.700,A.gd3)+ci(20.600,14.600,.8,A.ink)
+    +ln("M8 19.500c2.500.300 5-.200 7.200-1.600",A.rd2,1.200)+f("M26 20.200l1.200 1.800 1-1.900z",A.iv)+f("M17 11.200l3.500-5.200.600 5.600z",A.rd2)
+    +f("M5.500 5.600l2.800 2.800L11 4l2.700 4.400 2.800-2.800-.900 5H6.400z",A.gd)+ci(11,7.800,.9,A.bl),
+  // Barbarian: horned iron helm with a gold brow band
+  horns:f("M8.600 17C4.800 16.400 2.600 12.800 2.600 8c2.200 2.600 4.600 3.800 7.400 3.800zM23.400 17c3.800-.600 6-4.200 6-9-2.200 2.600-4.600 3.800-7.400 3.800z",A.iv)+f("M23.400 17c3.800-.600 6-4.200 6-9-1 1.200-2 2-3.200 2.700-.300 2.400-1.400 4.300-3.200 5.300z",A.iv2)
+    +f("M7.400 21.500a8.600 8.600 0 0 1 17.200 0v2.300H7.400z",A.st)+f("M16 12.900a8.600 8.600 0 0 1 8.600 8.600v2.300H16z",A.st2)+ln("M10.200 17.400c.800-1.800 2.200-3 4-3.600",'#fff',1.100,'stroke-opacity=".7"')
+    +`<rect x="6.400" y="21.800" width="19.200" height="3.600" rx="1.300" fill="${A.gd}"/><rect x="6.400" y="23.800" width="19.200" height="1.600" rx=".8" fill="${A.gd2}" fill-opacity=".6"/>`+ci(10.500,23.500,.8,A.gd2)+ci(16,23.500,.8,A.gd2)+ci(21.500,23.500,.8,A.gd2)
+    +f("M14.600 25.400h2.800v4.200h-2.800z",A.st2),
+  // Balloon: patched envelope, ropes, wicker basket with a bomb
+  balloon:f("M16 2.200c5.900 0 10.300 4.400 10.300 9.900 0 5.400-4.800 8.600-7.300 10.500h-6c-2.500-1.900-7.300-5.100-7.300-10.500 0-5.500 4.400-9.900 10.300-9.900z",A.rd)+f("M16 2.200c5.900 0 10.300 4.400 10.300 9.900 0 5.400-4.800 8.600-7.300 10.500H16z",A.rd2,'fill-opacity=".7"')
+    +ln("M16 2.400c-2.600 2.600-3.600 6-3.600 9.800s1.200 7.600 1.800 10.200M16 2.400c2.600 2.600 3.600 6 3.600 9.800s-1.200 7.600-1.800 10.200",A.ink,.8,'stroke-opacity=".3"')+ln("M9 8.400c1-2 2.600-3.400 4.600-4",'#fff',1.200,'stroke-opacity=".6"')
+    +ln("M13.200 22.600l.600 3M18.800 22.600l-.600 3",A.iv2,.9)+`<rect x="12.600" y="25.400" width="6.800" height="4.800" rx="1" fill="${A.wd}"/>`+ln("M12.800 27h6.400M12.800 28.600h6.400",A.wd2,.7)+ci(16,24.600,1.500,A.ink),
+  // Wizard: tall hat with a buckled band and stars
+  hat:f("M17.500 1.600c-4.500 2.600-7.100 9.300-8.700 18.600h14.400C22.400 12.800 21 8 23.600 4.200c-2.600.300-4.500-.700-6.100-2.600z",A.bl)+f("M17.500 1.600c1.600 1.900 3.500 2.900 6.100 2.600C21 8 22.400 12.800 23.200 20.200h-6.800z",A.bl2,'fill-opacity=".75"')
+    +`<ellipse cx="16" cy="21.400" rx="13" ry="3.600" fill="${A.bl2}"/><ellipse cx="16" cy="20.800" rx="13" ry="3.200" fill="${A.bl}"/>`+f("M8.900 18.400c4.600 1.300 9.600 1.300 14.200 0l.300 2.400c-4.900 1.400-9.900 1.400-14.800 0z",A.gd)+`<rect x="14.200" y="17.900" width="3.600" height="3.400" rx=".7" fill="${A.gd3}" stroke="${A.gd2}" stroke-width=".7"/>`
+    +f("M13.600 8.400l.700 1.500 1.500.700-1.500.700-.700 1.500-.700-1.500-1.500-.700 1.500-.700z",A.gd3)+ci(19,13.400,.8,A.gd3)+ci(17.600,6,.6,A.gd3),
+  // Healer: winged heart under a halo
+  heart:f("M11 15.500C7 14.500 3.600 11.600 1.600 7.800c3.400.200 6.800 1.600 9.400 4zM21 15.500c4-1 7.400-3.900 9.400-7.700-3.400.200-6.800 1.600-9.400 4z",A.iv)+ln("M3.800 9.200c2.400.800 4.600 2.200 6.400 4M28.200 9.200c-2.400.800-4.600 2.200-6.400 4",A.iv2,.9)
+    +f("M16 28.600S7 22.800 7 16.600a4.700 4.700 0 0 1 9-1.800 4.700 4.700 0 0 1 9 1.800c0 6.200-9 12-9 12z",A.rd)+f("M16 14.800a4.700 4.700 0 0 1 9 1.800c0 6.200-9 12-9 12z",A.rd2,'fill-opacity=".7"')+ln("M9.800 15.400c.500-1.200 1.400-2 2.600-2.300",'#fff',1.200,'stroke-opacity=".7"')
+    +`<ellipse cx="16" cy="6.200" rx="5.600" ry="1.900" fill="none" stroke="${A.gd}" stroke-width="1.500"/>`,
+  // Wall Breaker / traps: round bomb, lit fuse
+  bomb:ci(14.500,19.500,9.600,"#3a3f49")+f("M14.500 29.100a9.600 9.600 0 0 0 9.200-12.300 9.600 9.600 0 0 1-15.900 8.800 9.600 9.600 0 0 0 6.700 3.500z","#000",'fill-opacity=".35"')+ci(10.800,15.800,2.600,"#fff",'fill-opacity=".3"')
+    +f("m18.600 10.600 2.600-2.600 3.400 3.400-2.600 2.600z",A.st2)+ln("M23.200 8.400c1-1.800 2.400-2.600 4-2.400",A.wd,1.500)+f("M28.400 2.200l.800 2.200 2.200.800-2.200.800-.800 2.200-.800-2.200-2.200-.800 2.200-.800z",A.gd3)+ci(28.400,5.200,1.300,"#ff9a3d"),
+  // P.E.K.K.A: dark plate helm, horns, glowing visor
+  helm:f("M8.400 10.800 2.600 3.400l8 3.200zM23.600 10.800l5.800-7.400-8 3.200z",A.st2)+f("M7.200 13a8.800 8.800 0 0 1 17.600 0v11.400l-3.400 4.800H10.600l-3.400-4.800z","#4a5261")+f("M16 4.200A8.800 8.800 0 0 1 24.800 13v11.400l-3.400 4.800H16z","#000",'fill-opacity=".3"')
+    +ln("M9.600 10.400c.800-2 2.400-3.400 4.400-4",'#fff',1.100,'stroke-opacity=".45"')+f("M10.400 15h11.200v2.800h-4v6.800h-3.200v-6.800h-4z","#16121c")+f("M11.200 15.600h9.600v1.500h-9.600z","#ff6fb1")+f("M15.200 17.700h1.600v6h-1.600z","#ff6fb1",'fill-opacity=".8"')
+    +ln("M16 4.400v6",A.st3,1),
+  // Lightning: forked bolt with a glow
+  bolt:f("M19 1.800 7.500 17.200h6.700L11 30.200l13.500-17h-7z","#fff3a8",'fill-opacity=".35"')+f("M18.200 3.600 9.400 16.300h5.800l-2 10.500L22.600 14h-6z","#ffe36b")+f("M18.200 3.600 14 12.300h2.600z","#fff",'fill-opacity=".7"')+f("M15.200 16.300l-2 10.500L22.600 14z","#e0a92a",'fill-opacity=".55"'),
+  // Freeze: six-armed ice crystal
+  snow:[0,60,120].map(a=>`<g transform="rotate(${a} 16 16)">`+ln("M16 2.600v26.800",A.iv,2.400)+ln("M12.600 5.600 16 8.800l3.400-3.200M12.600 26.400 16 23.200l3.400 3.200",A.iv,1.700)+`</g>`).join("")+f("M16 12.200l3.300 1.900v3.800L16 19.800l-3.300-1.900v-3.800z","#bfeaff")+f("M16 12.200l3.300 1.900L16 16l-3.300-1.900z","#fff"),
+  // Rage: flame with a furious face
+  rage:f("M16 1.600c2.200 5.400 9.600 7.600 9.600 16.200a9.600 9.600 0 0 1-19.200 0c0-4.200 2.200-7.400 4.300-8.500 0 3.200 1.500 4.800 3.200 4.800 0-4.800-1.600-8.600 2.100-12.500z","#ff7a52")+f("M16 12.500c1.500 3 5.200 4.200 5.200 8.600a5.200 5.200 0 0 1-10.400 0c0-2.200 1.200-3.800 2.300-4.400 0 1.700.800 2.600 1.700 2.600 0-2.600-.800-4.700 1.200-6.800z","#ffd24d")
+    +ln("M11.200 18.400l3 1.300M20.800 18.400l-3 1.300",A.ink,1.500)+ln("M13.200 23.600c1.700-1.300 3.900-1.300 5.600 0",A.ink,1.400),
+  // Poison / generic spell: heavy drop with a highlight
+  drop:f("M16 2s10 10.600 10 17.600a10 10 0 0 1-20 0C6 12.600 16 2 16 2z","currentColor")+f("M16 29.600a10 10 0 0 0 10-10c0-1.400-.400-3-1.100-4.600A10 10 0 0 1 9.400 27.100 9.900 9.900 0 0 0 16 29.600z","#000",'fill-opacity=".28"')+ln("M10.400 18.600c.300-2.600 1.600-5.200 3.400-7.600",'#fff',1.500,'stroke-opacity=".6"'),
+  // Dragon: head seen from the front, with horns, side frills, slit eyes and fangs
+  dragon:(()=>{ const half=f("M11.2 11.4C9.6 7.4 7 4.4 3.4 2.2c1 3.400 1.400 6.200 3.200 9.400z",A.iv)+f("M11.200 11.400C9.600 7.400 7 4.400 3.400 2.200c2.600 2.800 4.200 5.600 5 8.800z",A.iv2)
+      +f("M7.600 14.200 1.600 12l2.600 4.600-2.200 3 5.800.200z","currentColor")+f("M7.600 14.200 1.600 12l2.600 4.600-2.200 3 5.800.200z","#000",'fill-opacity=".3"')+ln("M3 13l4 2.600M2.800 19l4.400-1.200",A.ink,.7,'stroke-opacity=".4"');
+    return half+`<g transform="translate(32 0) scale(-1 1)">${half}</g>`
+      +f("M16 7.600c5.800 0 9.400 3.800 9.400 8.600 0 3-1.400 5.200-3 6.800l-1.500 5c-.900 2-2.800 2.800-4.900 2.800s-4-.800-4.900-2.800l-1.500-5c-1.600-1.600-3-3.800-3-6.800 0-4.800 3.600-8.600 9.400-8.600z","currentColor")
+      +f("M16 7.600c5.800 0 9.400 3.800 9.400 8.600 0 3-1.400 5.200-3 6.800l-1.500 5c-.900 2-2.800 2.800-4.900 2.800z","#000",'fill-opacity=".22"')
+      +f("M16 4.400l1.700 3.800h-3.400zM16 9.200l1.300 2.800h-2.600z","#000",'fill-opacity=".35"')
+      +f("M12.600 21.400c0-1.600 6.800-1.600 6.800 0l-.500 6c-.500 1.700-5.300 1.700-5.800 0z","#fff",'fill-opacity=".2"')
+      +ln("M9.800 12.600c.900-1.600 2.300-2.700 4-3.200",'#fff',1.100,'stroke-opacity=".5"')
+      +ln("M8.600 14.200l5.400 2.400M23.400 14.200 18 16.600",A.ink,1.700)
+      +f("M9.600 15.800l4.600 1.900-.900 1.700c-1.900.100-3.300-1.300-3.700-3.600zM22.400 15.800l-4.600 1.900.900 1.700c1.900.100 3.300-1.300 3.700-3.600z","#ffe27a")+ln("M12.300 17.200l-.500 1.700M19.700 17.200l.500 1.700",A.ink,1)
+      +`<ellipse cx="14.200" cy="25.200" rx=".9" ry="1.300" fill="${A.ink}" fill-opacity=".8" transform="rotate(18 14.200 25.200)"/><ellipse cx="17.800" cy="25.200" rx=".9" ry="1.300" fill="${A.ink}" fill-opacity=".8" transform="rotate(-18 17.800 25.200)"/>`
+      +f("M11.300 26.200l1 3.600 1.200-2.600zM20.700 26.200l-1 3.600-1.200-2.600z",A.iv)+ln("M13.200 29.400c1.800.900 3.800.900 5.600 0",A.ink,.9,'stroke-opacity=".5"'); })(),
+  // Hog Rider: tusked boar head
+  boar:f("M4.600 12.400 8.800 5.600l3.400 4.400h7.600l3.400-4.400 4.200 6.800v7.200a11.400 10.800 0 0 1-22.800 0z",A.wd)+f("M16 10h3.800l3.400-4.400 4.200 6.800v7.200A11.400 10.800 0 0 1 16 30.400z",A.wd2,'fill-opacity=".6"')
+    +`<ellipse cx="16" cy="21.600" rx="5.600" ry="4" fill="#e8b79a"/>`+ci(13.800,21.600,1.100,A.wd2)+ci(18.200,21.600,1.100,A.wd2)+ci(11.200,15,1.300,A.ink)+ci(20.800,15,1.300,A.ink)+ci(10.800,14.600,.4,"#fff")+ci(20.400,14.600,.4,"#fff")
+    +f("M8.800 22.800c-2.400.400-4.200-1-4.600-3.600 1.800 1.400 3.200 1.600 4.800 1.200zM23.200 22.800c2.400.400 4.200-1 4.600-3.600-1.800 1.400-3.200 1.600-4.800 1.200z",A.iv)
+});
+P.dduke=`<g transform="translate(1.6 4.4) scale(.9)" style="color:#cf4a56" color="#cf4a56">${P.dragon}</g>`+f("M10.4 1.200l2.200 2.400L16 .200l3.400 3.400 2.200-2.400-.900 5h-9.400z",A.gd)+ci(16,4,1,A.bl)+ci(12.600,4.600,.6,A.rd)+ci(19.400,4.600,.6,A.rd);
 const MARK={
   bolt:`<g transform="translate(19 18) scale(.42)">${P.bolt}</g>`,
   snow:`<g transform="translate(19 18) scale(.4)" style="color:${C.ice}">${P.snow}</g>`,
@@ -1865,9 +1952,9 @@ const MARK={
   crack:`<path d="M6 30l4-6 3 3 4-5 3 4 4-4 3 5" fill="none" stroke="#000" stroke-opacity=".55" stroke-width="1.8"/>`
 };
 // emblem recipe per id: [part, mark?, mainColor?, liquid?]
-const TR={4000000:["horns"],4000001:["bow"],4000002:["sack"],4000003:["fist"],4000004:["bomb","crack"],4000005:["balloon"],4000006:["hat","star"],4000007:["heart","halo"],4000008:["dragon"],4000009:["helm"],4000010:["bat"],4000011:["boar"],4000012:["axe"],4000013:["golem"],4000015:["witchhat"],4000017:["lava"],4000022:["boulder"],4000023:["egg","fire"],4000024:["shovel"],4000053:["claw","snow"],4000058:["crystal",null,C.ice],4000059:["dragon","bolt"],4000065:["lance","wing"],4000082:["dagger"],4000095:["ring","bolt"],4000097:["book","star"],4000110:["root"],4000123:["staff"],4000132:["javelin"],4000150:["furnace"],4000159:["sling"],4000167:["meteor"],4000177:["meteor"],4000185:["elephant"],4000190:["coffin","snow"],4000109:["ruins"],
+const TR={4000000:["horns"],4000001:["bow"],4000002:["sack"],4000003:["fist"],4000004:["bomb","crack"],4000005:["balloon"],4000006:["hat","star"],4000007:["heart","halo"],4000008:["dragon",null,"#a06ad0"],4000009:["helm"],4000010:["bat"],4000011:["boar"],4000012:["axe"],4000013:["golem"],4000015:["witchhat"],4000017:["lava"],4000022:["boulder"],4000023:["egg","fire"],4000024:["shovel"],4000053:["claw","snow"],4000058:["crystal",null,C.ice],4000059:["dragon","bolt","#5f9fe6"],4000065:["lance","wing"],4000082:["dagger"],4000095:["ring","bolt"],4000097:["book","star"],4000110:["root"],4000123:["staff"],4000132:["javelin"],4000150:["furnace"],4000159:["sling"],4000167:["meteor"],4000177:["meteor"],4000185:["elephant"],4000190:["coffin","snow"],4000109:["ruins"],
  // super
- 4000026:["horns","bolt"],4000027:["bow","bolt"],4000028:["bomb","bolt"],4000029:["fist","bolt"],4000055:["sack","eye"],4000056:["shovel","bolt"],4000057:["balloon","rocket"],4000063:["egg","fire",C.fire2],4000064:["axe","bolt"],4000066:["witchhat","bolt"],4000076:["lava","snow",C.ice],4000080:["boulder","bolt"],4000081:["dragon","star"],4000083:["hat","bolt"],4000084:["bat","bolt"],4000098:["boar","bolt"],4000147:["claw","bolt"],
+ 4000026:["horns","bolt"],4000027:["bow","bolt"],4000028:["bomb","bolt"],4000029:["fist","bolt"],4000055:["sack","eye"],4000056:["shovel","bolt"],4000057:["balloon","rocket"],4000063:["egg","fire",C.fire2],4000064:["axe","bolt"],4000066:["witchhat","bolt"],4000076:["lava","snow",C.ice],4000080:["boulder","bolt"],4000081:["dragon","star","#e2903c"],4000083:["hat","bolt"],4000084:["bat","bolt"],4000098:["boar","bolt"],4000147:["claw","bolt"],
  // event & others
  4000030:["hat","snow",C.ice],4000045:["ram"],4000047:["ghost"],4000048:["pumpkin"],4000050:["skull"],4000061:["barrel","skull"],4000067:["robot"],4000072:["partyhat"],4000094:["ram","arrow"],4000101:["horns","bow"],4000102:["golem","hat"],4000103:["boar","star"],4000104:["balloon","fire"],4000118:["cookie"],4000119:["cracker"],4000120:["serpent",null,"#9fd4ff"],4000121:["boot"],4000122:["fist","arrow"],4000125:["broom"],4000130:["bat","snow",C.ice],4000136:["scroll"],4000142:["barrel","snake"],4000156:["fist","two"],4000157:["robot","bolt"],4000158:["broken"],
  // builder base
@@ -1879,7 +1966,7 @@ const TR={4000000:["horns"],4000001:["bow"],4000002:["sack"],4000003:["fist"],40
  // pets
  73000000:["dog"],73000001:["yak"],73000002:["owl"],73000003:["unicorn"],73000004:["feather"],73000007:["lizard"],73000008:["claw"],73000009:["spike"],73000010:["foxtails"],73000011:["jelly"],73000016:["puff"],73000017:["raven"],
  // heroes
- 28000000:["crown"],28000001:["bow","crown"],28000002:["book","star"],28000003:["gear"],28000004:["spear","crown"],28000005:["rotor"],28000006:["bat","crown"],28000007:["dduke"],
+ 28000000:["h_king"],28000001:["h_queen"],28000002:["h_warden"],28000003:["gear"],28000004:["h_champ"],28000005:["rotor"],28000006:["h_prince"],28000007:["dduke"],
  // equipment
  90000000:["puppet","horns"],90000001:["vial",null,null,"#e8524a"],90000002:["puppet","bow"],90000003:["vial","eye",null,"#9fe0ff"],90000004:["book","infinity"],90000005:["gem","heart",C.leaf],90000006:["shield","target"],90000007:["gem","crown","#ff9ad1"],90000008:["boot","crack"],90000009:["puppet","boar"],90000010:["gauntlet"],90000011:["stache"],90000012:["vial","wing",null,"#7ad1ff"],90000013:["spear","rocket"],90000014:["spiky"],90000015:["bigarrow","snow"],90000016:["bigarrow","star"],90000017:["bigarrow"],90000019:["torch"],90000020:["puppet","halo"],90000022:["fireball"],90000024:["gem","fire","#ff9a6a"],90000032:["bracelet"],90000034:["book","plus"],90000035:["crown",null,"#b58cff"],90000039:["mirror"],90000040:["boot","bolt"],90000041:["puppet","balloon"],90000042:["puppet","two"],90000043:["orb"],90000044:["pants"],90000047:["dumbbell"],90000048:["figure"],90000049:["meteorstaff"],90000050:["flake"],90000051:["horse"],90000052:["heart","fire","#ff6a5a"],90000053:["backpack"],90000056:["blaster"],90000057:["nozzle"],90000059:["fangs"],90000060:["cards"],90000061:["pendant"]
 };
@@ -1933,31 +2020,55 @@ function recipe(id){
 }
 const TOKC=new Map();
 const HERO_EQ={28000000:[0,1,8,10,11,14,32,51],28000001:[2,3,15,16,17,20,39,48],28000002:[4,5,19,22,24,34,41],28000004:[6,7,9,12,13,40,50],28000006:[35,42,43,44,47,49,61],28000007:[52,53,56,57,59,60]};
+// Classy look: deep enamel in muted jewel tones, a fine gold rim with an engraved inner line, an ivory emblem.
+// No heavy bevels or gloss; heroes and Super Troops get the brighter gold.
+function jewel(col){
+  const [r,g,b]=hx(col).map(v=>v/255), mx=Math.max(r,g,b), mn=Math.min(r,g,b), d=mx-mn; let h=0;
+  if(d){ h=mx===r?((g-b)/d)%6:mx===g?(b-r)/d+2:(r-g)/d+4; h*=60; if(h<0) h+=360; }
+  const l0=(mx+mn)/2, s0=d?d/(1-Math.abs(2*l0-1)):0, S=Math.min(.5,s0*.62), L=s0<.12?.22:.27;
+  const f=n=>{ const k=(n+h/30)%12, a=S*Math.min(L,1-L); return Math.round(255*(L-a*Math.max(-1,Math.min(k-3,9-k,1)))).toString(16).padStart(2,"0"); };
+  return "#"+f(0)+f(8)+f(4);
+}
+const ANCH={shield:[[32,3],[56.5,11.5],[7.5,11.5],[32,61]],crest:[[7,10.5],[57,10.5],[32,61]],hex:[[32,3.5],[57,17.8],[57,46.2],[32,60.5],[7,46.2],[7,17.8]],
+  diamond:[[32,2.5],[61.5,32],[32,61.5],[2.5,32]],squircle:[[11,11],[53,11],[53,53],[11,53]],orb:[]};
 function tokenSVG(id){
-  const t=recipe(id), p=SHAPE[t.shape], c=t.col;
-  const hi=mixc(c,"#ffffff",.42), lo=mixc(c,"#000000",.5), deep=mixc(c,"#000000",.68);
-  const gold=t.shape==="crest"||t.sup;
-  const metal=gold?["#fff4c8","#e8b64a","#8a5a12","#5a3a08"]:["#f6f3ec","#bdb7aa","#6b675e","#38352f"];
-  const main=t.main||"#fbf1da";
-  const emFill=t.shape==="crest"?["#fff6d6","#f2c75c","#a8721a"]:[ "#ffffff", main, mixc(main,"#000000",.3)];
+  const t=recipe(id), p=SHAPE[t.shape], c=jewel(t.col);
+  const hi=mixc(c,"#ffffff",.2), lo=mixc(c,"#000000",.42);
+  const royal=t.shape==="crest"||t.sup;
+  const rim=royal?["#fff3c9","#d9ab4a","#8a5e16","#f3d27a"]:["#f4ecd8","#c4b48c","#7a6c48","#ddd0aa"];
+  const main=t.main&&t.main!=="#fbf1da"?mixc(t.main,"#f4ead2",.12):"#f4ead2";
+  const em=royal?["#fff6d8","#e6bd62","#b98a2c"]:[mixc(main,"#ffffff",.6),main,mixc(main,"#8f8266",.35)];
+  const IN="translate(32 32.2) scale(.9) translate(-32 -32)", LN=f=>`translate(32 32.2) scale(${f}) translate(-32 -32)`;
+  // engraved sunburst behind the emblem
+  let rays=""; for(let k=0;k<18;k++){ const a=k/18*Math.PI*2, a2=a+Math.PI/36; rays+=`M32 32L${(32+40*Math.cos(a)).toFixed(1)} ${(32+40*Math.sin(a)).toFixed(1)}L${(32+40*Math.cos(a2)).toFixed(1)} ${(32+40*Math.sin(a2)).toFixed(1)}z`; }
+  // rivets at the corners (dial ticks on round badges)
+  let studs="";
+  if(t.shape==="orb"){ for(let k=0;k<24;k++){ const a=k/24*Math.PI*2, r1=k%6?21.6:20.6, r2=23.2; studs+=`<path d="M${(32+r1*Math.cos(a)).toFixed(2)} ${(32.2+r1*Math.sin(a)).toFixed(2)}L${(32+r2*Math.cos(a)).toFixed(2)} ${(32.2+r2*Math.sin(a)).toFixed(2)}" stroke="${rim[1]}" stroke-opacity="${k%6?.45:.9}" stroke-width="${k%6?.6:1}" stroke-linecap="round"/>`; } }
+  else for(const [x,y] of ANCH[t.shape]||[]){ const X=32+(x-32)*.74, Y=32.2+(y-32.2)*.74; studs+=`<circle cx="${X.toFixed(2)}" cy="${(Y+.4).toFixed(2)}" r="1.5" fill="#000" fill-opacity=".4"/><circle cx="${X.toFixed(2)}" cy="${Y.toFixed(2)}" r="1.4" fill="url(#m)"/><circle cx="${(X-.4).toFixed(2)}" cy="${(Y-.4).toFixed(2)}" r=".45" fill="#fff" fill-opacity=".8"/>`; }
+  // heroes: a cut ruby set at the foot of the crest
+  const gem=t.shape==="crest"?`<g transform="translate(32 52.6)"><path d="M0 -3.4 3.2 0 0 3.6 -3.2 0z" fill="#5a0f1c"/><path d="M0 -3.4 3.2 0 0 3.6 -3.2 0z" fill="url(#rb)" transform="scale(.82)"/><path d="M0 -2.8 -2.6 0H2.6z" fill="#fff" fill-opacity=".35" transform="scale(.82)"/><path d="M0 -3.4 3.2 0 0 3.6 -3.2 0z" fill="none" stroke="url(#m)" stroke-width=".7"/></g>`:"";
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="128" height="128">
 <defs>
-<linearGradient id="b" x1="0" y1="0" x2=".35" y2="1"><stop offset="0" stop-color="${hi}"/><stop offset=".48" stop-color="${c}"/><stop offset="1" stop-color="${lo}"/></linearGradient>
-<linearGradient id="m" x1="0" y1="0" x2=".2" y2="1"><stop offset="0" stop-color="${metal[0]}"/><stop offset=".35" stop-color="${metal[1]}"/><stop offset=".7" stop-color="${metal[2]}"/><stop offset="1" stop-color="${metal[3]}"/></linearGradient>
-<linearGradient id="e" x1="0" y1="0" x2=".15" y2="1"><stop offset="0" stop-color="${emFill[0]}"/><stop offset=".55" stop-color="${emFill[1]}"/><stop offset="1" stop-color="${emFill[2]}"/></linearGradient>
-<radialGradient id="g" cx=".32" cy=".18" r=".75"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".45" stop-color="#fff" stop-opacity=".08"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<radialGradient id="v" cx=".5" cy=".55" r=".6"><stop offset=".6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".42"/></radialGradient>
-<filter id="bev" x="-15%" y="-15%" width="130%" height="130%"><feGaussianBlur in="SourceAlpha" stdDeviation="1.8" result="bl"/><feSpecularLighting in="bl" surfaceScale="3.5" specularConstant=".85" specularExponent="20" lighting-color="#ffffff" result="sp"><feDistantLight azimuth="235" elevation="42"/></feSpecularLighting><feComposite in="sp" in2="SourceAlpha" operator="in" result="sp2"/><feComposite in="SourceGraphic" in2="sp2" operator="arithmetic" k1="0" k2="1" k3=".5" k4="0"/></filter>
-<filter id="emb" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation=".9" result="a"/><feSpecularLighting in="a" surfaceScale="2.6" specularConstant="1" specularExponent="26" lighting-color="#ffffff" result="s"><feDistantLight azimuth="235" elevation="38"/></feSpecularLighting><feComposite in="s" in2="SourceAlpha" operator="in" result="s2"/><feComposite in="SourceGraphic" in2="s2" operator="arithmetic" k1="0" k2="1" k3=".55" k4="0" result="lit"/><feGaussianBlur in="SourceAlpha" stdDeviation="1.1" result="sb"/><feOffset in="sb" dx=".5" dy="1.6" result="so"/><feFlood flood-color="#000" flood-opacity=".6"/><feComposite in2="so" operator="in" result="sh"/><feMerge><feMergeNode in="sh"/><feMergeNode in="lit"/></feMerge></filter>
-<clipPath id="c"><path d="${p}"/></clipPath>
+<radialGradient id="b" cx=".5" cy=".38" r=".75"><stop offset="0" stop-color="${hi}"/><stop offset=".55" stop-color="${c}"/><stop offset="1" stop-color="${lo}"/></radialGradient>
+<linearGradient id="m" x1="0" y1="0" x2=".35" y2="1"><stop offset="0" stop-color="${rim[0]}"/><stop offset=".3" stop-color="${rim[1]}"/><stop offset=".55" stop-color="${rim[3]}"/><stop offset=".75" stop-color="${rim[1]}"/><stop offset="1" stop-color="${rim[2]}"/></linearGradient>
+<linearGradient id="e" x1="0" y1="0" x2=".2" y2="1"><stop offset="0" stop-color="${em[0]}"/><stop offset=".5" stop-color="${em[1]}"/><stop offset="1" stop-color="${em[2]}"/></linearGradient>
+<linearGradient id="rb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff6b7d"/><stop offset="1" stop-color="#9c1730"/></linearGradient>
+<filter id="emb" x="-25%" y="-25%" width="150%" height="160%"><feMorphology in="SourceAlpha" operator="dilate" radius=".6" result="d"/><feFlood flood-color="#150f09" flood-opacity=".9"/><feComposite in2="d" operator="in" result="ol"/><feGaussianBlur in="d" stdDeviation=".9" result="sb"/><feOffset in="sb" dy="1.5" result="so"/><feFlood flood-color="#000" flood-opacity=".5"/><feComposite in2="so" operator="in" result="sh"/><feGaussianBlur in="SourceAlpha" stdDeviation=".7" result="a"/><feSpecularLighting in="a" surfaceScale="1.6" specularConstant=".55" specularExponent="16" lighting-color="#fff" result="s"><feDistantLight azimuth="235" elevation="45"/></feSpecularLighting><feComposite in="s" in2="SourceAlpha" operator="in" result="s2"/><feComposite in="SourceGraphic" in2="s2" operator="arithmetic" k1="0" k2="1" k3=".35" k4="0" result="lit"/><feMerge><feMergeNode in="sh"/><feMergeNode in="ol"/><feMergeNode in="lit"/></feMerge></filter>
+<clipPath id="c"><path d="${p}" transform="${IN}"/></clipPath>
 </defs>
-<path d="${p}" fill="${deep}" transform="translate(0 2.6)"/>
+<path d="${p}" fill="#000" fill-opacity=".3" transform="translate(0 2)"/>
 <path d="${p}" fill="url(#m)"/>
-<path d="${p}" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width=".8"/>
-<g transform="translate(32 32.4) scale(.86) translate(-32 -32)"><path d="${p}" fill="url(#b)" filter="url(#bev)"/><path d="${p}" fill="url(#v)"/><path d="${p}" fill="none" stroke="#000" stroke-opacity=".35" stroke-width="1.4"/></g>
-<g transform="${t.big?"translate(9.2 9.4) scale(1.42)":"translate(14.4 14) scale(1.1)"}" filter="url(#emb)"><g fill="url(#e)" color="${main}">${t.emb}</g></g>
-<g clip-path="url(#c)"><ellipse cx="20" cy="9" rx="30" ry="15" fill="url(#g)"/></g>
-${t.sup?`<g transform="translate(42.5 1.5) scale(.6)"><circle cx="16" cy="16" r="13.5" fill="url(#m)" stroke="#5a3a08" stroke-width="1.6"/><path d="M17.8 6.5 10 18h5l-1.5 8 8-12h-5z" fill="#3a2700"/></g>`:""}
+<path d="${p}" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width=".6"/>
+<path d="${p}" fill="none" stroke="${rim[2]}" stroke-width=".9" transform="${LN(.955)}"/>
+<path d="${p}" fill="url(#b)" transform="${IN}"/>
+<g clip-path="url(#c)"><path d="${rays}" fill="#fff" fill-opacity=".05"/><path d="${p}" fill="none" stroke="#000" stroke-opacity=".5" stroke-width="2.4" transform="${IN}"/><path d="${p}" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width="1" transform="${LN(.86)} translate(0 .8)"/></g>
+<path d="${p}" fill="none" stroke="${rim[1]}" stroke-opacity=".65" stroke-width=".7" transform="${LN(.8)}"/>
+<path d="${p}" fill="none" stroke="${rim[1]}" stroke-opacity=".28" stroke-width=".5" stroke-dasharray=".8 1.6" transform="${LN(.755)}"/>
+${studs}
+<g transform="${t.big?"translate(11.8 11.6) scale(1.26)":t.shape==="crest"?"translate(14.4 12.6) scale(1.1)":"translate(14.7 14.4) scale(1.08)"}" filter="url(#emb)"><g fill="url(#e)" color="${main}">${t.emb}</g></g>
+${gem}
+<g clip-path="url(#c)"><path d="M0 0h64v24C44 18 20 18 0 24z" fill="#fff" fill-opacity=".07"/></g>
+${t.sup?`<g transform="translate(44 2) scale(.52)"><circle cx="16" cy="16" r="13.5" fill="url(#m)" stroke="#5a3a08" stroke-width="1.6"/><path d="M17.8 6.5 10 18h5l-1.5 8 8-12h-5z" fill="#3a2700"/></g>`:""}
 </svg>`;
 }
 function token(id){
