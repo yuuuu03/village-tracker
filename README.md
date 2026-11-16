@@ -108,6 +108,9 @@ Copy the export in the game and leave the game: your phone sends it to your trac
 2. **Edge Functions** → **Deploy a new function** → **Via Editor** → name it `ingest` → paste `supabase/functions/ingest/index.ts` → **Deploy**. Open its **Details** and turn **Verify JWT** OFF (the private key in your link is the check).
 3. On the site: **Settings → Auto-upload from your phone → Set up**. Copy your link and follow the iPhone or Android steps shown there.
 
+## 11 · Weekly online backups (optional, recommended)
+Supabase → **SQL Editor** → paste `supabase/backups.sql` → **Run**. From then on the site copies your villages and attack log to your Supabase once a week (the last 8 are kept). See them, back up now, or restore in **Settings → Online backups**.
+
 ## Rules for publishing (Supercell fan content policy)
 
 - **Free only.** No paid features or premium tier. Ads and true donations are allowed.
