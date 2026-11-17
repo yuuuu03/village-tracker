@@ -4652,6 +4652,7 @@ function findMap(P,tx,ty,rad){
    (only one Town Hall, 4 Air Defenses, …). Plain geometry and arithmetic, no AI. */
 const EYE_K=3, EYE_O=4, EYE_N=(44+2*EYE_O)*EYE_K;
 function findBuildings(P,D,S,wallM2){
+  const CF=Object.assign({hole:5,wall:1,thin:1.5,long:4,mj:.85,mr:0,nms:1.15,split:99,vmin:.75,dirs:3,R:6},window.__eyecfg||{});
   const Q=sharp(), f=Q.W/P.W, N=EYE_N, K=EYE_K, O=EYE_O, g=new Uint8Array(N*N), G=new Uint8Array(N*N), gb=D.gb;
   const grass=(r,gg,b)=>{ const R=r/255,Gc=gg/255,B=b/255, mx=Math.max(R,Gc,B), mn=Math.min(R,Gc,B), dl=mx-mn; if(!dl||mx<.2||dl/mx<.12) return false;
     let h=mx===R?((Gc-B)/dl)%6:mx===Gc?(B-R)/dl+2:(R-Gc)/dl+4; h*=60; if(h<0) h+=360; const bin=Math.floor(h/10)%36, dd=Math.min(Math.abs(bin-gb),36-Math.abs(bin-gb)); return dd<=1; };
@@ -4660,14 +4661,27 @@ function findBuildings(P,D,S,wallM2){
     const x=Math.round((D.mx+D.hx*u)*f), y=Math.round((D.my+D.hy*v)*f); if(x<0||y<0||x>=Q.W||y>=Q.H) continue; const k=y*Q.W+x;
     if(wallM2&&wallM2[k]) continue; if(grass(Q.rgb[k*3],Q.rgb[k*3+1],Q.rgb[k*3+2])){ G[j*N+i]=1; continue; } g[j*N+i]=1; }
   if(window.__eyedbg) window.__eyeg0=g.slice();
+  // glass domes and small rings show grass through them: fill small pockets of grass closed in on all sides
+  { const lab=new Int32Array(N*N).fill(-1); let id=0;
+    for(let s0=0;s0<N*N;s0++){ if(g[s0]||lab[s0]>=0) continue; const st=[s0], mem=[]; lab[s0]=id; let edge=false;
+      while(st.length){ const k=st.pop(); mem.push(k); const i=k%N, j=(k/N)|0; if(i===0||j===0||i===N-1||j===N-1) edge=true;
+        for(const q of [k-1,k+1,k-N,k+N]){ if(q<0||q>=N*N||g[q]||lab[q]>=0) continue; if((q===k-1&&i===0)||(q===k+1&&i===N-1)) continue; lab[q]=id; st.push(q); } }
+      if(!edge&&mem.length<=CF.hole*K*K) for(const k of mem){ g[k]=1; G[k]=0; } id++; } }
   // a building stands on the grass: looking along the grid's 4 directions from it, grass shows up within 6 tiles in at least 3.
   // The dirt border, the scenery and the lava around the village only have grass on one side, so they drop out.
-  const R=6*K, cnt=new Uint8Array(N*N);
+  const R=CF.R*K, cnt=new Uint8Array(N*N);
   const pass=(i0,j0,di,dj,len,lines,step)=>{ for(let l=0;l<lines;l++){ let last=-1e9; for(let s=0;s<len;s++){ const i=i0+(step[0]*l)+di*s, j=j0+(step[1]*l)+dj*s, k=j*N+i; if(G[k]) last=s; else if(g[k]&&s-last<=R) cnt[k]++; } } };
   pass(0,0,1,0,N,N,[0,1]); pass(N-1,0,-1,0,N,N,[0,1]); pass(0,0,0,1,N,N,[1,0]); pass(0,N-1,0,-1,N,N,[1,0]);
-  for(let k=0;k<N*N;k++) if(g[k]&&cnt[k]<3) g[k]=0;
+  for(let k=0;k<N*N;k++) if(g[k]&&cnt[k]<CF.dirs) g[k]=0;
   // clean specks: a spot counts only if most of its neighbours agree
   const c=new Uint8Array(N*N); for(let j=1;j<N-1;j++) for(let i=1;i<N-1;i++){ let s=0; for(let dy=-1;dy<=1;dy++) for(let dx=-1;dx<=1;dx++) s+=g[(j+dy)*N+i+dx]; c[j*N+i]=s>=5?1:0; }
+  // walls without tapping: on this square grid a wall is a long straight line about one tile thick. Take those out
+  // so a building is never mistaken for the wall it stands next to, and walls aren't counted as buildings
+  { const Lh=new Uint16Array(N*N), Lv=new Uint16Array(N*N);
+    for(let j=0;j<N;j++){ let i=0; while(i<N){ if(!c[j*N+i]){ i++; continue; } let e=i; while(e<N&&c[j*N+e]) e++; for(let q=i;q<e;q++) Lh[j*N+q]=e-i; i=e; } }
+    for(let i=0;i<N;i++){ let j=0; while(j<N){ if(!c[j*N+i]){ j++; continue; } let e=j; while(e<N&&c[e*N+i]) e++; for(let q=j;q<e;q++) Lv[q*N+i]=e-j; j=e; } }
+    const thin=K*CF.thin, long=K*CF.long; if(CF.wall)
+    for(let k=0;k<N*N;k++) if(c[k]&&((Lh[k]>=long&&Lv[k]<=thin)||(Lv[k]>=long&&Lh[k]<=thin))) c[k]=0; }
   if(window.__eyedbg) window.__eyeg=c;
   // distance to the nearest grass, counted in steps along rows, columns and diagonals (buildings are squares on this grid)
   const d=new Float32Array(N*N); const BIG=1e4;
@@ -4675,10 +4689,15 @@ function findBuildings(P,D,S,wallM2){
   for(let j=0;j<N;j++) for(let i=0;i<N;i++){ const k=j*N+i; if(!d[k]) continue; let m=BIG; if(i>0) m=Math.min(m,d[k-1]+1); if(j>0){ m=Math.min(m,d[k-N]+1); if(i>0) m=Math.min(m,d[k-N-1]+1); if(i<N-1) m=Math.min(m,d[k-N+1]+1); } if(i===0||j===0) m=1; d[k]=Math.min(d[k],m); }
   for(let j=N-1;j>=0;j--) for(let i=N-1;i>=0;i--){ const k=j*N+i; if(!d[k]) continue; let m=d[k]; if(i<N-1) m=Math.min(m,d[k+1]+1); if(j<N-1){ m=Math.min(m,d[k+N]+1); if(i<N-1) m=Math.min(m,d[k+N+1]+1); if(i>0) m=Math.min(m,d[k+N-1]+1); } if(i===N-1||j===N-1) m=1; d[k]=m; }
   // centres: the deepest spots first, each one claiming the square around it
-  const cand=[]; for(let j=1;j<N-1;j++) for(let i=1;i<N-1;i++){ const k=j*N+i, v=d[k]; if(v<K*.75) continue; let top=true; for(let dy=-1;dy<=1&&top;dy++) for(let dx=-1;dx<=1;dx++) if(d[(j+dy)*N+i+dx]>v){ top=false; break; } if(top) cand.push({i,j,v}); }
+  const cand=[]; for(let j=1;j<N-1;j++) for(let i=1;i<N-1;i++){ const k=j*N+i, v=d[k]; if(v<K*CF.vmin) continue; let top=true; for(let dy=-1;dy<=1&&top;dy++) for(let dx=-1;dx<=1;dx++) if(d[(j+dy)*N+i+dx]>v){ top=false; break; } if(top) cand.push({i,j,v}); }
   cand.sort((p,q)=>q.v-p.v); const out=[];
-  for(const p of cand){ if(out.some(o=>Math.max(Math.abs(o.i-p.i),Math.abs(o.j-p.j))<Math.max(o.v,p.v)*1.4)) continue; out.push(p); }
-  return out.map(p=>{ const a=(p.i+.5)/K-O, b=(p.j+.5)/K-O, u=(a-b)/44, v=(a+b-44)/44; return {x:(D.mx+D.hx*u)/P.W, y:(D.my+D.hy*v)/P.H, s:Math.min(6,2*p.v/K*1.2), a, b}; });
+  // two peaks are the same building when you can walk from one to the other without dipping toward grass
+  const joined=(p,o)=>{ const n=Math.max(Math.abs(o.i-p.i),Math.abs(o.j-p.j)); if(n<2) return true; let m=1e9; for(let s=1;s<n;s++){ const i=Math.round(p.i+(o.i-p.i)*s/n), j=Math.round(p.j+(o.j-p.j)*s/n); m=Math.min(m,d[j*N+i]); } return m>=Math.min(p.v,o.v)*CF.mj; };
+  for(const p of cand){ if(out.some(o=>{ const dc=Math.max(Math.abs(o.i-p.i),Math.abs(o.j-p.j)); return dc<Math.max(o.v,p.v)*CF.nms||(dc<Math.max(o.v,p.v)*CF.mr&&joined(p,o)); })) continue; out.push(p); }
+  // a block much bigger than any one building is several buildings pressed together (with walls between): split it into 3-tile buildings
+  const fin=[]; for(const p of out){ const s=2*p.v/K*1.2; if(s<=CF.split){ fin.push({i:p.i,j:p.j,s}); continue; }
+    const n=Math.round(s/3), step=2*p.v/n; for(let y=0;y<n;y++) for(let x=0;x<n;x++){ const i=Math.round(p.i-p.v+step*(x+.5)), j=Math.round(p.j-p.v+step*(y+.5)); if(i<0||j<0||i>=N||j>=N||!c[j*N+i]) continue; fin.push({i,j,s:Math.min(3.6,s/n*1.1)}); } }
+  return fin.map(p=>{ const a=(p.i+.5)/K-O, b=(p.j+.5)/K-O, u=(a-b)/44, v=(a+b-44)/44; return {x:(D.mx+D.hx*u)/P.W, y:(D.my+D.hy*v)/P.H, s:p.s, a, b}; });
 }
 // the game's own buttons sit on top of the picture in fixed places (wide phone screenshots): never count them as buildings
 function uiZone(x,y){ if(!SHOT||SHOT.w/SHOT.h<1.55) return x<.01||x>.99||y<.01||y>.99;
@@ -4938,7 +4957,7 @@ function shotBox(){
   const cnt=t=>SHOT.marks.filter(m=>m.t===t).length, an=SHOT.an;
   return `<div class="advshot open">
     <div class="shotbar">${SHOT_T.map(([k,l,n,c])=>`<button type="button" class="shotk" data-shotk="${k}" aria-pressed="${SHOT.mode===k}" style="--c:${c}"><i></i>${l}<small class="mono">${cnt(k)}/${n}</small></button>`).join("")}
-      <span class="shotsp"></span>${SHOT.view==="sim"?`<span id="simstate" class="mono simst"></span><button type="button" class="glink" data-sim="pause">Pause</button><button type="button" class="glink" data-sim="speed">1×</button><button type="button" class="shotview on" data-sim="stop">Stop</button>`:""}${an&&SHOT.view!=="sim"?`<button type="button" class="shotview ${SHOT.view==="plan"?"on":""}" data-shotx="view">${SHOT.view==="plan"?"Back to tapping":"Show the plan"}</button>`:""}${(an&&an.bld&&an.bld.length)||(SHOT.bld&&SHOT.bld.length)?`<button type="button" class="glink" data-shotx="eye" aria-pressed="${!!SHOT.eye}">${SHOT.eye?"Hide what the eye sees":"Show what the eye sees"}</button>`:""}<button type="button" class="glink" data-shotx="zoom">${SHOT.zoom?"Zoom out":"Zoom in"}</button><button type="button" class="shotk namek" data-shotx="name" aria-pressed="${SHOT.mode==="name"}">✎ Name buildings</button><button type="button" class="glink" data-shotx="undo">Undo</button><button type="button" class="glink" data-shotx="close">Remove picture</button></div>
+      <span class="shotsp"></span>${SHOT.view==="sim"?`<span id="simstate" class="mono simst"></span><button type="button" class="glink" data-sim="pause">Pause</button><button type="button" class="glink" data-sim="speed">1×</button><button type="button" class="shotview on" data-sim="stop">Stop</button>`:""}${an&&SHOT.view!=="sim"?`<button type="button" class="shotview ${SHOT.view==="plan"?"on":""}" data-shotx="view">${SHOT.view==="plan"?"Back to tapping":"Show the plan"}</button>`:""}${(an&&an.bld&&an.bld.length)||(SHOT.bld&&SHOT.bld.length)?`<button type="button" class="glink" data-shotx="eye" aria-pressed="${!!SHOT.eye}">${SHOT.eye?"Hide what the eye sees":"Show what the eye sees"}</button>`:""}<button type="button" class="glink" data-shotx="zoom">${SHOT.zoom?"Zoom out":"Zoom in"}</button><button type="button" class="shotk namek" data-shotx="name" aria-pressed="${SHOT.mode==="name"}">✎ Name buildings</button><button type="button" class="glink" data-shotx="undo">Undo</button>${SHOT.marks.some(m=>m.named)?`<button type="button" class="glink" data-shotx="export">Save labels for tuning</button>`:""}<button type="button" class="glink" data-shotx="close">Remove picture</button></div>
     ${SHOT.finding?`<p class="note shothint">The eye is looking over the base…</p>`:SHOT.found!=null?`<p class="note shothint">${SHOT.found?`${SHOT.bld&&SHOT.bld.length?`The eye found ${SHOT.bld.length} buildings and recognised ${SHOT.found} of the key ones`:`Recognised ${SHOT.found} building${SHOT.found>1?"s":""}`} (dashed markers). Remove any wrong one (tap it with its kind selected): the page learns from that too.${SHOT.kept||SHOT.fixed?` Learned: ${SHOT.kept||0} kept, ${SHOT.fixed||0} corrected.`:""}`:`${SHOT.bld&&SHOT.bld.length?`The eye found ${SHOT.bld.length} buildings but couldn't name the key ones yet. `:""}Tap them in; the eye learns from every tap. (${TPL.filter(q=>!q.neg).length} examples saved, ${TPL.filter(q=>q.neg).length} "not this")`}</p>`:""}
     <p class="note shothint">${SHOT.view==="sim"?"Watching the simulated attack. What happens is listed under the picture.":SHOT.mode==="name"?"Tap any building to say what it is: a Cannon, a Mortar, a storage… or that it isn't a building at all. Tap empty ground to add one the eye missed. Every name you give is used in the simulation and teaches the eye.":SHOT.mode==="wall"?"Tap one or two wall pieces (different wall levels have different colours). Found walls show in green; the page remembers the colours for your next screenshots.":SHOT.mode==="sweep"?"Tap an Air Sweeper to place it. Tap it again to turn the way it faces (the shaded cone).":an?(SHOT.view==="plan"?"The plan for the best army below. Tap the picture or a building type to go back to tapping.":"Tap more buildings to sharpen it, then press Show the plan. Tapping a marker of the selected kind removes it."):`Tap the <b>${esc(SHT[SHOT.mode].l)}</b> on the picture. Town Hall plus two more is enough to start.`}<span class="shotmob"> Swipe the picture sideways to see all of it.</span>${an&&!an.ok?" This scenery's ground colour is hard to read, so base shape is left for you to pick.":""}</p>
     <div class="shotwrap"><canvas id="shotcv" data-shotcv></canvas>${SHOT.pend?namePop():""}</div>
@@ -4958,6 +4977,9 @@ document.addEventListener("click",e=>{
   if(cv&&SHOT.view==="plan"){ SHOT.view="tap"; }
   if(x&&x.dataset.shotx==="undo") SHOT.marks.pop();
   if(x&&x.dataset.shotx==="eye"){ SHOT.eye=!SHOT.eye; }
+  if(x&&x.dataset.shotx==="export"){ const c=document.createElement("canvas"); c.width=SHOT.w; c.height=SHOT.h; c.getContext("2d").drawImage(SHOT.img,0,0);
+    const B=(SHOT.an&&SHOT.an.bld)||SHOT.bld||[], out={v:1,w:SHOT.w,h:SHOT.h,opTh:ADV.opTh||null,marks:SHOT.marks.map(m=>({t:m.t,x:+m.x.toFixed(4),y:+m.y.toFixed(4),auto:!!m.auto,named:!!m.named})),added:SHOT.addB||[],removed:SHOT.noB||[],eye:B.map(o=>({x:+o.x.toFixed(4),y:+o.y.toFixed(4),s:+o.s.toFixed(2)})),img:c.toDataURL("image/jpeg",.9)};
+    const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([JSON.stringify(out)],{type:"application/json"})); a.download=`base-labels-${Date.now()}.json`; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),4000); return; }
   if(x&&x.dataset.shotx==="name"){ SHOT.mode=SHOT.mode==="name"?"th":"name"; SHOT.view="tap"; SHOT.pend=null; if(SHOT.mode==="name") SHOT.eye=true; }
   if(x&&x.dataset.shotx==="view"){ SHOT.view=SHOT.view==="plan"?"tap":"plan"; if(SHOT.view==="plan") learnConfirmed(); }
   if(x&&x.dataset.shotx==="zoom") SHOT.zoom=!SHOT.zoom;
@@ -5259,7 +5281,7 @@ const dcount=t=>DCOUNT[Math.max(6,Math.min(12,t))];
 // hidden traps at each Town Hall
 const TCOUNT=t=>({gb:Math.max(1,Math.min(7,t-4)),b:t>=8?6:4,sp:t>=10?8:t>=8?6:4,ab:t>=11?5:t>=7?4:2,sam:t>=11?7:t>=9?4:t>=8?2:0});
 const TRAP={gb:{dmg:700,r:3,c:"#ff8a3d"},b:{dmg:150,r:1.5,c:"#ffb36b"},sp:{r:1.2,spring:10,c:"#d9d9d9"},ab:{dmg:450,r:3,air:1,c:"#ff6bd5"},sam:{dmg:1500,r:0,air:1,c:"#ff4d8d"}};
-const SIMK={troopF:1.3,defF:1,bhp:.45,runs:10};
+const SIMK={troopF:1.3,defF:1,bhp:.52,runs:10};
 const HERO_AB={28000000:"Iron Fist",28000001:"Cloak",28000002:"Eternal Tome",28000004:"Seeking Shield",28000006:"Dark Orb",28000007:"Fire Breath"};
 const isDefB=b=>!b.dead&&b.k!=="th"&&b.k!=="gen"&&b.k!=="cc"&&b.k!=="ccdef"&&(b.dps>0||b.push)&&(!b.hid||b.seen);
 const dist=(p,q)=>Math.hypot(p.x-q.x,p.y-q.y);
