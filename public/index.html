@@ -1054,6 +1054,12 @@ body.gated>*:not(#gateWrap):not(#ground):not(.grain):not(#toast){visibility:hidd
 .simlog li .mono{opacity:.6;min-width:34px;font-size:11.5px}
 .simlog.live{max-height:150px;overflow:auto;padding:8px 10px;border-radius:10px;background:color-mix(in srgb,currentColor 5%,transparent)}
 .simkey{font-size:11.5px;margin-top:6px}
+.simarmy{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.simu{display:inline-flex;align-items:center;gap:6px;padding:3px 9px 3px 3px;border-radius:999px;background:color-mix(in srgb,currentColor 6%,transparent);font-size:12px}
+.simu .ico{width:22px;height:22px}
+.simu i{font-style:normal;opacity:.7;font-size:11px}
+.simu.gone{opacity:.4;text-decoration:line-through}
+.simu.wait{opacity:.6}
 .planopts{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;margin:0 0 10px}
 .planopt{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;padding:10px 12px;border-radius:12px;border:1px solid var(--line,rgba(255,255,255,.12));background:transparent;color:inherit;font:inherit;cursor:pointer}
 .planopt small{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;opacity:.65}
@@ -4630,20 +4636,25 @@ function findMap(P,tx,ty,rad){
    Step 2, telling them apart: each building found is compared with the examples (built-in and the ones you've
    tapped), its size is checked against what that building should be, and the game's limits are kept
    (only one Town Hall, 4 Air Defenses, …). Plain geometry and arithmetic, no AI. */
-const EYE_N=132, EYE_K=3;
+const EYE_K=3, EYE_O=4, EYE_N=(44+2*EYE_O)*EYE_K;
 function findBuildings(P,D,S,wallM2){
-  const Q=sharp(), f=Q.W/P.W, N=EYE_N, K=EYE_K, g=new Uint8Array(N*N), gb=D.gb;
-  const grass=(r,gg,b)=>{ const R=r/255,G=gg/255,B=b/255, mx=Math.max(R,G,B), mn=Math.min(R,G,B), dl=mx-mn; if(!dl||mx<.2||dl/mx<.12) return false;
-    let h=mx===R?((G-B)/dl)%6:mx===G?(B-R)/dl+2:(R-G)/dl+4; h*=60; if(h<0) h+=360; const bin=Math.floor(h/10)%36, dd=Math.min(Math.abs(bin-gb),36-Math.abs(bin-gb)); return dd<=1; };
-  for(let j=0;j<N;j++) for(let i=0;i<N;i++){ const a=(i+.5)/K, b=(j+.5)/K, u=(a-b)/44, v=(a+b-44)/44; if(Math.abs(u)+Math.abs(v)>S*.98) continue;
+  const Q=sharp(), f=Q.W/P.W, N=EYE_N, K=EYE_K, O=EYE_O, g=new Uint8Array(N*N), G=new Uint8Array(N*N), gb=D.gb;
+  const grass=(r,gg,b)=>{ const R=r/255,Gc=gg/255,B=b/255, mx=Math.max(R,Gc,B), mn=Math.min(R,Gc,B), dl=mx-mn; if(!dl||mx<.2||dl/mx<.12) return false;
+    let h=mx===R?((Gc-B)/dl)%6:mx===Gc?(B-R)/dl+2:(R-Gc)/dl+4; h*=60; if(h<0) h+=360; const bin=Math.floor(h/10)%36, dd=Math.min(Math.abs(bin-gb),36-Math.abs(bin-gb)); return dd<=1; };
+  // a little past the outline too: the outline is an estimate, and edge buildings shouldn't be cut off
+  for(let j=0;j<N;j++) for(let i=0;i<N;i++){ const a=(i+.5)/K-O, b=(j+.5)/K-O, u=(a-b)/44, v=(a+b-44)/44; if(Math.abs(u)+Math.abs(v)>1.16) continue;
     const x=Math.round((D.mx+D.hx*u)*f), y=Math.round((D.my+D.hy*v)*f); if(x<0||y<0||x>=Q.W||y>=Q.H) continue; const k=y*Q.W+x;
-    if(wallM2&&wallM2[k]) continue; if(grass(Q.rgb[k*3],Q.rgb[k*3+1],Q.rgb[k*3+2])) continue; g[j*N+i]=1; }
-  // the dirt border and scenery around the grass are joined to the outside: flood in from the edge and drop them
-  const outQ=[]; for(let j=0;j<N;j++) for(let i=0;i<N;i++){ const a=(i+.5)/K, b=(j+.5)/K, u=(a-b)/44, v=(a+b-44)/44; if(Math.abs(u)+Math.abs(v)>S*.98){ outQ.push(j*N+i); } }
-  const dep=new Uint8Array(N*N), seen=new Uint8Array(N*N); for(const k of outQ) seen[k]=1;
-  for(let h=0;h<outQ.length;h++){ const k=outQ[h], i=k%N, j=(k/N)|0; if(dep[k]>=K*2.5) continue; for(const [di,dj] of [[1,0],[-1,0],[0,1],[0,-1]]){ const I=i+di, J=j+dj; if(I<0||J<0||I>=N||J>=N) continue; const q=J*N+I; if(seen[q]||!g[q]) continue; seen[q]=1; g[q]=0; dep[q]=dep[k]+1; outQ.push(q); } }
+    if(wallM2&&wallM2[k]) continue; if(grass(Q.rgb[k*3],Q.rgb[k*3+1],Q.rgb[k*3+2])){ G[j*N+i]=1; continue; } g[j*N+i]=1; }
+  if(window.__eyedbg) window.__eyeg0=g.slice();
+  // a building stands on the grass: looking along the grid's 4 directions from it, grass shows up within 6 tiles in at least 3.
+  // The dirt border, the scenery and the lava around the village only have grass on one side, so they drop out.
+  const R=6*K, cnt=new Uint8Array(N*N);
+  const pass=(i0,j0,di,dj,len,lines,step)=>{ for(let l=0;l<lines;l++){ let last=-1e9; for(let s=0;s<len;s++){ const i=i0+(step[0]*l)+di*s, j=j0+(step[1]*l)+dj*s, k=j*N+i; if(G[k]) last=s; else if(g[k]&&s-last<=R) cnt[k]++; } } };
+  pass(0,0,1,0,N,N,[0,1]); pass(N-1,0,-1,0,N,N,[0,1]); pass(0,0,0,1,N,N,[1,0]); pass(0,N-1,0,-1,N,N,[1,0]);
+  for(let k=0;k<N*N;k++) if(g[k]&&cnt[k]<3) g[k]=0;
   // clean specks: a spot counts only if most of its neighbours agree
   const c=new Uint8Array(N*N); for(let j=1;j<N-1;j++) for(let i=1;i<N-1;i++){ let s=0; for(let dy=-1;dy<=1;dy++) for(let dx=-1;dx<=1;dx++) s+=g[(j+dy)*N+i+dx]; c[j*N+i]=s>=5?1:0; }
+  if(window.__eyedbg) window.__eyeg=c;
   // distance to the nearest grass, counted in steps along rows, columns and diagonals (buildings are squares on this grid)
   const d=new Float32Array(N*N); const BIG=1e4;
   for(let k=0;k<N*N;k++) d[k]=c[k]?BIG:0;
@@ -4652,8 +4663,8 @@ function findBuildings(P,D,S,wallM2){
   // centres: the deepest spots first, each one claiming the square around it
   const cand=[]; for(let j=1;j<N-1;j++) for(let i=1;i<N-1;i++){ const k=j*N+i, v=d[k]; if(v<K*.75) continue; let top=true; for(let dy=-1;dy<=1&&top;dy++) for(let dx=-1;dx<=1;dx++) if(d[(j+dy)*N+i+dx]>v){ top=false; break; } if(top) cand.push({i,j,v}); }
   cand.sort((p,q)=>q.v-p.v); const out=[];
-  for(const p of cand){ if(out.some(o=>Math.max(Math.abs(o.i-p.i),Math.abs(o.j-p.j))<Math.max(o.v,p.v)*1.55)) continue; out.push(p); }
-  return out.map(p=>{ const a=(p.i+.5)/K, b=(p.j+.5)/K, u=(a-b)/44, v=(a+b-44)/44; return {x:(D.mx+D.hx*u)/P.W, y:(D.my+D.hy*v)/P.H, s:Math.min(6,2*p.v/K*1.2), a, b}; });
+  for(const p of cand){ if(out.some(o=>Math.max(Math.abs(o.i-p.i),Math.abs(o.j-p.j))<Math.max(o.v,p.v)*1.4)) continue; out.push(p); }
+  return out.map(p=>{ const a=(p.i+.5)/K-O, b=(p.j+.5)/K-O, u=(a-b)/44, v=(a+b-44)/44; return {x:(D.mx+D.hx*u)/P.W, y:(D.my+D.hy*v)/P.H, s:Math.min(6,2*p.v/K*1.2), a, b}; });
 }
 /* auto-find: every building you tap is saved on this device as a tiny 16×16 picture, sized to the map.
    On a new screenshot the page slides those pictures over the base and keeps the strongest matches
@@ -4791,7 +4802,7 @@ function shotAnalyze(){
       if(ly>=4) traits.shape="boxed"; else if(traits.shape==="boxed"&&ly<=2) traits.shape=fill>.6?"compact":"spread"; }
     else if(tapped.length) notes.push(wm.share>=.25?"That wall colour matches too much of the picture; tap the light top edge of a wall":"Couldn't trace walls from that spot; tap right on the top edge of a wall"); }
   // the eye: every building's place and size (walls taken out first when they're known)
-  const bld=D.ok&&D.gb!=null?findBuildings(P,D,S,walls&&walls.M2):[];
+  const bld=D.ok&&D.gb!=null?findBuildings(P,D,1,walls&&walls.M2):[];
   if(bld.length) notes.push(`The eye found ${bld.length} buildings on this base`);
   return {D,S,P:P2,traits,notes,fill,ok:D.ok,walls,bld};
 }
@@ -4897,7 +4908,7 @@ function shotBox(){
     ${SHOT.finding?`<p class="note shothint">The eye is looking over the base…</p>`:SHOT.found!=null?`<p class="note shothint">${SHOT.found?`${SHOT.bld&&SHOT.bld.length?`The eye found ${SHOT.bld.length} buildings and recognised ${SHOT.found} of the key ones`:`Recognised ${SHOT.found} building${SHOT.found>1?"s":""}`} (dashed markers). Remove any wrong one (tap it with its kind selected): the page learns from that too.${SHOT.kept||SHOT.fixed?` Learned: ${SHOT.kept||0} kept, ${SHOT.fixed||0} corrected.`:""}`:`${SHOT.bld&&SHOT.bld.length?`The eye found ${SHOT.bld.length} buildings but couldn't name the key ones yet. `:""}Tap them in; the eye learns from every tap. (${TPL.filter(q=>!q.neg).length} examples saved, ${TPL.filter(q=>q.neg).length} "not this")`}</p>`:""}
     <p class="note shothint">${SHOT.view==="sim"?"Watching the simulated attack. What happens is listed under the picture.":SHOT.mode==="wall"?"Tap one or two wall pieces (different wall levels have different colours). Found walls show in green; the page remembers the colours for your next screenshots.":SHOT.mode==="sweep"?"Tap an Air Sweeper to place it. Tap it again to turn the way it faces (the shaded cone).":an?(SHOT.view==="plan"?"The plan for the best army below. Tap the picture or a building type to go back to tapping.":"Tap more buildings to sharpen it, then press Show the plan. Tapping a marker of the selected kind removes it."):`Tap the <b>${esc(SHT[SHOT.mode].l)}</b> on the picture. Town Hall plus two more is enough to start.`}<span class="shotmob"> Swipe the picture sideways to see all of it.</span>${an&&!an.ok?" This scenery's ground colour is hard to read, so base shape is left for you to pick.":""}</p>
     <div class="shotwrap"><canvas id="shotcv" data-shotcv></canvas></div>
-    ${SHOT.view==="sim"?`<ol id="simlog" class="simlog live" aria-live="polite"></ol><p class="note simkey">White: ground troops · blue: air · gold: heroes · dark squares: defenses guessed from the Town Hall level (C cannon, A archer tower, M mortar, W wizard tower, X X-Bow, T tesla, B bomb tower) · Inferno 1 = single, 5 = multi · stars: traps that went off.</p>`:""}
+    ${SHOT.view==="sim"?`<div id="simarmy" class="simarmy"></div><ol id="simlog" class="simlog live" aria-live="polite"></ol><p class="note simkey">Outlines: every building the simulation uses (coloured: the ones named, red letters: defenses guessed from the Town Hall level — C cannon, A archer tower, M mortar, W wizard tower, X X-Bow, T tesla, B bomb tower). Dark: destroyed. IN·1 single Inferno, IN·5 multi. Stars: traps that went off. Flyers have a shadow.</p>`:""}
     ${an?`<ul class="advnotes">${an.notes.map(n=>`<li>${esc(n)}</li>`).join("")}</ul>
     ${an.steps?`<div class="shotsteps"><b>The attack, on this base</b><ol>${an.steps.map(t=>`<li>${esc(t)}</li>`).join("")}</ol><p class="note">Green arrow: start. Gold line: hero path. Yellow dots: funnel. Rings: spells.</p></div>`:""}`:""}
   </div>`;
@@ -5214,6 +5225,7 @@ function simSetup(plan,a,th){
   const mk=(k,x,y,d,guess)=>({k,x,y,...d,hp:d.hp*opF*SIMK.bhp,max:d.hp*opF*SIMK.bhp,dps:(d.dps||0)*opF*SIMK.defF,frz:0,cdl:Math.random()*(d.cd||0),lock:null,ramp:0,guess:!!guess});
   const B=[];
   for(const m of an.P){ const d=SDEF[m.t]; if(!d) continue; const b=mk(m.t,m.x*SHOT.w,m.y*SHOT.h,d); if(m.t==="inf") b.single=Math.random()<.5; B.push(b); }
+  const SZ={th:4,ad:3,eagle:4,inf:2,scat:3,sweep:2,cc:3}; for(const b of B) b.s=SZ[b.k]||3;
   const thB=B.find(b=>b.k==="th"); if(thB&&oth>=12){ Object.assign(thB,{dps:220*opF,r:7,both:1,splash:1,cd:1.2,cdl:0}); }   // from TH12 the Town Hall fights back
   // every other building: where the picture isn't grass inside the base, about every 3 tiles
   const step=Math.max(6,Math.round(3*tile/K)), cand=[];
@@ -5229,8 +5241,8 @@ function simSetup(plan,a,th){
   const free=cand.slice(), nDef=want.reduce((s,n)=>s+n,0), share=Math.min(1,free.length*.5/Math.max(1,nDef));
   for(const i of [4,2,3,6,5,1,0]){ const k=kinds[i], n=Math.round(want[i]*share);
     for(let j=0;j<n&&free.length;j++){ const [lo,hi]=band[k]; const sz=s=>s.s==null||(k==="tesla"?s.s<3.2:s.s>=2&&s.s<4.3); let c=free.filter(s=>sz(s)&&s.r>=lo&&s.r<=hi&&!B.some(b=>b.k===k&&Math.hypot(b.x-s.x,b.y-s.y)<tile*5)); if(!c.length) c=free.filter(sz); if(!c.length) c=free;
-      const s=c[Math.floor(Math.random()*c.length)]; free.splice(free.indexOf(s),1); B.push(mk(k,s.x,s.y,SDEF[k],1)); } }
-  for(const s of free){ const f=s.s?Math.max(.4,Math.min(2.2,(s.s/3)**2)):1; B.push(mk("gen",s.x,s.y,{...SDEF.gen,hp:SDEF.gen.hp*f},1)); }
+      const s=c[Math.floor(Math.random()*c.length)]; free.splice(free.indexOf(s),1); B.push({...mk(k,s.x,s.y,SDEF[k],1),s:s.s||(k==="tesla"?2:3)}); } }
+  for(const s of free){ const f=s.s?Math.max(.4,Math.min(2.2,(s.s/3)**2)):1; B.push({...mk("gen",s.x,s.y,{...SDEF.gen,hp:SDEF.gen.hp*f},1),s:s.s||3}); }
   // hidden traps, in the gaps between buildings
   const traps=[];
   for(const [k,n] of Object.entries(TCOUNT(oth))) for(let j=0;j<n;j++) for(let tr=0;tr<25;tr++){
@@ -5257,7 +5269,8 @@ function simSetup(plan,a,th){
   const nsp=id=>(A.spells.find(([q])=>q===id)||[0,0])[1];
   // walls from the picture: each wall pixel has hit points; Wall Breakers blow holes, Jump lets troops over
   let wall=null, whp=null; if(an.walls){ wall=an.walls.M; whp=new Float32Array(wall.length); for(let i=0;i<wall.length;i++) if(wall[i]) whp[i]=1800*opF; }
-  const W={B,T,traps,t:0,tile,K,PW:P.W,PH:P.H,wall,whp,broken:[],opF,oth,spots,fx:[],zones:[],shots:[],ev:[],evk:{},kill:{},lost:{},hs:0,fk:0,start:S,ccOut:false,
+  const iso={ax:D.hx/44*K,ay:D.hy/44*K,bx:-D.hx/44*K,by:D.hy/44*K};
+  const W={B,T,traps,iso,t:0,tile,K,PW:P.W,PH:P.H,wall,whp,broken:[],opF,oth,spots,fx:[],zones:[],shots:[],ev:[],evk:{},kill:{},lost:{},hs:0,fk:0,start:S,ccOut:false,
     ph:[0,funnel?null:0,null,null],boxed:!an.walls&&ADV.traits.shape==="boxed",
     spells:{rage:nsp(26000002),freeze:nsp(26000005),heal:nsp(26000001),zap:nsp(26000000),eq:nsp(26000010),jump:nsp(26000003),poison:nsp(26000009),haste:nsp(26000011),inv:nsp(26000035)}};
   if(!funnel){ W.ph[2]=3; W.ph[3]=5; }
@@ -5414,6 +5427,15 @@ function simPlay(plan,a,th,seed){
     drawSim(); requestAnimationFrame(tick); };
   requestAnimationFrame(tick);
 }
+// troop badges for the animation: the same badges as the army list, drawn once into small pictures
+const SIMICO=new Map();
+function simIcon(id){ if(SIMICO.has(id)) return SIMICO.get(id); SIMICO.set(id,null);
+  try{ const im=new Image(); im.onload=()=>{ const c=document.createElement("canvas"); c.width=c.height=48; c.getContext("2d").drawImage(im,0,0,48,48); SIMICO.set(id,c); }; im.src=token(id); }catch(e){}
+  return null; }
+function simArmyBar(W){ const el=document.getElementById("simarmy"); if(!el) return;
+  const grp=new Map(); for(const q of W.T){ const k=q.u; if(!grp.has(k)) grp.set(k,{n:0,alive:0,in:0,hero:q.hero}); const o=grp.get(k); o.n++; if(q.at<=W.t){ o.in++; if(q.hp>0) o.alive++; } }
+  const key=[...grp.values()].map(o=>o.alive+"/"+o.in).join(","); if(el.dataset.k===key) return; el.dataset.k=key;
+  el.innerHTML=[...grp.entries()].map(([u,o])=>`<span class="simu${o.in&&!o.alive?" gone":""}${o.in?"":" wait"}">${ico(u)}<b>${esc(name(u))}</b><i class="mono">${o.in?`${o.alive}/${o.n}`:`waiting · ${o.n}`}</i></span>`).join(""); }
 const mmss=t=>{ const m=Math.max(0,180-t); return `${Math.floor(m/60)}:${String(Math.floor(m%60)).padStart(2,"0")}`; };
 function drawSim(){
   const cv=document.getElementById("shotcv"); if(!cv||!SIM) return; drawShotBase(cv);
@@ -5421,23 +5443,38 @@ function drawSim(){
   if(W.broken.length){ g.save(); g.fillStyle="rgba(20,14,8,.75)"; for(const i of W.broken){ const x=(i%W.PW)*W.K, y=Math.floor(i/W.PW)*W.K; g.fillRect(x-W.K/2,y-W.K/2,W.K,W.K); } g.restore(); }
   for(const z of W.zones.filter(z=>z.until>W.t)){ g.save(); g.globalAlpha=.28; g.fillStyle=z.c; g.beginPath(); g.ellipse(z.x,z.y,z.r,z.r*.6,0,0,Math.PI*2); g.fill(); g.restore(); }
   for(const tr of W.traps) if(!tr.on){ g.save(); g.strokeStyle=tr.c; g.lineWidth=1.5*u; g.globalAlpha=.8; g.beginPath(); for(let i=0;i<6;i++){ const a=i*Math.PI/3; g.moveTo(tr.x+Math.cos(a)*2*u,tr.y+Math.sin(a)*2*u); g.lineTo(tr.x+Math.cos(a)*5*u,tr.y+Math.sin(a)*5*u); } g.stroke(); g.restore(); }
-  for(const b of W.B){
-    if(b.k==="gen"){ if(b.dead){ g.save(); g.strokeStyle="rgba(0,0,0,.65)"; g.lineWidth=2*u; g.beginPath(); g.moveTo(b.x-4*u,b.y-3*u); g.lineTo(b.x+4*u,b.y+3*u); g.moveTo(b.x+4*u,b.y-3*u); g.lineTo(b.x-4*u,b.y+3*u); g.stroke(); g.restore(); } continue; }
-    if(b.k==="ccdef"){ if(!b.dead){ g.save(); g.fillStyle="#ff4d4d"; g.strokeStyle="#000"; g.lineWidth=1*u; for(let i=0;i<3;i++){ g.beginPath(); g.arc(b.x+(i-1)*4*u,b.y+(i%2)*3*u,3*u,0,Math.PI*2); g.fill(); g.stroke(); } g.restore(); } continue; }
-    if(DLET[b.k]){ if(b.hid&&!b.seen) continue; g.save(); g.globalAlpha=b.dead?.3:.85; g.fillStyle=b.dead?"#333":"rgba(0,0,0,.6)"; g.strokeStyle=b.dead?"#555":"#ff8a8a"; g.lineWidth=1*u; g.fillRect(b.x-4.5*u,b.y-4.5*u,9*u,9*u); g.strokeRect(b.x-4.5*u,b.y-4.5*u,9*u,9*u);
-      g.fillStyle="#ffd0d0"; g.font=`800 ${6.5*u}px system-ui`; g.textAlign="center"; g.textBaseline="middle"; g.fillText(DLET[b.k],b.x,b.y+.5*u);
-      if(!b.dead&&b.hp<b.max){ g.globalAlpha=1; g.fillStyle="#000"; g.fillRect(b.x-6*u,b.y-8*u,12*u,2*u); g.fillStyle="#3ee08f"; g.fillRect(b.x-6*u,b.y-8*u,12*u*b.hp/b.max,2*u); } g.restore(); continue; }
-    const c=SHT[b.k]?SHT[b.k].c:"#fff"; g.save(); g.globalAlpha=b.dead?.35:1; g.fillStyle=b.dead?"#333":c; g.strokeStyle="#000"; g.lineWidth=1.5*u; g.beginPath(); g.arc(b.x,b.y,6*u,0,Math.PI*2); g.fill(); g.stroke();
-    if(!b.dead&&b.hp<b.max){ g.fillStyle="#000"; g.fillRect(b.x-8*u,b.y-11*u,16*u,2.5*u); g.fillStyle="#3ee08f"; g.fillRect(b.x-8*u,b.y-11*u,16*u*b.hp/b.max,2.5*u); }
-    if(b.k==="eagle"&&!b.dead&&!b.awake){ g.fillStyle="#fff"; g.font=`800 ${7*u}px system-ui`; g.textAlign="center"; g.fillText("z",b.x+8*u,b.y-6*u); }
-    if(b.k==="inf"&&!b.dead){ g.fillStyle="#111"; g.font=`800 ${6*u}px system-ui`; g.textAlign="center"; g.textBaseline="middle"; g.fillText(b.single?"1":"5",b.x,b.y+.5*u); }
-    if(b.frz>W.t){ g.strokeStyle="#7fd8ff"; g.lineWidth=2.5*u; g.beginPath(); g.arc(b.x,b.y,9*u,0,Math.PI*2); g.stroke(); } g.restore(); }
-  for(const s of W.shots){ g.save(); g.strokeStyle=s.c; g.globalAlpha=.8; g.lineWidth=1.2*u; g.beginPath(); g.moveTo(s.x1,s.y1); g.lineTo(s.x2,s.y2); g.stroke(); g.restore(); }
-  for(const q of W.T){ if(q.at>W.t||q.hp<=0) continue; g.save(); const r=q.hero?5*u:q.siege?4.5*u:Math.max(2.2*u,Math.min(4.5*u,Math.sqrt(HS[q.u]||1)*1.3*u));
-    if(q.cloak>W.t) g.globalAlpha=.35;
-    g.fillStyle=q.hero?"#f5c542":q.heal?"#9dff9d":q.air?"#9ef0ff":"#ffffff"; g.strokeStyle="#000"; g.lineWidth=1*u; g.beginPath(); g.arc(q.x,q.y,r,0,Math.PI*2); g.fill(); g.stroke();
-    if(q.hero){ g.fillStyle="#000"; g.fillRect(q.x-6*u,q.y-9*u,12*u,2*u); g.fillStyle=q.hp<q.max*.45?"#ff6b6b":"#3ee08f"; g.fillRect(q.x-6*u,q.y-9*u,12*u*q.hp/q.max,2*u); }
+  // every building the simulation knows about: its footprint, grey when standing, dark rubble when destroyed
+  const I=W.iso, foot=(b,f=1)=>{ const h=(b.s||3)/2*f; g.beginPath(); g.moveTo(b.x+(-h)*I.ax+(-h)*I.bx,b.y+(-h)*I.ay+(-h)*I.by); g.lineTo(b.x+h*I.ax+(-h)*I.bx,b.y+h*I.ay+(-h)*I.by); g.lineTo(b.x+h*I.ax+h*I.bx,b.y+h*I.ay+h*I.by); g.lineTo(b.x+(-h)*I.ax+h*I.bx,b.y+(-h)*I.ay+h*I.by); g.closePath(); };
+  for(const b of W.B){ if(b.k==="ccdef"||(b.hid&&!b.seen)) continue; g.save(); foot(b,.92);
+    if(b.dead){ g.fillStyle="rgba(15,10,6,.72)"; g.fill(); g.strokeStyle="rgba(0,0,0,.6)"; g.lineWidth=1*u; g.stroke(); }
+    else { g.strokeStyle=DLET[b.k]?"rgba(255,140,140,.7)":SHT[b.k]?SHT[b.k].c:"rgba(255,255,255,.45)"; g.lineWidth=(SHT[b.k]?1.6:1)*u; g.stroke();
+      if(b.hp<b.max){ g.fillStyle="#000"; g.fillRect(b.x-7*u,b.y-(b.s||3)*I.ay*.5-4*u,14*u,2.4*u); g.fillStyle=b.hp<b.max*.35?"#ff6b6b":"#3ee08f"; g.fillRect(b.x-7*u,b.y-(b.s||3)*I.ay*.5-4*u,14*u*b.hp/b.max,2.4*u); } }
     g.restore(); }
+  // labels on defenses: the ones you tapped (coloured) and the ones guessed (letters)
+  for(const b of W.B){ if(b.dead||b.k==="gen"||b.k==="ccdef"||(b.hid&&!b.seen)) continue; const lab=MK[b.k]||DLET[b.k]; if(!lab) continue;
+    g.save(); g.font=`800 ${6*u}px system-ui`; const tw=g.measureText(lab).width+5*u; g.fillStyle=SHT[b.k]?SHT[b.k].c:"rgba(60,20,20,.85)"; g.globalAlpha=.9; g.fillRect(b.x-tw/2,b.y-4*u,tw,8*u);
+    g.fillStyle=SHT[b.k]?"#111":"#ffd0d0"; g.textAlign="center"; g.textBaseline="middle"; g.fillText(b.k==="inf"?(b.single?"IN·1":"IN·5"):lab,b.x,b.y+.3*u);
+    if(b.k==="eagle"&&!b.awake){ g.fillStyle="#fff"; g.fillText("zz",b.x+tw/2+5*u,b.y-5*u); }
+    if(b.frz>W.t){ g.strokeStyle="#7fd8ff"; g.lineWidth=2.5*u; g.beginPath(); g.arc(b.x,b.y,9*u,0,Math.PI*2); g.stroke(); } g.restore(); }
+  const cdf=W.B.find(b=>b.k==="ccdef"&&!b.dead); if(cdf){ g.save(); g.fillStyle="#ff4d4d"; g.strokeStyle="#000"; g.lineWidth=1*u; for(let i=0;i<3;i++){ g.beginPath(); g.arc(cdf.x+(i-1)*4*u,cdf.y+(i%2)*3*u,3*u,0,Math.PI*2); g.fill(); g.stroke(); } g.restore(); }
+  for(const s of W.shots){ g.save(); g.strokeStyle=s.c; g.globalAlpha=.8; g.lineWidth=1.2*u; g.beginPath(); g.moveTo(s.x1,s.y1); g.lineTo(s.x2,s.y2); g.stroke(); g.restore(); }
+  // your army: each troop with its own badge, heroes bigger with a health bar, flyers with a shadow under them
+  const live=W.T.filter(q=>q.at<=W.t&&q.hp>0).sort((p,q)=>(p.air-q.air)||(p.y-q.y));
+  for(const q of live){ const r=q.hero?10*u:q.siege?8.5*u:HS[q.u]>=10?8*u:6.5*u, lift=q.air?8*u:0, im=simIcon(q.u);
+    g.save(); if(q.cloak>W.t) g.globalAlpha=.35;
+    if(q.air){ g.fillStyle="rgba(0,0,0,.35)"; g.beginPath(); g.ellipse(q.x,q.y+2*u,r*.8,r*.35,0,0,Math.PI*2); g.fill(); }
+    if(im) g.drawImage(im,q.x-r,q.y-r-lift,2*r,2*r);
+    else { g.fillStyle=q.hero?"#f5c542":q.air?"#9ef0ff":"#fff"; g.strokeStyle="#000"; g.lineWidth=1*u; g.beginPath(); g.arc(q.x,q.y-lift,r*.6,0,Math.PI*2); g.fill(); g.stroke(); }
+    if(q.hero){ g.strokeStyle="#f5c542"; g.lineWidth=1.4*u; g.beginPath(); g.arc(q.x,q.y-lift,r+1*u,0,Math.PI*2); g.stroke(); }
+    if(q.hero||q.hp<q.max*.98&&HS[q.u]>=5){ const w=q.hero?16*u:11*u; g.globalAlpha=1; g.fillStyle="#000"; g.fillRect(q.x-w/2,q.y-r-lift-4*u,w,2.2*u); g.fillStyle=q.hp<q.max*.45?"#ff6b6b":"#3ee08f"; g.fillRect(q.x-w/2,q.y-r-lift-4*u,w*q.hp/q.max,2.2*u); }
+    g.restore(); }
+  // name tags: one per group of the same troop, so you can tell who's who
+  const groups=[]; for(const q of live){ const R=3.2*W.tile; let G=groups.find(o=>o.u===q.u&&Math.hypot(o.x0-q.x,o.y0-q.y)<R); if(!G){ G={u:q.u,x0:q.x,y0:q.y,xs:0,ys:0,n:0,air:q.air,hero:q.hero,top:1e9}; groups.push(G); } G.xs+=q.x; G.ys+=q.y; G.n++; G.top=Math.min(G.top,q.y); }
+  g.save(); g.font=`700 ${7*u}px system-ui`; g.textAlign="center"; g.textBaseline="middle";
+  for(const G of groups){ const x=G.xs/G.n, y=G.ys/G.n+(G.hero?13:10)*u, t=`${name(G.u)}${G.n>1?` ×${G.n}`:""}`, tw=g.measureText(t).width+7*u;
+    g.fillStyle=G.hero?"rgba(60,45,5,.85)":G.air?"rgba(10,40,60,.85)":"rgba(0,0,0,.72)"; g.fillRect(x-tw/2,y-5*u,tw,10*u); g.fillStyle=G.hero?"#f5c542":G.air?"#9ef0ff":"#fff"; g.fillText(t,x,y+.3*u); }
+  g.restore();
+  simArmyBar(W);
   const sc=simScore(W);
   g.save(); g.fillStyle="rgba(0,0,0,.65)"; g.fillRect(8*u,8*u,150*u,26*u); g.fillStyle="#fff"; g.font=`800 ${12*u}px system-ui`; g.textBaseline="middle";
   g.fillText(`${mmss(W.t)}   ${sc.pct}%   `,14*u,21*u); g.fillStyle="#f5c542"; g.fillText("★".repeat(sc.stars)+"☆".repeat(3-sc.stars),100*u,21*u); g.restore();
