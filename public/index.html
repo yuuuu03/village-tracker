@@ -1054,6 +1054,13 @@ body.gated>*:not(#gateWrap):not(#ground):not(.grain):not(#toast){visibility:hidd
 .simlog li .mono{opacity:.6;min-width:34px;font-size:11.5px}
 .simlog.live{max-height:150px;overflow:auto;padding:8px 10px;border-radius:10px;background:color-mix(in srgb,currentColor 5%,transparent)}
 .simkey{font-size:11.5px;margin-top:6px}
+.planopts{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;margin:0 0 10px}
+.planopt{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;padding:10px 12px;border-radius:12px;border:1px solid var(--line,rgba(255,255,255,.12));background:transparent;color:inherit;font:inherit;cursor:pointer}
+.planopt small{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;opacity:.65}
+.planopt b{font-size:13.5px;line-height:1.25}
+.planopt span{font-size:12px;opacity:.8}
+.planopt[aria-selected="true"]{border-color:#f5c542;background:color-mix(in srgb,#f5c542 10%,transparent)}
+@media (max-width:600px){.planopts{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:78%;overflow-x:auto;scroll-snap-type:x mandatory}.planopt{scroll-snap-align:start}}
 .think{border-radius:12px;padding:10px 14px;box-shadow:inset 0 0 0 1px var(--line-2)}
 .think summary{cursor:pointer;font-weight:700;font-size:13px}.think summary small{font-weight:400;color:var(--muted);margin-left:6px}
 .think ol{margin:8px 0 2px;padding-left:20px;display:grid;gap:7px;font-size:13px;color:var(--ink-2);line-height:1.45}
@@ -4598,7 +4605,7 @@ function findMap(P,tx,ty,rad){
   for(let y=0;y<P.H;y++) for(let x=0;x<P.W;x++){ const i=y*P.W+x; if(P.sat[i]<.15||P.val[i]<.2||Math.hypot(x-tx,(y-ty)*1.7)>rad) continue; bins[P.hue[i]]++; }
   const tot=bins.reduce((a,b)=>a+b,0), gb=bins.indexOf(Math.max(...bins)), share=(bins[(gb+35)%36]+bins[gb]+bins[(gb+1)%36])/(tot||1);
   const isG=new Uint8Array(P.W*P.H); for(let i=0;i<P.W*P.H;i++){ const dd=Math.min(Math.abs(P.hue[i]-gb),36-Math.abs(P.hue[i]-gb)); isG[i]=dd<=1&&P.sat[i]>.12&&P.val[i]>.2?1:0; }
-  if(share<.18) return {isG,ok:false};
+  if(share<.18) return {isG,ok:false,gb};
   // coarse cells: a cell is "map" if there's grass nearby (buildings sit on grass, lava doesn't)
   const C=4, CW=Math.ceil(P.W/C), CH=Math.ceil(P.H/C), fr=new Float32Array(CW*CH);
   for(let cy=0;cy<CH;cy++) for(let cx=0;cx<CW;cx++){ let g=0,n=0; for(let y=cy*C;y<Math.min(P.H,cy*C+C);y++) for(let x=cx*C;x<Math.min(P.W,cx*C+C);x++){ g+=isG[y*P.W+x]; n++; } fr[cy*CW+cx]=g/n; }
@@ -4613,13 +4620,48 @@ function findMap(P,tx,ty,rad){
   const mx=(L[0]+R[0])/2, my=(L[1]+R[1])/2, hx=(R[0]-L[0])/2;
   let hy=touchT&&touchB?hx/1.7:touchT?B[1]-my:touchB?my-T[1]:Math.max(my-T[1],B[1]-my);
   hy=Math.max(hx/2.2,Math.min(hx/1.2,hy));
-  return {isG,ok:true,mx,my,hx,hy};
+  return {isG,ok:true,mx,my,hx,hy,gb};
+}
+
+/* ---------------- the eye ----------------
+   Step 1, finding every building. The village is a 44×44 grid of tiles seen at an angle. The page turns the picture
+   back into that square grid (3 samples a tile, from a sharper copy), marks every spot that isn't grass or wall,
+   then finds the squares: a building's centre is the spot furthest from any grass, and that distance is its size.
+   Step 2, telling them apart: each building found is compared with the examples (built-in and the ones you've
+   tapped), its size is checked against what that building should be, and the game's limits are kept
+   (only one Town Hall, 4 Air Defenses, …). Plain geometry and arithmetic, no AI. */
+const EYE_N=132, EYE_K=3;
+function findBuildings(P,D,S,wallM2){
+  const Q=sharp(), f=Q.W/P.W, N=EYE_N, K=EYE_K, g=new Uint8Array(N*N), gb=D.gb;
+  const grass=(r,gg,b)=>{ const R=r/255,G=gg/255,B=b/255, mx=Math.max(R,G,B), mn=Math.min(R,G,B), dl=mx-mn; if(!dl||mx<.2||dl/mx<.12) return false;
+    let h=mx===R?((G-B)/dl)%6:mx===G?(B-R)/dl+2:(R-G)/dl+4; h*=60; if(h<0) h+=360; const bin=Math.floor(h/10)%36, dd=Math.min(Math.abs(bin-gb),36-Math.abs(bin-gb)); return dd<=1; };
+  for(let j=0;j<N;j++) for(let i=0;i<N;i++){ const a=(i+.5)/K, b=(j+.5)/K, u=(a-b)/44, v=(a+b-44)/44; if(Math.abs(u)+Math.abs(v)>S*.98) continue;
+    const x=Math.round((D.mx+D.hx*u)*f), y=Math.round((D.my+D.hy*v)*f); if(x<0||y<0||x>=Q.W||y>=Q.H) continue; const k=y*Q.W+x;
+    if(wallM2&&wallM2[k]) continue; if(grass(Q.rgb[k*3],Q.rgb[k*3+1],Q.rgb[k*3+2])) continue; g[j*N+i]=1; }
+  // the dirt border and scenery around the grass are joined to the outside: flood in from the edge and drop them
+  const outQ=[]; for(let j=0;j<N;j++) for(let i=0;i<N;i++){ const a=(i+.5)/K, b=(j+.5)/K, u=(a-b)/44, v=(a+b-44)/44; if(Math.abs(u)+Math.abs(v)>S*.98){ outQ.push(j*N+i); } }
+  const dep=new Uint8Array(N*N), seen=new Uint8Array(N*N); for(const k of outQ) seen[k]=1;
+  for(let h=0;h<outQ.length;h++){ const k=outQ[h], i=k%N, j=(k/N)|0; if(dep[k]>=K*2.5) continue; for(const [di,dj] of [[1,0],[-1,0],[0,1],[0,-1]]){ const I=i+di, J=j+dj; if(I<0||J<0||I>=N||J>=N) continue; const q=J*N+I; if(seen[q]||!g[q]) continue; seen[q]=1; g[q]=0; dep[q]=dep[k]+1; outQ.push(q); } }
+  // clean specks: a spot counts only if most of its neighbours agree
+  const c=new Uint8Array(N*N); for(let j=1;j<N-1;j++) for(let i=1;i<N-1;i++){ let s=0; for(let dy=-1;dy<=1;dy++) for(let dx=-1;dx<=1;dx++) s+=g[(j+dy)*N+i+dx]; c[j*N+i]=s>=5?1:0; }
+  // distance to the nearest grass, counted in steps along rows, columns and diagonals (buildings are squares on this grid)
+  const d=new Float32Array(N*N); const BIG=1e4;
+  for(let k=0;k<N*N;k++) d[k]=c[k]?BIG:0;
+  for(let j=0;j<N;j++) for(let i=0;i<N;i++){ const k=j*N+i; if(!d[k]) continue; let m=BIG; if(i>0) m=Math.min(m,d[k-1]+1); if(j>0){ m=Math.min(m,d[k-N]+1); if(i>0) m=Math.min(m,d[k-N-1]+1); if(i<N-1) m=Math.min(m,d[k-N+1]+1); } if(i===0||j===0) m=1; d[k]=Math.min(d[k],m); }
+  for(let j=N-1;j>=0;j--) for(let i=N-1;i>=0;i--){ const k=j*N+i; if(!d[k]) continue; let m=d[k]; if(i<N-1) m=Math.min(m,d[k+1]+1); if(j<N-1){ m=Math.min(m,d[k+N]+1); if(i<N-1) m=Math.min(m,d[k+N+1]+1); if(i>0) m=Math.min(m,d[k+N-1]+1); } if(i===N-1||j===N-1) m=1; d[k]=m; }
+  // centres: the deepest spots first, each one claiming the square around it
+  const cand=[]; for(let j=1;j<N-1;j++) for(let i=1;i<N-1;i++){ const k=j*N+i, v=d[k]; if(v<K*.75) continue; let top=true; for(let dy=-1;dy<=1&&top;dy++) for(let dx=-1;dx<=1;dx++) if(d[(j+dy)*N+i+dx]>v){ top=false; break; } if(top) cand.push({i,j,v}); }
+  cand.sort((p,q)=>q.v-p.v); const out=[];
+  for(const p of cand){ if(out.some(o=>Math.max(Math.abs(o.i-p.i),Math.abs(o.j-p.j))<Math.max(o.v,p.v)*1.55)) continue; out.push(p); }
+  return out.map(p=>{ const a=(p.i+.5)/K, b=(p.j+.5)/K, u=(a-b)/44, v=(a+b-44)/44; return {x:(D.mx+D.hx*u)/P.W, y:(D.my+D.hy*v)/P.H, s:Math.min(6,2*p.v/K*1.2), a, b}; });
 }
 /* auto-find: every building you tap is saved on this device as a tiny 16×16 picture, sized to the map.
    On a new screenshot the page slides those pictures over the base and keeps the strongest matches
    (normalised cross-correlation: plain maths, no AI). More bases tapped = better matches. */
 const TPL_N=16, TPL_PER=8;
 let TPL=(()=>{ try{ return JSON.parse(localStorage.getItem("cvt.tpl")||"[]"); }catch(e){ return []; } })();
+// built-in examples, so the eye recognises the main buildings before you've tapped anything (from a TH16 war base)
+const TPL_STARTER=[{"t":"th","d":"pptdpJhgopVdpZpfp5thopZZnYZGw6FUrJVjRzRHPzJPRTlLcmpTlpFcnpVgnZBcpZphpZljpZdfqJtgpphcnoVOlWo2tI1F58JsxrJrlZNdl5NgnZVfoZVgoZNfn5NdoZFnpplgopZbo5dbppdamHtNkWtOup5z2q97xpxipp1cn5dfoZVhoZdjoZZgm5Fbg25oqJtgopdaqJlarJdYoo9kopV+vrKZ18iw17CSu5Npp5NjoJRhnJZtnpdkgXlhd2NRvalitZpZvpVTn3dGd2lThHppr6SNy7yj17KI1pJnv4pesZRapJVqk4RgXE1roIBM16RUwodGt207f1Evc2NOb2RXgXVhn49x0rh4woVLsWY7sXM4tH84elw/b1xhh24/tHQ4oUwkmEAiZDsfgmQ+b1k8emZJn35S06pbo201gTEalk8nrXw7hGxDhXVmfWQ6tn9KnEwnhzUaZDUcflksgFsvnXM/rHg5xpVCq3Y2ol4zpWo5u5FLuqBdnpNpc1kyhF85g0UlfC4XfDgjgEYnlGEzwIJCqWAtnWYtxJpZ3rqEoX9VqYRAp4xIopdbeHRBbFEucTcidisadSobgz4koGs7zJBMy3w/pm5Ao45stKmLh3VZhHQ9mJFTophfZ208SzodUy4jYCsdaCwabUUrfmVHmn1Qpng/nXlPno91sJ14hm1TcGM1lY9RoZVfWlZGOCAPRzEqPisjWDkpVkMsVlBHbWJQiGlAjXBKl3hayZxzlWdNclIyh3pLpJhgUVBXNxoRQi4gIx4YPjMuVkIqYk0tgmQ2j2w5dl07glA8rHJSjF5Dh1c/gmJDoIdMSzwxOyceMiMXGBcVIx8jPjArUT0ncVYxZUouUEEygUQ3jkw5i2xQglE1kWs+nZBMlYViSUQ3OTo8KCsuKCcpLykjO0ErXGk9TUkuRDkviEc8jjYronNLoolRmpNVn5pb1LyCtql4cW9XS05MMTAuPS8eR0AhZmk2a1UvYEw5jF5Gr0kyrWk/oZJTo5tbpJha","s":1},{"t":"ad","d":"c2RFfXFJkIVYlY1dmZFfmZBemJBilZFrlZJrmpNhlZFZjIxUa2xCQUREPD9RbWVmh3pVj4dZlo5fl41dm49fmI1gkZBxhZiQh5SLlZFxmI5hl5FdjI9VY2hFREhJdm1cjIJVlItbmI5dmo9fmY5hkIpsi5aQh56kiIWKlIl/ko1umI5hlpFdkZFafH9SamlXlY1cmJFem5JgnZNll4hqj4eDkZyqeXeEcV5Rhn9yiI+Jk49ymZFjl5Jhl5tqj5uRmZFfmpJimJFolJN4intug2hkfXB9YkdZeWJDdWlOcHJxh3x2k49ylph5nKqdnre8mI9fmpRqlp6NipWhaGNlaVU5eGRUUz49Zkw1aFQ9YUw8bkxEhY2Flq6qm7K7gpCYj4xvnqaWmK6zjZWtTj1YWkQ0ZVA9WDwydU46Z0s0cVg+a1dDa3V7f5amkKWydXiBlKKjjZS0foOdc3GDTDxUWkhEUj0qVjUoZT4yVDomSjgkUEI6QDtWRUZpbHWae4eZorXBY1iIZ1Zycl5aaltaZ15SSj41RTYxTDsyTjosVkgvTkdCRTpIQTlSQztqZHOJfYOOU0ZhZE9XjnpfenJYT0xGRz49UEM+XEtBdmFHjHxYcWtcZFpPRj1HNzFJSUxZfW9ob1tWc2hZkIpebWpMKicvLScnQTYqXUw8gWxSmIdtaWFacGxUYFxMTEREZFlOv7B9mI5miYlYiIpTUlJKLy1KNTRBNC8oSD1AU0hRT0ZMSEJXamdchoVYfoJorJx43MmLu7Bzo6FojItaSUk4NzpHSVBcQUNGOzhERUNIS0s/YF5VeXlfj5l7nK+or6uWpZV1v7WJyMemv72edXxYTFE4QElDNjtKMy9NWlhUfn9Rio9fl6iNkqOrfoKrjIeLf3RzqLSwrLa1pq+nh5yRcnxhXmNESUlDRD9PbW1aipBsnK6dma+xi5WpX1OFcFVcmqezhYWufXuXYWZ4ZW6SgJOTiZZ3gIRTfYJVjJl4m66kiI+yg4WlbWZ0SThRfmFW","s":1},{"t":"ad","d":"oJVeo5dhoJZinpZhmJVclpVbnJVimZNlmpJim5Fem5BgnpNjnpJim5Nhl5NbkpFXoJVhopdhopZioZdjnpZimpNjkJBuiJSEkJV/mJFkmpBfnZJinJFgnJJenZRenJVdn5RfoJVfo5djpJdkoZRkkYxrhJOMgJeahIiLko15mI1lm5BhnZNhn5Rgn5VfoJVeq6JwoJZkpZllpZhlnpFrk5KJlaSwhoeNgGZei4N5kpJ7mpJnnZRioJVhoZRgopVftrSPm6CCoZxvnJVwjoFvj4aHgXiTfGRmmH1Ti4hzhIqHlo15mZBrnpRio5ZjpJdheoN8e5OXlqaVipWPWFBLbVlFbllZZUxJel89ZVhAYlFGdF9diYqDlpZ1n5VjoJZfXGFrdI2Ylq65g5CgRTw9WEc0Z1JHYD45ZEMwVD8kU0AmRjozY3B6g5aSlpqAmI1jhJKijZi5jJKvaGOAX01RVkItXkgxWzcuYT4yYksxRDMkMygvPUJUXWmDeYiakpuQkqS4ZViPbWF9W0pZemRfZVc/TDwyQTAoSzgkTj0lRTcwQTc6Qj5DQjthUVJ6aH+Kb3GFSTldb1pcdWdbc2pbTUVCRDg7Tj5EYlBMf2tSg3RddG5YYFdDPTNDNzBPSFVkb19mZlNVf3VgiYhaYmNKMjA1NzAuRjguYk89nYhjpZN6a2RUeXdQUEpFS0BERUdWiYuKioBkj49ciIpXSklJKSc7My8zOS8kSDs4aV1XYFZbS0RXeXZfgX9WcXNgh5efa4CMkqSYiY9sdnhMOTk4OTtQSk9bPz9AQTxIRkNEQz87VlBTfnxgkJx6obathYujVl1zZm+Ui5+fhZFwY2Q+QkU2RUtRNzhIPDhLaWpUg4RPi49dkqKPoK+4iIywZ2SHVkxaZmCBU2Bzcn5+k5RmdXZGT085OjZHQzpWd3VbjZZon7Whlq6vdnyeYlKNXFRt4c+U3M6plJSLraSK18iKv7x9kphigYRSg4RVjJd2obOwipO2jpGsZmFxRjlQVUVi","s":1},{"t":"ad","d":"pJGQoYyAyqtwtqJoi4BZeXBXpJJuoYtocF9VXU5RcmhTnZVgs6lqsKVrtq2O2M+7jn9/gnl5uKVxtqhor6Bnpp1ml5JbjolWiIBVjoZXoZhhraNnsaVorJ9oi4Bimo94nZVxY2FhZ2JempNtqJ1lp5xlppxilodYknRSpI5gqJ9lq6FlraNnopZdi3pWk4RqnI9kTkU+WFlfjoRrmIJamoZcnZFcfG1HaVI4j3xUpphjrZ5lraNno5lgp5RxyrueXlxVZllIcmhZgXBbclQ/gWZIi3tNfWtDalU1gG5GkHlSm4JaqJpkqJ9osaeI0seydW9upo1kjn1Qhn1UbVk7eWNBd2VBeGNBVDohXEYoalA4eWBInY5fp5tjin1gl4t1gHdioJFgq59foZZhfG1HW0kvXkkwcVFAbUU1VkAlY1A0g3FNoZNfo5RcgGpGfWdNkIpZp59lqqBjq6Blj4VWWk02TjooTjAoY0AyTTohWUswkoVYq55kppldkHpGg144p59lqqBlraBhq6BgkYdWX1JETT06RTY3WkdAXko3f3NGpp1hrqNksKZlsKRlo41Zp5xmqJxlq59hoZtbdXFQRj8/Sj84VUY/cV1RjHRYl4dbmpRip6BksKdnr6NlsKJorKJtpJtgop5ejo5YTElELCk3NC0nQDUmZFVHiHZie2xeY1xVhoRdqaNkp6BloKCAtK9+mJ5tl5had3lNNTNBNDROQEBENzEtRz9JTkdOPztEQj1Od3ZanJ9joqyGlKWnmJeFiJmTjpd4dHhMP0A2PD9LS1FbPz5IQDpKU1BHX19Hbm9VhottmaiSm6ywk6KvYFtrXWCKcoWKgo93bW9FUVM4QkZDNjZNPDdObWtWjpJalaB2mq2giJOoeXehcGx+RTlHPT1iYG51kpJ+q6dvjo5XZWhCUU9LWFNSfoBdkqGCmKqomKy0d3uQYE5zdl1hTD8+ODFEV1RVoJd/yr+Hxbl1npxiioxTgYNVjpqBjp2peHilcWyNZ1xpWkZXgW1f","s":1},{"t":"ad","d":"1J5LoW8sqH5A0bZ+s6eMgHxvSUVJWE9MfGtua2J7Y3GEf5WXiZODj5V7m62hmrK20Z1ItIY4vJRNwaJurqCVjouHampjhX9qy7eOx7iac3h5WGl2XHF8cYqQhZegh5Odz6JUzKFUy6JVqIhUkYJ3j46Qh5SXnZ+NpoVws459dGJXQDxHTlNkcHSDdGp1bl9gqIhfp4lftpdgqZJlgGpljIGIi5GmdGp1dmJOj21RdFhCUkBERzlFXUtUb1dfg2tchHp2jIJ7hnttnZKBiHJseVpPbVtiUz9KX0sydF09ZVQ9WDs5Y09Ob2Nea19ei39jc21vhnx4raGEzcGXlYVqblY8aFJAUjk0UzgkYkouZFA0aEo5mIZ6uK+hoZh9optnjIN8pJR7vad5vayEmYBjYkcuWEMtWzktaUAuZkgtYUoud2JBoZJ8zsOszL+QvrJ72s663c2ps554mXhZlWdEa0kzTDooUjYqWzwrVz8nTDsieGZDhXlhnJB5uq2C2MiLxLqhu6iMlWpLhVM0kWtEb19ITEA7Rzg5VERBVkY6bF48gG5FfGRCgGZMlIZrw7WJm4xxoYNhmWk9k3lGgHZQSUc/QDk1T0A8aVdOfWpTnIhfhHNThG9GgFs2f2BDlIFqpYpjkW5Do5NTmJpaZGVPJCU0LiorPTAnUkM5dGVXhXVkXlNTc2tXjHpMelc0d2Rcxq9xopBbm51Yg4VQTEtGMjROPD5INTMtQTxBSkRNQDk/PzhQZGFajo5WfndUjpOT0r+Jyrt8trJtkI9YVVU6PkJDSU9YPUBJNjZESEZHXl5Cbm9Ui4lju7Z3sql9qKucmo50tquE0MeMrKt4g4xkYGVBR0o9NjZJNzJWYV1aiYxakp1tqKyF0smcyLiMppZtbmBVl4ZpqqGGmZ2SiJydhpV9dnpSXF1JV1JSenpglJ+BoLOrn6upsbOoo6OYhnttaFJJfFg7eWdaZWF8ZGqVeI2UkKGIjZRgi5Fil6eMna6toaKgjY6McHN3bG9rZlVM","s":1},{"t":"eagle","d":"pZpho5hkj4RdW09FNSw5PjlJRkBpUliBdY2Vl6OQoZxxqJxnpptkpppjp5xiqJxipJdipJhin5NgjIFdal9PVkxDOzJGQEJeTVpzdYWUjZqYmZd5oppno5ljp5phqJxho5Zho5Zfn5Rbn5VbmI9ceG9VT0dKPDhJOzdTgHBtnJqGjJuTmJuAnpdrpZhkp5tipZhjpJhioJReoZVcpJlcnpRien5sX25xUFVhZVVNmH9cfXp9eIqaipSQm5lwko9dpZhjpZpkpZljqJlgtqJgsaBmfINxgI6IlpR/e3JaooxginNyVlV1bYGRiZqRb3RopJhhpZlipZpitZ9jx6ljo5NlgImArKmP2MB5v61up6Nyno9scWxjTFZjZXGOeIaepZljpJljpplisZxfmIlVeX1oqKmkjYV8nIdi0LRxx7p7m49ffnNPU01QQTpmWWOApppkq51luaRprZtifHZJaG5Va3dtYmdidGtmnIhtvqVwmYZTdGlGV0tGNy5JQ0RWp5tkrZtksJFXnn1Hh3A6dGU8Yl9GX11GXFdKdmZar5FmxLByop1meHVUTERCSD08p51in5RZhW87cUgfelQlgGAxdGA9XFc6S0k4gXJql4Jsvqt1xLFtnphZgX9ScWhOnplamItPjW06e1AsbU8tb1IsaVIwg2xCkHVHfm1deWxjt6WDyaFtt5ZUqaNclZZafHtDc2MykWU2eVEoaVQ2alQ+dFk8d1s2hms+k3lTbmFMl39gtYFOvIdIsZ5XoaVaXFsxSUAlaksrcUsmfV45g2pOhHRjsZlvxK16t5t3a1pFels7qHE7onY/oJdTqKpofHhLb2tSem5Zj3Rel3tdlXBDiWtJq4ZYvJhjupVlbl1BV0Mqj10vgGU5m5hk0MijoZp4jIdjdHJTb2JEinJUm3tfjmhMkVkrn2Ivp286blc7U085i3hHlo5RlZFgsKmUrKR5gXlleHRxdGdmgFtndUlmf1NulFppk1ZghElaclFRhoNWmp1YoJ9Zj4ZTfXZg","s":1},{"t":"inf","d":"JiM2JyU4KCY5PTJWaVVufmlskYZjopplnZNnrqJtc2hSXE9TV0hpRj1iOTNLLCg+PzRgSkBmSEFURj5UOzBRaVpfoZdqsKVoraBmp5xgfXVROjU8MClJQDlTTEJcRDlgdV6CgGd+cV1rbVtWUkNIgGlliX5krp9ko4VUf2tAVU86ODA3OzI8PjVAWUpdbVh0dWFmblplWkhUlX1dfGNSb1tjbGRQro1Yq186cD0lPTMwOTRGTkJBVEc/MSg5XE1XJB02PjFDaFVJm4JRlXRPTD1IWkxDn2ZKzGlIlk9AQS4vKCY1OzM6UUU7PTM1Ix4zQjJAVUFNfGNZq4dNnXxGZ1NDjW5WpWNIt149m1pIYEhIMy8zLi04OzY8RD1GQDRDTUFXTkBbUEFNgmpBlIFLhXFRk3JXlmhXhlFCmm9Mg2taU0tAOTk3Kyw5KilARjtULCg7Lys7TUdCjYhYpJxgjH1WRzg+WEddZVJfgWRMjXJQh3xSaWVDQD0zJiQoKSY1X19DZmVKiYVbrKZstalprpldc19FQjpHUUZTbkxDm3lRr6JlpJ1hh39QbGlFZWNGnpxdpKBkr6dqsKZqsqdotp5hgWlKNiw2STdAglBCmnBIqZpgsqlnraNkqJ9erKFisKhos6lssadrrqVpophhjHRNd1dFTDU7XUFFkVdGm21MoZBgsqVmr6RktKVmnpZvsKpns6pssqhtp51kenBNc1pLiGNQb0tFc1BNmGNOoHVZj4Fepp9isaRkpJZncnFgsqlps6prsqhspptjaWFHUUBIe1xViF1Cf1dJoXtkm3plcWRQjIZYsJhjpYdcdF1XsKdos6pqsahpraFnkYhdYVdLdmNXr45njnBXi29fqpNylY1vb2hkk2xjmWZkb1Fnsahntaxrsahor6RqraJon5VimY9hnJFghntWf29Nq5ltraqObWZygFhWeVpxTzZds6pptqxptKpns6lrtK1rs6ppsqhqrKVmqKNko5ddjHZHhXpcYFpkeFRQYmyFSl6H","s":1},{"t":"inf","d":"UDFBRCtFOi9SaF5bkI9YV1c0Ly8vLCk+NzFLOjJMY19SkpVXqadcsKtlsqlrua17Tjo7SDU5QDE1VU5Bmp1klplXYGVCNjg3NzU/RUFBgX5SqKNhtKtqs6losahx2c+0LSg0LSUrMyAuQTg7eX9NpKhcoqVemJFXiGQ/kXNJpJperqNlr6NjsqZmpJppl5F4NDE2KyoyOTFNV1BmjI5an6RanpxdqHxPvV45pGBDoYpcqp5kq6FjsqdmmoxXfm5YZF9PWVVPQztjS0VcentNmZZainhWlFdEulg6nEk5mXhdqJ5qr6Zps6hrlYNOrJV2endNamdGS0lLX1tMlJVck4lXjW1MnmdJo1lBm2dRkHhxqJxwtq1ss6porqRu0MavaGY9cnRIe31Nn55gqKRgkYFXaFBIcFNVgl9WpoBRh25TnpBis6tptKtqp51olIt0mZ1cnKBioaJdqqZirqRllINVXExAW05eUEJZUzs7imtKp5ZhsKdntatrlodSgW9TlpdbpqduqaVmsqlts6dquaNgj3lQPzRFPzBDaUVAm3dLrZ1gsqppt61snIpUtaGBp6F8qKJwsqltsqltsKZqrZdee19JOigzRy80gkxAkmM9o5JbtKtstatqsKVvwrmiwax7s55ms6ZsraNpkYZbiXFThmRRVzo+Xz9CjFVInGtOl4ZdqqJmsqhppJlkiYFtuqN5z7WJrZ1kpp1hcGhLX0xOe1lPdk5CgVtRkmhQm3VZdmhSmJJbsKVnk4FMhXFTb2dpn5CHlYlqs6JjgXlRSUBAc1xTrYZdlHBSh2dae2BeYVVLl5Bbsqhop5ZgwK+SlI6arJmYqpWB0bV0t6ZsiH1Zg3hanIhggW9SXlBHYlROgXdXqp9ms6hqrKBsta2XbWxzfnV3enNxtqFvr6BnqZxkoZdinZZemI9ekYZblo1do5tirqNnsaZoo5ZkgXhnrJ1zrqN7Yl5caGhln5pspp5kppxkpp5kiHNOh2hNoZBiqZ9lrKFlraVokYFNh3JQ","s":1},{"t":"inf","d":"Skg9PDlNbV9rpIdZVUhBalRkjW9wpY5mi3dwX1RtRT1SWk1aV0lvRTlfOjFJKSU3d3dKV1JFe15JmnpLjHZgrZJ/r5B4qohdo3pQfmRSVlJJMCw/LihJRD1XTUBbPjRbq6JikY5Udms+gmZHUkRaVEl0alZ0lHVjpIpOgndEU1E5Lyw3OjQ/OzQ+XU5hbFd7sqZpr6homphcc29FUU9JT0pUY1ZajmtRmWM5YEMoODY1ODNIVkdDUkU7MCc5ZVRcr6VssadpsqpqpqNjiYpWdHFWdmdZnmNIsFAyd0I/ODE8KCU6RDk8VUY2NS4wIh43sahttatuua1wt69urqlnnpRim3xgsHRPs2o7gFROT0BRKiYzLio0QDg8RTxAPTFBs6lrtqxuvK9xt65us6ZsnIZeoYBcq3xgqXVWpHxYfWhbSUI/NjI2LSk6MClFS0BYsqhvsqhquK1utattr6FognNRRjpGZ1JscVloiWlPnH5WfHNOWVU5ODQtJCEsKyk6oaOKrKRutqxvtatvsaVqoZBaYVZHRjxOVElXcE5Dn3lNqJlfmZBYe3dJYF1AVVJAi3iglXqFnYF9pJZptqlrsp1fc2VMNSo3TT1EilNEqnVIqphfsqVnraVmo5ximJRaZVCCZEyBhHOaj4h2qJxmjndPalFJSTU9XUJGmFZEqHBKoJFgr6Rnr6VnsadosKdoPzxPRj9pYWSIfYuQfnlqdlxMfFlTbktEc05NoWZLrHtWj4NfoZxgsKdptalrr59nWUlKOzBSQ0VkcHyBmY54mIFshmhbhVlAg1lUqn9mo4Bnd2xXmZVcsqppqppfkntQnHtuX1BeYUlMf2pgsJl6y7iOqph5q49tjWtcdFxXa1tXdWtVpJxjs6toraFmgWxDjnF+fkhWjkRElE5JoGdisaOJmZuPlp2egH11ZV5Od29Ul5BjsKhqs6tptKZtt6JmU0FahzpIunJHwHhGmUhIe2hfXFp0YGaMdoeOkJN7pJppr6VssqlusKh7tqN82bdx","s":1},{"t":"cc","d":"aVBghmpUqYZXdGdPV1U4Ly8sIyItJyU0MS1CMS0/UkpEVUxBRT1ISElZVWV0XHR+Wk5gSztAiWZJopReoZpeeHJIUEs2PTs1Pjs4Uk0/gn5aZ2NRPzg+TkdGWFZVWWVqPC88a01Gp3JMrp5jtKtprqZlp6BhoZtcpZ1drKRjsKhslo1jg3xsqaGW0ciqm5B8TTU5b0ZBpmpHkH5TsqZmsaVjsKRjr6Fnsqd0ua10tKlssadssamIs7KklqeihY6Ja0lGg1dQsnhTloRkpZxisKRkq51lkIprgIN3nJZ1r6JssqVqi4BfcG1lVWJpV2t5d04/h2JZqoFffm1ciYVWrJ5jqJBgg3JedWlhg3NZo4xesJpni3ZUf3NifXdqbnFykWtQhmhesZZ0joBpf3lhmIBlsoZilXBniXFymXhjpn1doIRvk4Jss6OA3cyXnpB2n49jeWpOq5hqvbWMiIWCeFpioHZwdl1zXEdngGV2j2ZeeGFjkJOLtKd+z7h5uqh7m5dYlY1VkHxKm49rgX16cVheiXh3WGWJSklti4J1mntWeWZjiYd+qJRptZhi07+HsqpprqRpkn9NbVMyXFBHYkxUgnp8cI2WnquBxr9qooVOcl9fe2tglG5FmHhTtKOCwruHsqt4mpFjcl5DV0o7ZlhThHJom5d3w71wrp5Znodqk4d8hHhjimpKknhXoZR6qqR+pKB9mpd3mZV6dnJbdG1XeGlWhXpfmZNwh3ZYo5N5pZ+Fl5N4lIptmY5tk4ltgX5XVVM5TkYya1hGZUw1VT4mXEMsZ04xgGRCiWM/lW1GkG5FjHBOg3BNe2lKlYBZnpVhdHNRXmhfbnJvaFVGSyoRRScQPB4NXTMXZjUbhlQsilowc1M1l4ZdxK98yLKArJlqiZF4gZyeh5+jdoB/SzwxNR4QJhYMQzQlUzUkbEQnf2VDhXVUuaVx1smdx7eUlpKHmq62jZyybXmOcoWXdYaORDg5QCUUb1U1c1Qxf14+u6t5zryCuKZ9tZ9/sIJk","s":1}];
 const tplSave=()=>{ try{ localStorage.setItem("cvt.tpl",JSON.stringify(TPL)); }catch(e){} advSync(); };
 const mapScale=()=>{ const D=SHOT&&((SHOT.an&&SHOT.an.ok&&SHOT.an.D)||(SHOT.D0&&SHOT.D0.ok&&SHOT.D0)); return D?2*D.hx*(SHOT.w/SHOT.px.W):null; };
 function clip(cx,cy,side){ const c=document.createElement("canvas"); c.width=c.height=TPL_N; const g=c.getContext("2d",{willReadFrequently:true});
@@ -4635,7 +4677,9 @@ function learnTpl(m,neg=false){
 // markers the page placed that you kept are right: learn them when you move on to the plan
 function learnConfirmed(){ if(!SHOT) return; let n=0; for(const m of SHOT.marks) if(m.auto&&!m.learned){ m.learned=true; learnTpl(m); n++; } if(n) SHOT.kept=(SHOT.kept||0)+n; }
 async function autoFind(){
-  const D=SHOT.D0; if(!TPL.length||!D||!D.ok) return;
+  const D=SHOT.D0; if(!D||!D.ok) return;
+  SHOT.bld=findBuildings(SHOT.px,D,1,null);
+  const lib=TPL.concat(typeof TPL_STARTER!=="undefined"?TPL_STARTER:[]); if(!lib.some(q=>!q.neg)){ SHOT.found=0; rerAdv(); return; }
   SHOT.finding=true; rerAdv(); await new Promise(r=>setTimeout(r,30));
   const K=SHOT.w/SHOT.px.W, mw=2*D.hx*K, side=mw*.065, sc=TPL_N/side;
   const x0=Math.max(0,(D.mx-D.hx*1.05)*K), y0=Math.max(0,(D.my-D.hy*1.05)*K), x1=Math.min(SHOT.w,(D.mx+D.hx*1.05)*K), y1=Math.min(SHOT.h,(D.my+D.hy*1.05)*K);
@@ -4647,25 +4691,39 @@ async function autoFind(){
   for(let y=0;y<H;y++){ let r1=0,r2=0; for(let x=0;x<W;x++){ const o=(y*W+x)*3, v=rgb[o]+rgb[o+1]+rgb[o+2], q=rgb[o]*rgb[o]+rgb[o+1]*rgb[o+1]+rgb[o+2]*rgb[o+2]; r1+=v; r2+=q; S1[(y+1)*(W+1)+x+1]=S1[y*(W+1)+x+1]+r1; S2[(y+1)*(W+1)+x+1]=S2[y*(W+1)+x+1]+r2; } }
   const box=(A,x,y)=>A[(y+TPL_N)*(W+1)+x+TPL_N]-A[y*(W+1)+x+TPL_N]-A[(y+TPL_N)*(W+1)+x]+A[y*(W+1)+x];
   const n=TPL_N*TPL_N*3;
-  const tp=TPL.map(q=>{ const b=atob(q.d), v=new Float32Array(n); let m=0; for(let i=0;i<n;i++){ v[i]=b.charCodeAt(i); m+=v[i]; } m/=n; let ss=0; for(let i=0;i<n;i++){ v[i]-=m; ss+=v[i]*v[i]; } return {t:q.t,neg:!!q.neg,v,nrm:Math.sqrt(ss)}; }).filter(q=>q.nrm>1);
-  if(!tp.some(q=>!q.neg)){ SHOT.finding=false; return; }
-  const hits=[];
+  const tp=lib.map(q=>{ const b=atob(q.d), v=new Float32Array(n); let m=0; for(let i=0;i<n;i++){ v[i]=b.charCodeAt(i); m+=v[i]; } m/=n; let ss=0; for(let i=0;i<n;i++){ v[i]-=m; ss+=v[i]*v[i]; } return {t:q.t,neg:!!q.neg,v,nrm:Math.sqrt(ss)}; }).filter(q=>q.nrm>1);
+  // how alike the picture at (x,y) is to each example: best score for each kind, and for each kind's "not this" examples
+  const scoreAt=(x,y)=>{ if(x<0||y<0||x>W-TPL_N||y>H-TPL_N) return null; const s1=box(S1,x,y), s2=box(S2,x,y), wn=Math.sqrt(Math.max(1e-6,s2-s1*s1/n)); if(wn<40) return null;
+    const pos={}, neg={}; for(const q of tp){ let dot=0, k=0; const v=q.v; for(let r=0;r<TPL_N;r++){ let o=((y+r)*W+x)*3; for(let cI=0;cI<TPL_N*3;cI++) dot+=rgb[o++]*v[k++]; } const s=dot/(wn*q.nrm);
+      const B=q.neg?neg:pos; if(s>(B[q.t]??-1)) B[q.t]=s; } return {pos,neg}; };
+  // a building's size should fit what it's matched to (sizes are the eye's estimate, in tiles)
+  const fit=(t,s)=>s==null?0:(t==="th"||t==="eagle")?(s<2.3?-.08:0):(t==="inf"||t==="sweep")?(s>3.9?-.06:0):0;
+  // slide every example over the base (every 2nd pixel), then sharpen the promising spots pixel by pixel
+  const pre=[];
   for(let y=0;y<=H-TPL_N;y+=2){
     for(let x=0;x<=W-TPL_N;x+=2){
       const cxN=(x0+(x+TPL_N/2)/sc)/K, cyN=(y0+(y+TPL_N/2)/sc)/K; if(Math.abs(cxN-D.mx)/D.hx+Math.abs(cyN-D.my)/D.hy>1.02) continue;
-      const s1=box(S1,x,y), s2=box(S2,x,y), wn=Math.sqrt(Math.max(1e-6,s2-s1*s1/n)); if(wn<40) continue;
-      let best=-1, bt=null; const negB={};
-      for(const q of tp){ let dot=0, k=0; const v=q.v; for(let r=0;r<TPL_N;r++){ let o=((y+r)*W+x)*3; for(let cI=0;cI<TPL_N*3;cI++) dot+=rgb[o++]*v[k++]; } const sc2=dot/(wn*q.nrm);
-        if(q.neg){ if(sc2>(negB[q.t]||-1)) negB[q.t]=sc2; } else if(sc2>best){ best=sc2; bt=q.t; } }
-      if(best>.62&&best>(negB[bt]||-1)+.03) hits.push({x,y,s:best,t:bt});   // looks like a known example, and more like it than like a past mistake
+      const r=scoreAt(x,y); if(!r) continue; for(const [t,s] of Object.entries(r.pos)) if(s>.5) pre.push({x,y,s,t,ng:r.neg[t]??-1});
     }
     if(y%16===0) await new Promise(r=>setTimeout(r,0));
   }
-  // keep the best matches, no two on top of each other, no more than the game allows of each kind
+  pre.sort((p,q)=>q.s-p.s); const top=[];
+  for(const h of pre){ if(top.length>=160) break; if(top.some(k=>k.t===h.t&&Math.abs(k.x-h.x)<=2&&Math.abs(k.y-h.y)<=2)) continue; top.push(h); }
+  for(const h of top) for(let dy=-1;dy<=1;dy++) for(let dx=-1;dx<=1;dx++){ if(!dx&&!dy) continue; const r=scoreAt(h.x+dx,h.y+dy); if(r&&(r.pos[h.t]??-1)>h.s){ h.s=r.pos[h.t]; h.x+=dx; h.y+=dy; h.ng=r.neg[h.t]??-1; } }
+  // step 1 backs up step 2: a match sitting on a building the eye found counts more; one on bare ground counts less
+  const tileT=mw/44*sc, hits=[];
+  for(const h of top){ const X=x0+(h.x+TPL_N/2)/sc, Y=y0+(h.y+TPL_N/2)/sc; let near=null, nd=1e9;
+    for(const bd of SHOT.bld){ const dd=Math.hypot(bd.x*SHOT.w-X,(bd.y*SHOT.h-Y)*1.7)/(mw/44); if(dd<nd){ nd=dd; near=bd; } }
+    const s=h.s+(SHOT.bld.length>=15?(nd<=1.6?.03+fit(h.t,near.s):-.05):0);
+    if(s>.7&&h.s>h.ng+.03) hits.push({...h,s,bd:nd<=1.6?near:null}); }
+  // keep the best matches: one kind per building, none on top of each other, no more than the game allows of each kind
   hits.sort((p,q)=>q.s-p.s); const keep=[], cnt={};
-  for(const h of hits){ if((cnt[h.t]||0)>=SHT[h.t].n) continue; if(keep.some(k=>Math.hypot(k.x-h.x,k.y-h.y)<TPL_N*.9)) continue; keep.push(h); cnt[h.t]=(cnt[h.t]||0)+1; }
+  for(const h of SHOT.marks.filter(m=>!m.auto)) cnt[h.t]=(cnt[h.t]||0)+1;
+  for(const h of hits){ if((cnt[h.t]||0)>=SHT[h.t].n) continue; if(h.bd&&keep.some(k=>k.bd===h.bd)) continue; if(keep.some(k=>Math.hypot(k.x-h.x,k.y-h.y)<TPL_N*.8)) continue;
+    const X=(x0+(h.x+TPL_N/2)/sc)/SHOT.w, Y=(y0+(h.y+TPL_N/2)/sc)/SHOT.h; if(SHOT.marks.some(m=>Math.hypot((m.x-X)*SHOT.w,(m.y-Y)*SHOT.h)<side*.45)) continue;
+    keep.push(h); cnt[h.t]=(cnt[h.t]||0)+1; }
   if(!SHOT){ return; }
-  for(const h of keep) SHOT.marks.push({t:h.t,x:(x0+(h.x+TPL_N/2)/sc)/SHOT.w,y:(y0+(h.y+TPL_N/2)/sc)/SHOT.h,auto:true});
+  for(const h of keep) SHOT.marks.push({t:h.t,x:(x0+(h.x+TPL_N/2)/sc)/SHOT.w,y:(y0+(h.y+TPL_N/2)/sc)/SHOT.h,auto:true,sc:Math.round(h.s*100)});
   SHOT.finding=false; SHOT.found=keep.length; shotUpdate(); rerAdv();
 }
 /* walls: tap a wall piece once; the page takes its colour, finds every pixel of that colour inside the base,
@@ -4690,7 +4748,7 @@ function wallMap(P,D,S,cols){
     for(const sl of slopes){ if(run(x,y,1,sl)+run(x,y,-1,sl)>=16||run(x,y,1,-sl)+run(x,y,-1,-sl)>=16){ M2[i]=1; n++; break; } } }
   // back to the working size
   const M=new Uint8Array(P.W*P.H); for(let y=0;y<Q.H;y++) for(let x=0;x<Q.W;x++) if(M2[y*Q.W+x]){ const X=Math.min(P.W-1,Math.floor(x/f)), Y=Math.min(P.H-1,Math.floor(y/f)); M[Y*P.W+X]=1; }
-  return {M,share:area?n/area:0};
+  return {M,M2,share:area?n/area:0};
 }
 function wallLayers(P,D,S,M){
   const out=[]; for(let k=0;k<16;k++){ const a=k/16*Math.PI*2, c=Math.cos(a), s=Math.sin(a), L=Math.abs(c)+Math.abs(s); let layers=0, inWall=false, gap=0;
@@ -4728,11 +4786,14 @@ function shotAnalyze(){
   if(tapped.length){ for(const c of tapped) if(!WALLC.some(w=>Math.abs(w[0]-c[0])+Math.abs(w[1]-c[1])+Math.abs(w[2]-c[2])<24)) WALLC.push(c); WALLC=WALLC.slice(-8); try{ localStorage.setItem("cvt.wallc",JSON.stringify(WALLC)); }catch(e){} if(typeof advSync==="function") advSync(); }
   const cols=tapped.length?tapped:WALLC;
   if(cols.length&&D.ok){ const wm=wallMap(P,D,S,cols);
-    if(wm.share>.002&&wm.share<.25){ const ly=wallLayers(P,D,S,wm.M); walls={M:wm.M,layers:ly,share:wm.share,learned:!tapped.length};
+    if(wm.share>.002&&wm.share<.25){ const ly=wallLayers(P,D,S,wm.M); walls={M:wm.M,M2:wm.M2,layers:ly,share:wm.share,learned:!tapped.length};
       notes.push(`About ${ly} wall layer${ly===1?"":"s"} between the edge and the core${tapped.length?"":" (walls found with colours you tapped before)"}`);
       if(ly>=4) traits.shape="boxed"; else if(traits.shape==="boxed"&&ly<=2) traits.shape=fill>.6?"compact":"spread"; }
     else if(tapped.length) notes.push(wm.share>=.25?"That wall colour matches too much of the picture; tap the light top edge of a wall":"Couldn't trace walls from that spot; tap right on the top edge of a wall"); }
-  return {D,S,P:P2,traits,notes,fill,ok:D.ok,walls};
+  // the eye: every building's place and size (walls taken out first when they're known)
+  const bld=D.ok&&D.gb!=null?findBuildings(P,D,S,walls&&walls.M2):[];
+  if(bld.length) notes.push(`The eye found ${bld.length} buildings on this base`);
+  return {D,S,P:P2,traits,notes,fill,ok:D.ok,walls,bld};
 }
 // where to start: the 4 corners and 4 sides of the diamond. Ground armies take the side with the least firepower,
 // air armies the one where Air Defenses are reachable first.
@@ -4775,6 +4836,8 @@ function drawShot(){
       g.lineTo(x2-Math.cos(ang)*30*u+Math.cos(ang+1.57)*9*u,y2-Math.sin(ang)*30*u+Math.sin(ang+1.57)*9*u); g.lineTo(x2-Math.cos(ang)*30*u-Math.cos(ang+1.57)*9*u,y2-Math.sin(ang)*30*u-Math.sin(ang+1.57)*9*u); g.fill(); g.restore(); }
     for(const m of an.marks2||[]){ g.save(); g.fillStyle=m.c; g.strokeStyle="#000"; g.lineWidth=2*u; g.beginPath(); g.arc(m.x,m.y,4.5*u,0,Math.PI*2); g.fill(); g.stroke(); g.restore(); }
   }
+  if(SHOT.eye){ const B=(an&&an.bld)||SHOT.bld||[], D=(an&&an.D)||SHOT.D0, K=SHOT.w/SHOT.px.W; if(D&&D.mx!=null){ const pt=(a,b)=>{ const uu=(a-b)/44, vv=(a+b-44)/44; return [(D.mx+D.hx*uu)*K,(D.my+D.hy*vv)*K]; };
+    g.save(); g.lineWidth=1.3*u; for(const o of B){ const h=o.s/2, Q=[pt(o.a-h,o.b-h),pt(o.a+h,o.b-h),pt(o.a+h,o.b+h),pt(o.a-h,o.b+h)]; g.strokeStyle=o.s>=3.6?"rgba(255,120,120,.9)":o.s>=2.6?"rgba(255,225,90,.85)":"rgba(90,230,255,.85)"; g.beginPath(); Q.forEach((p,i)=>i?g.lineTo(...p):g.moveTo(...p)); g.closePath(); g.stroke(); } g.restore(); } }
   SHOT.marks.forEach(m=>{ const x=m.x*SHOT.w,y=m.y*SHOT.h,c=SHT[m.t].c;
     if(m.t==="sweep"){ const P=an&&an.P.find(q=>q.x===m.x&&q.y===m.y), f=m.f!=null?m.f:P?P.a:-Math.PI/2, D=an?an.D:{hx:1,hy:.6}, dx=Math.cos(f)*D.hx, dy=Math.sin(f)*D.hy, L=Math.hypot(dx,dy)||1;
       g.save(); g.strokeStyle=c; g.lineWidth=3*u; g.beginPath(); g.moveTo(x,y); g.lineTo(x+dx/L*34*u,y+dy/L*34*u); g.stroke(); g.globalAlpha=.18; g.fillStyle=c; g.beginPath(); g.moveTo(x,y);
@@ -4830,8 +4893,8 @@ function shotBox(){
   const cnt=t=>SHOT.marks.filter(m=>m.t===t).length, an=SHOT.an;
   return `<div class="advshot open">
     <div class="shotbar">${SHOT_T.map(([k,l,n,c])=>`<button type="button" class="shotk" data-shotk="${k}" aria-pressed="${SHOT.mode===k}" style="--c:${c}"><i></i>${l}<small class="mono">${cnt(k)}/${n}</small></button>`).join("")}
-      <span class="shotsp"></span>${SHOT.view==="sim"?`<span id="simstate" class="mono simst"></span><button type="button" class="glink" data-sim="pause">Pause</button><button type="button" class="glink" data-sim="speed">1×</button><button type="button" class="shotview on" data-sim="stop">Stop</button>`:""}${an&&SHOT.view!=="sim"?`<button type="button" class="shotview ${SHOT.view==="plan"?"on":""}" data-shotx="view">${SHOT.view==="plan"?"Back to tapping":"Show the plan"}</button>`:""}<button type="button" class="glink" data-shotx="zoom">${SHOT.zoom?"Zoom out":"Zoom in"}</button><button type="button" class="glink" data-shotx="undo">Undo</button><button type="button" class="glink" data-shotx="close">Remove picture</button></div>
-    ${SHOT.finding?`<p class="note shothint">Looking for buildings from your saved examples…</p>`:SHOT.found!=null?`<p class="note shothint">${SHOT.found?`Found ${SHOT.found} building${SHOT.found>1?"s":""} from your saved examples (dashed markers). Remove any wrong one (tap it with its kind selected): the page learns from that too.${SHOT.kept||SHOT.fixed?` Learned: ${SHOT.kept||0} kept, ${SHOT.fixed||0} corrected.`:""}`:`No buildings matched your saved examples on this picture. Tap them in; the page learns from every tap. (${TPL.filter(q=>!q.neg).length} examples saved, ${TPL.filter(q=>q.neg).length} "not this")`}</p>`:""}
+      <span class="shotsp"></span>${SHOT.view==="sim"?`<span id="simstate" class="mono simst"></span><button type="button" class="glink" data-sim="pause">Pause</button><button type="button" class="glink" data-sim="speed">1×</button><button type="button" class="shotview on" data-sim="stop">Stop</button>`:""}${an&&SHOT.view!=="sim"?`<button type="button" class="shotview ${SHOT.view==="plan"?"on":""}" data-shotx="view">${SHOT.view==="plan"?"Back to tapping":"Show the plan"}</button>`:""}${(an&&an.bld&&an.bld.length)||(SHOT.bld&&SHOT.bld.length)?`<button type="button" class="glink" data-shotx="eye" aria-pressed="${!!SHOT.eye}">${SHOT.eye?"Hide what the eye sees":"Show what the eye sees"}</button>`:""}<button type="button" class="glink" data-shotx="zoom">${SHOT.zoom?"Zoom out":"Zoom in"}</button><button type="button" class="glink" data-shotx="undo">Undo</button><button type="button" class="glink" data-shotx="close">Remove picture</button></div>
+    ${SHOT.finding?`<p class="note shothint">The eye is looking over the base…</p>`:SHOT.found!=null?`<p class="note shothint">${SHOT.found?`${SHOT.bld&&SHOT.bld.length?`The eye found ${SHOT.bld.length} buildings and recognised ${SHOT.found} of the key ones`:`Recognised ${SHOT.found} building${SHOT.found>1?"s":""}`} (dashed markers). Remove any wrong one (tap it with its kind selected): the page learns from that too.${SHOT.kept||SHOT.fixed?` Learned: ${SHOT.kept||0} kept, ${SHOT.fixed||0} corrected.`:""}`:`${SHOT.bld&&SHOT.bld.length?`The eye found ${SHOT.bld.length} buildings but couldn't name the key ones yet. `:""}Tap them in; the eye learns from every tap. (${TPL.filter(q=>!q.neg).length} examples saved, ${TPL.filter(q=>q.neg).length} "not this")`}</p>`:""}
     <p class="note shothint">${SHOT.view==="sim"?"Watching the simulated attack. What happens is listed under the picture.":SHOT.mode==="wall"?"Tap one or two wall pieces (different wall levels have different colours). Found walls show in green; the page remembers the colours for your next screenshots.":SHOT.mode==="sweep"?"Tap an Air Sweeper to place it. Tap it again to turn the way it faces (the shaded cone).":an?(SHOT.view==="plan"?"The plan for the best army below. Tap the picture or a building type to go back to tapping.":"Tap more buildings to sharpen it, then press Show the plan. Tapping a marker of the selected kind removes it."):`Tap the <b>${esc(SHT[SHOT.mode].l)}</b> on the picture. Town Hall plus two more is enough to start.`}<span class="shotmob"> Swipe the picture sideways to see all of it.</span>${an&&!an.ok?" This scenery's ground colour is hard to read, so base shape is left for you to pick.":""}</p>
     <div class="shotwrap"><canvas id="shotcv" data-shotcv></canvas></div>
     ${SHOT.view==="sim"?`<ol id="simlog" class="simlog live" aria-live="polite"></ol><p class="note simkey">White: ground troops · blue: air · gold: heroes · dark squares: defenses guessed from the Town Hall level (C cannon, A archer tower, M mortar, W wizard tower, X X-Bow, T tesla, B bomb tower) · Inferno 1 = single, 5 = multi · stars: traps that went off.</p>`:""}
@@ -4849,6 +4912,7 @@ document.addEventListener("click",e=>{
   if(cv&&SHOT.view==="sim") return;
   if(cv&&SHOT.view==="plan"){ SHOT.view="tap"; }
   if(x&&x.dataset.shotx==="undo") SHOT.marks.pop();
+  if(x&&x.dataset.shotx==="eye"){ SHOT.eye=!SHOT.eye; }
   if(x&&x.dataset.shotx==="view"){ SHOT.view=SHOT.view==="plan"?"tap":"plan"; if(SHOT.view==="plan") learnConfirmed(); }
   if(x&&x.dataset.shotx==="zoom") SHOT.zoom=!SHOT.zoom;
   if(x&&x.dataset.shotx==="close"){ URL.revokeObjectURL(SHOT.url); SHOT=null; return rerAdv(); }
@@ -5036,7 +5100,7 @@ function planFor(a,th,opts={}){
     return {u,s,r}; };
   const ranked=pool.map(score).sort((x,y)=>y.s-x.s);
   if(!ranked.length) return null;
-  const main=ranked[0].u; let second=null;
+  const main=((opts.main&&ranked.find(r=>r.u===opts.main))||ranked[0]).u; let second=null;
   const pair={4000011:[4000024],4000024:[4000011],4000005:[4000008,4000023],4000008:[4000005],4000059:[4000005],4000022:[4000015,4000006],4000053:[4000015,4000022],4000147:[4000015],4000110:[4000012],4000065:[4000008],4000080:[4000012],4000132:[4000012]};
   second=(pair[main]||[]).find(u=>haveTroop(a,th,u)&&str(u)>=.5)||null;
   think("Main troops",`${ranked.slice(0,3).map(c=>`${name(c.u)} ${c.s.toFixed(1)} (${c.r.join(", ")})`).join(" · ")} → ${name(main)}${second?` with ${name(second)}`:""}.`);
@@ -5100,7 +5164,7 @@ function planFor(a,th,opts={}){
   think("Where to start",entryTxt);
   const A={troops,used:used(),cap,spells:sp.filter(([,n])=>n>0),sp:C.spells-room,sc:C.spells,cc:cct,ccu,ccCap:C.cc,ccs,ccsu,siege,siegeNote,gear,notes:[],slots:4};
   const title=`${style}: ${name(main)}${second?` + ${name(second)}`:""}${tank&&tank!==main?` with ${name(tank)}`:""}${healers?" (Queen Walk)":""}`;
-  return {id:"custom:"+style+":"+main,title,style,main,second,tank,A,T};
+  return {id:"custom:"+style+":"+main,title,style,main,second,tank,A,T,alts:ranked.filter(r=>r.u!==main&&r.u!==second).slice(0,2).map(r=>r.u),rank:ranked.find(r=>r.u===main).s};
 }
 
 /* ---------------- the attack simulation ----------------
@@ -5138,7 +5202,7 @@ const dcount=t=>DCOUNT[Math.max(6,Math.min(12,t))];
 // hidden traps at each Town Hall
 const TCOUNT=t=>({gb:Math.max(1,Math.min(7,t-4)),b:t>=8?6:4,sp:t>=10?8:t>=8?6:4,ab:t>=11?5:t>=7?4:2,sam:t>=11?7:t>=9?4:t>=8?2:0});
 const TRAP={gb:{dmg:700,r:3,c:"#ff8a3d"},b:{dmg:150,r:1.5,c:"#ffb36b"},sp:{r:1.2,spring:10,c:"#d9d9d9"},ab:{dmg:450,r:3,air:1,c:"#ff6bd5"},sam:{dmg:1500,r:0,air:1,c:"#ff4d8d"}};
-const SIMK={troopF:1.05,defF:1,bhp:.8,runs:10};
+const SIMK={troopF:1.12,defF:1,bhp:.65,runs:10};
 const HERO_AB={28000000:"Iron Fist",28000001:"Cloak",28000002:"Eternal Tome",28000004:"Seeking Shield",28000006:"Dark Orb",28000007:"Fire Breath"};
 const isDefB=b=>!b.dead&&b.k!=="th"&&b.k!=="gen"&&b.k!=="cc"&&b.k!=="ccdef"&&(b.dps>0||b.push)&&(!b.hid||b.seen);
 const dist=(p,q)=>Math.hypot(p.x-q.x,p.y-q.y);
@@ -5158,13 +5222,15 @@ function simSetup(plan,a,th){
     let st=0,n=0; for(let dy=-1;dy<=1;dy++) for(let dx=-1;dx<=1;dx++){ const q=(y+dy)*P.W+x+dx; if(q<0||q>=P.W*P.H) continue; n++; st+=1-(an.D.isG?an.D.isG[q]:0); }
     if(st/n<.6) continue; const X=x*K, Y=y*K; if(B.some(b=>Math.hypot(b.x-X,b.y-Y)<tile*2.2)||cand.some(s=>Math.hypot(s.x-X,s.y-Y)<tile*2.2)) continue;
     cand.push({x:X,y:Y,r:rad(X,Y)}); }
+  // better: the buildings the eye found, with their real places and sizes
+  if(an.bld&&an.bld.length>=15){ cand.length=0; for(const o of an.bld){ const X=o.x*SHOT.w, Y=o.y*SHOT.h; if(B.some(b=>Math.hypot(b.x-X,b.y-Y)<tile*1.6)) continue; cand.push({x:X,y:Y,r:rad(X,Y),s:o.s}); } }
   // the defenses you didn't tap, guessed from the Town Hall level: heavy ones toward the middle, light ones toward the edge
   const want=dcount(oth), kinds=["cannon","archer","mortar","wiz","xbow","tesla","bomb"], band={cannon:[.45,1],archer:[.35,1],mortar:[.15,.7],wiz:[.2,.75],xbow:[.1,.65],tesla:[.2,.9],bomb:[.2,.8]};
   const free=cand.slice(), nDef=want.reduce((s,n)=>s+n,0), share=Math.min(1,free.length*.5/Math.max(1,nDef));
   for(const i of [4,2,3,6,5,1,0]){ const k=kinds[i], n=Math.round(want[i]*share);
-    for(let j=0;j<n&&free.length;j++){ const [lo,hi]=band[k]; let c=free.filter(s=>s.r>=lo&&s.r<=hi&&!B.some(b=>b.k===k&&Math.hypot(b.x-s.x,b.y-s.y)<tile*5)); if(!c.length) c=free;
+    for(let j=0;j<n&&free.length;j++){ const [lo,hi]=band[k]; const sz=s=>s.s==null||(k==="tesla"?s.s<3.2:s.s>=2&&s.s<4.3); let c=free.filter(s=>sz(s)&&s.r>=lo&&s.r<=hi&&!B.some(b=>b.k===k&&Math.hypot(b.x-s.x,b.y-s.y)<tile*5)); if(!c.length) c=free.filter(sz); if(!c.length) c=free;
       const s=c[Math.floor(Math.random()*c.length)]; free.splice(free.indexOf(s),1); B.push(mk(k,s.x,s.y,SDEF[k],1)); } }
-  for(const s of free) B.push(mk("gen",s.x,s.y,SDEF.gen,1));
+  for(const s of free){ const f=s.s?Math.max(.4,Math.min(2.2,(s.s/3)**2)):1; B.push(mk("gen",s.x,s.y,{...SDEF.gen,hp:SDEF.gen.hp*f},1)); }
   // hidden traps, in the gaps between buildings
   const traps=[];
   for(const [k,n] of Object.entries(TCOUNT(oth))) for(let j=0;j<n;j++) for(let tr=0;tr<25;tr++){
@@ -5311,8 +5377,9 @@ function seeded(f,seed=12345){ let s=seed; const R=Math.random; Math.random=()=>
 function simOnce(plan,a,th,seed){ return seeded(()=>{ const W=simSetup(plan,a,th); while(!simDone(W)) simStep(W,.15); const sc=simScore(W);
   return {...sc,t:Math.round(W.t),seed,ev:W.ev,kill:W.kill,lost:W.lost}; },seed); }
 // many runs: the likely result, the chance of each star count, and the run closest to typical (that's the one you watch)
-function simRun(plan,a,th,n=SIMK.runs){
-  const R=SEEDS.slice(0,n).map(s=>simOnce(plan,a,th,s)), N=R.length;
+function simRun(plan,a,th,n=SIMK.runs){ return simAgg(SEEDS.slice(0,n).map(s=>simOnce(plan,a,th,s))); }
+function simAgg(R){
+  const N=R.length;
   const avgS=R.reduce((s,r)=>s+r.stars,0)/N, avgP=R.reduce((s,r)=>s+r.pct,0)/N, p3=R.filter(r=>r.stars===3).length/N, p2=R.filter(r=>r.stars>=2).length/N;
   const typ=R.slice().sort((x,y)=>Math.abs(x.stars-avgS)*40+Math.abs(x.pct-avgP)-(Math.abs(y.stars-avgS)*40+Math.abs(y.pct-avgP)))[0];
   const kill={}; for(const r of R) for(const [k,v] of Object.entries(r.kill)) kill[k]=(kill[k]||0)+v/N;
@@ -5387,36 +5454,61 @@ document.addEventListener("click",e=>{
   if(k==="stop"){ SIM=null; if(SHOT) SHOT.view="plan"; rerAdv(); }
 });
 
-/* ---------------- the planner card ---------------- */
-let PLAN_CACHE={k:null,v:null};
-function plannerCard(a,th){
-  const key=JSON.stringify([a.id,a.v&&a.v.timestamp,ADV.traits,ADV.opTh,SHOT&&SHOT.marks,(ADV.log||[]).length]);
-  if(PLAN_CACHE.k===key&&PLAN_CACHE.v){ window.__lastPlan=PLAN_CACHE.plan; return PLAN_CACHE.v; }
-  const html=plannerCardRaw(a,th); PLAN_CACHE={k:key,v:html,plan:window.__lastPlan}; return html;
+/* ---------------- the planner card: several plans, each tested ---------------- */
+// the plans worth testing: the best army for air and for ground, and the runner-up main troop of each
+function planOptions(a,th){
+  const out=[], pair=P=>[P.main,P.second].filter(Boolean).sort().join(), add=P=>{ if(P&&!out.some(q=>q.id===P.id||pair(q)===pair(P))) out.push(P); };
+  const first=planFor(a,th); if(!first) return out; add(first);
+  const other=planFor(a,th,{style:first.style==="Air"?"Ground":"Air"}); add(other);
+  for(const P of [first,other]) if(P&&P.alts&&P.alts[0]) add(planFor(a,th,{style:P.style,main:P.alts[0]}));
+  return out.slice(0,4);
 }
-function plannerCardRaw(a,th){
-  let P=planFor(a,th); if(!P) return "";
-  let sims=null;
-  if(SHOT&&SHOT.an&&SHOT.an.P.some(m=>m.t==="th")){
-    const other=planFor(a,th,{style:P.style==="Air"?"Ground":"Air"});
-    const val=r=>r.avgS*100+r.pct+r.p3*40;
-    let r1=simRun(P,a,th), r2=other?simRun(other,a,th,6):null;
-    const better=r2&&val(r2)>val(r1)+8;
-    const say=r=>`${r.avgS.toFixed(1)}★ ${r.pct}% (3★ in ${Math.round(r.p3*100)}% of runs)`;
-    if(better){ r2=simRun(other,a,th); const first=P.T.find(t=>/^Air or ground/.test(t.h));
-      other.T=[{h:"First idea",t:`${first?first.t.replace(/Trying \w+ to compare\./,"").trim():""} So ${P.style.toLowerCase()} came first: ${P.title}.`}].concat(other.T.filter(t=>!/^Air or ground/.test(t.h)));
-      other.T.push({h:"Tested both",t:`Over ${r1.n} simulated runs each, ${P.style.toLowerCase()} averaged ${say(r1)} and ${other.style.toLowerCase()} ${say(r2)}, so I switched to ${other.style.toLowerCase()}.`}); P=other; sims={me:r2,alt:r1}; }
-    else { P.T.push({h:"Tested both",t:`Simulated ${P.style.toLowerCase()} ${r1.n} times: ${say(r1)}${r2?`. ${P.style==="Air"?"Ground":"Air"} over ${r2.n} runs: ${say(r2)}`:""}. Keeping ${P.style.toLowerCase()}.`}); sims={me:r1,alt:r2}; }
-    const ls=simLessons(sims.me); if(ls.length) P.T.push({h:"What the simulations showed",t:ls.join(" ")});
+let PLAN_CACHE={k:null,opts:null}, PLAN_JOB=null;
+function planKey(a){ return JSON.stringify([a.id,a.v&&a.v.timestamp,ADV.traits,ADV.opTh,SHOT&&SHOT.marks.map(m=>[m.t,+m.x.toFixed(3),+m.y.toFixed(3)]),SHOT&&SHOT.an&&SHOT.an.walls?1:0,(ADV.log||[]).length]); }
+const simVal=r=>r?r.avgS*100+r.pct+r.p3*40:-1;
+const simReady=()=>SHOT&&SHOT.an&&SHOT.an.P.some(m=>m.t==="th");
+function plannerCard(a,th){
+  const key=planKey(a);
+  if(PLAN_CACHE.k!==key){
+    const opts=planOptions(a,th); if(!opts.length) return "";
+    if(!simReady()){ PLAN_CACHE={k:key,opts:opts.map(P=>({P,r:null}))}; ADV.pick=0; }
+    else { if(!PLAN_JOB||PLAN_JOB.key!==key) runOptions(key,a,th,opts); return `<article class="advc best plan rv"><header><span class="advrank mono">Testing plans for this base</span><h3>Simulating ${opts.length} armies…</h3></header>
+      <p class="advsim">${glyph("bolt")}<span>Each army attacks this base 5 times, then the best three get 5 more runs. <b id="planprog">0%</b></span></p></article>`; }
   }
+  return optionsView(a,th,PLAN_CACHE.opts);
+}
+const tick0=()=>new Promise(r=>setTimeout(r,0));
+async function runOptions(key,a,th,opts){
+  const job=PLAN_JOB={key}; const total=opts.length*5+Math.min(3,opts.length)*5; let done=0;
+  const prog=()=>{ const el=document.getElementById("planprog"); if(el) el.textContent=Math.round(done/total*100)+"%"; };
+  const res=opts.map(P=>({P,R:[]}));
+  const runs=async(o,seeds)=>{ for(const sd of seeds){ o.R.push(simOnce(o.P,a,th,sd)); done++; prog(); await tick0(); if(PLAN_JOB!==job) throw 0; } o.r=simAgg(o.R); };
+  try{
+    for(const o of res) await runs(o,SEEDS.slice(0,5));
+    res.sort((x,y)=>simVal(y.r)-simVal(x.r));
+    for(const o of res.slice(0,3)) await runs(o,SEEDS.slice(5,10));
+  }catch(e){ return; }
+  res.sort((x,y)=>simVal(y.r)-simVal(x.r));
+  const say=r=>`${r.avgS.toFixed(1)}★ ${r.pct}% (3★ in ${Math.round(r.p3*100)}%)`;
+  const cmp=res.map((o,i)=>`${i+1}. ${o.P.title}: ${say(o.r)}${o.r.n<10?", dropped after 5 runs":""}`).join(" · ");
+  for(const [i,o] of res.entries()){ const P=o.P; P.T=P.T.filter(t=>!/^Tested|^What the sim/.test(t.h));
+    P.T.push({h:"Tested against the others",t:`${cmp}. ${i===0?"This one came out on top.":`This one is option ${i+1}.`}`});
+    const ls=simLessons(o.r); if(ls.length) P.T.push({h:"What the simulations showed",t:ls.join(" ")}); }
+  PLAN_CACHE={k:key,opts:res}; ADV.pick=0; PLAN_JOB=null; rerAdv();
+}
+function optionsView(a,th,opts){
+  const i=Math.min(ADV.pick||0,opts.length-1), o=opts[i], P=o.P, sims=o.r?{me:o.r}:null;
   // calibration: how your real logged attacks compared with what the simulation said beforehand
-  const cal=(ADV.log||[]).filter(e=>e.sim!=null&&(e.myTh===th)), off=cal.length>=3?cal.reduce((s,e)=>s+(e.pct-e.sim),0)/cal.length:null;
+  const cal=(ADV.log||[]).filter(e=>e.sim!=null&&e.myTh===th), off=cal.length>=3?cal.reduce((s,e)=>s+(e.pct-e.sim),0)/cal.length:null;
   window.__lastPlan={plan:P,a,th,seed:sims&&sims.me.seed,sims};
   const lr=learned(P.id,th,ADV.opTh||th);
-  return `<article class="advc best plan rv">
-    <header><span class="advrank mono">Worked out for this base</span><h3>${esc(P.title)}</h3><span class="advtag">${P.style}</span></header>
-    ${sims?`<div class="advsim">${glyph("bolt")}<span>Simulated ${sims.me.n} times: <b>${"★".repeat(sims.me.stars)}${"☆".repeat(3-sims.me.stars)} ${sims.me.pct}%</b> on average (${sims.me.min}–${sims.me.max}%). 3★ in ${Math.round(sims.me.p3*sims.me.n)} of ${sims.me.n} runs, at least 2★ in ${Math.round(sims.me.p2*sims.me.n)}.${off!=null?` Your logged attacks have come out ${Math.abs(Math.round(off))}% ${off<0?"below":"above"} what it predicted, so expect about <b>${Math.max(0,Math.min(100,Math.round(sims.me.pct+off)))}%</b>.`:""} <small class="note">Buildings you didn't tap and the traps are guessed from the Town Hall level, differently in each run.</small></span>${SHOT&&SHOT.an?`<span class="simbtns"><button type="button" class="shotview" data-sim="play">▶ Watch a typical run</button>${sims.me.worst?`<button type="button" class="glink" data-sim="play" data-seed="${sims.me.worst}">Watch what goes wrong</button>`:""}</span>`:""}</div>
-      ${sims.me.ev&&sims.me.ev.length?`<details class="think" data-fold="simev" ${HOMEFOLD.simev?"open":""}><summary>How the typical run went <small>${sims.me.typ.stars}★ ${sims.me.typ.pct}%</small></summary><ol class="simlog">${sims.me.ev.map(e=>`<li><span class="mono">${mmss(e.t)}</span>${esc(e.txt)}</li>`).join("")}</ol></details>`:""}`:`<p class="note">Upload a screenshot and tap the key buildings to test this plan in simulated attacks.</p>`}
+  const star=n=>"★".repeat(n)+"☆".repeat(3-n);
+  return `<div class="planopts" role="tablist" aria-label="Plans">${opts.map((q,k)=>`<button type="button" role="tab" class="planopt" data-pick="${k}" aria-selected="${k===i}">
+      <small class="mono">Option ${k+1}${k===0&&q.r?" · best":""}</small><b>${esc(q.P.title)}</b>${q.r?`<span>${star(q.r.stars)} ${q.r.pct}% · 3★ ${Math.round(q.r.p3*100)}%</span>`:`<span>${q.P.style}</span>`}</button>`).join("")}</div>
+  <article class="advc best plan rv">
+    <header><span class="advrank mono">${sims?`Option ${i+1} of ${opts.length}, tested on this base`:`Option ${i+1} of ${opts.length}`}</span><h3>${esc(P.title)}</h3><span class="advtag">${P.style}</span></header>
+    ${sims?`<div class="advsim">${glyph("bolt")}<span>Simulated ${sims.me.n} times: <b>${star(sims.me.stars)} ${sims.me.pct}%</b> on average (${sims.me.min}–${sims.me.max}%). 3★ in ${Math.round(sims.me.p3*sims.me.n)} of ${sims.me.n} runs, at least 2★ in ${Math.round(sims.me.p2*sims.me.n)}.${off!=null?` Your logged attacks have come out ${Math.abs(Math.round(off))}% ${off<0?"below":"above"} what it predicted, so expect about <b>${Math.max(0,Math.min(100,Math.round(sims.me.pct+off)))}%</b>.`:""} <small class="note">${SHOT&&SHOT.an&&SHOT.an.bld&&SHOT.an.bld.length>=15?`Uses the ${SHOT.an.bld.length} buildings the eye found; the ones you didn't name`:"Buildings you didn't tap"} and the traps are guessed from the Town Hall level, differently in each run.</small></span>${SHOT&&SHOT.an?`<span class="simbtns"><button type="button" class="shotview" data-sim="play">▶ Watch a typical run</button>${sims.me.worst?`<button type="button" class="glink" data-sim="play" data-seed="${sims.me.worst}">Watch what goes wrong</button>`:""}</span>`:""}</div>
+      ${sims.me.ev&&sims.me.ev.length?`<details class="think" data-fold="simev" ${HOMEFOLD.simev?"open":""}><summary>How the typical run went <small>${sims.me.typ.stars}★ ${sims.me.typ.pct}%</small></summary><ol class="simlog">${sims.me.ev.map(e=>`<li><span class="mono">${mmss(e.t)}</span>${esc(e.txt)}</li>`).join("")}</ol></details>`:""}`:`<p class="note">Upload a screenshot and tap the Town Hall (the eye finds the rest it can) to test these plans in simulated attacks.</p>`}
     ${lr?`<p class="advlr">${glyph("star")}<span>Your record with plans like this: <b>${lr.stars.toFixed(1)}★</b> · ${Math.round(lr.pct)}% over ${lr.n}</span></p>`:""}
     <details class="think" data-fold="think" ${HOMEFOLD.think?"open":""}><summary>How I worked it out <small>${P.T.length} steps</small></summary><ol>${P.T.map(s=>`<li><b>${esc(s.h)}${/[?.]$/.test(s.h)?"":"."}</b> ${esc(s.t)}</li>`).join("")}</ol></details>
     ${renderArmy(P.A,a,th)}
@@ -5425,6 +5517,7 @@ function plannerCardRaw(a,th){
       <input type="number" min="0" max="100" inputmode="numeric" placeholder="%" aria-label="Destruction %" name="pct"><button class="ghost" type="submit">Save</button></form>
   </article>`;
 }
+document.addEventListener("click",e=>{ const b=e.target.closest("[data-pick]"); if(!b) return; ADV.pick=+b.dataset.pick; if(SIM){ SIM=null; if(SHOT) SHOT.view="plan"; } rerAdv(); });
 
 /* ---------------- 5 · upgrades that matter for how YOU attack ---------------- */
 function campInfo(a,th){ const x=analyze(a), rows=effRows(a,x,"buildings").filter(r=>r.data===1000000), n=rows.reduce((s,r)=>s+(r.cnt||1),0);
