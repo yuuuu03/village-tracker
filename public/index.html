@@ -4599,7 +4599,7 @@ const MK={th:"TH",ad:"AD",eagle:"EA",inf:"IN",scat:"SC",sweep:"SW",cc:"CC",wall:
 const SHT=Object.fromEntries(SHOT_T.map(([k,l,n,c,w])=>[k,{l,n,c,w}]));
 // every other building you can name with "Name buildings": the eye learns each one, and the simulation uses its real stats
 const EXT_T=[["cannon","Cannon",7,"#d0d0d0",.4,"CN"],["archer","Archer Tower",8,"#a3e36b",.4,"AT"],["mortar","Mortar",4,"#c49a62",.3,"MO"],["wiz","Wizard Tower",5,"#8a9cff",.5,"WT"],["xbow","X-Bow",4,"#ff6fa0",.8,"XB"],["bomb","Bomb Tower",2,"#ff8a4a",.5,"BT"],
-  ["multi","Multi-Archer Tower",3,"#6fd18f",.8,"MA"],["rico","Ricochet Cannon",3,"#aab4c0",.7,"RC"],["mono","Monolith",1,"#9a6cff",1.2,"MN"],["fire","Firespitter",2,"#ff5a2a",.7,"FS"],["gear","Multi-Gear Tower",1,"#d4b26a",.8,"MG"],["spell","Spell Tower",3,"#e06bd8",.2,"ST"],["other","Not a defense",120,"#9a9a9a",0,"·"]];
+  ["multi","Multi-Archer Tower",3,"#6fd18f",.8,"MA"],["rico","Ricochet Cannon",3,"#aab4c0",.7,"RC"],["mono","Monolith",1,"#9a6cff",1.2,"MN"],["fire","Firespitter",2,"#ff5a2a",.7,"FS"],["gear","Multi-Gear Tower",1,"#d4b26a",.8,"MG"],["spell","Spell Tower",3,"#e06bd8",.2,"ST"],["tesla","Hidden Tesla",5,"#ffe14a",.6,"HT"],["other","Not a defense",120,"#9a9a9a",0,"·"]];
 for(const [k,l,n,c,wt,mk] of EXT_T){ SHT[k]={l,n,c,w:wt,ext:1}; MK[k]=mk; }
 let SHOT=null; // {img,url,w,h,marks:[{t,x,y}],mode,an}
 async function loadShot(file){
@@ -4703,9 +4703,65 @@ function findBuildings(P,D,S,wallM2){
 function uiZone(x,y){ if(!SHOT||SHOT.w/SHOT.h<1.55) return x<.01||x>.99||y<.01||y>.99;
   return x<.01||x>.99||y<.01||y>.99||(x<.27&&y<.22)||(x<.15&&y>.36&&y<.6)||(x<.2&&y>.74)||(x>.35&&x<.67&&y>.82)||(x>.8&&y>.72); }
 // the eye's list with your fixes: buildings you added, minus the ones you said aren't buildings
-function eyeList(base){ base=(base||[]).filter(o=>!uiZone(o.x,o.y)); if(!SHOT) return base; const tl=(SHOT.an&&SHOT.an.D?SHOT.an.D.hx:SHOT.D0&&SHOT.D0.hx||100)*2/44/SHOT.px.W;
+function eyeList(base){ base=(base||[]).filter(o=>!uiZone(o.x,o.y)&&!o.mdl); if(!SHOT) return base;
+  const M=SHOT.mdl||[]; if(M.length){ const inBox=o=>M.some(m=>{ const b=m.box, ex=(b[2]-b[0])*.35, ey=(b[3]-b[1])*.35; return o.x>=b[0]-ex&&o.x<=b[2]+ex&&o.y>=b[1]-ey&&o.y<=b[3]+ey; });
+    base=base.filter(o=>!inBox(o)).concat(M.filter(m=>!uiZone(m.x,m.y)).map(m=>({x:m.x,y:m.y,s:m.s,a:m.a,b:m.b,mdl:1,t:m.t,c:m.c}))); } const tl=(SHOT.an&&SHOT.an.D?SHOT.an.D.hx:SHOT.D0&&SHOT.D0.hx||100)*2/44/SHOT.px.W;
   const no=SHOT.noB||[], add=SHOT.addB||[];
   return base.filter(o=>!no.some(n=>Math.hypot(n.x-o.x,(n.y-o.y)*SHOT.h/SHOT.w)<tl*1.6)).concat(add); }
+/* ---------------- the trained eye ----------------
+   A small building detector you trained yourself (YOLOv8n, Colab notebook). It runs here on your device with
+   ONNX Runtime; the picture never leaves it. It finds buildings and names their type; the hand-built eye above
+   fills in anything it misses, and the examples you've tapped still win where they disagree. */
+const EYE_MODEL={state:"idle",sess:null,classes:null,sz:832,ver:"1"};
+const ORT_CDN="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/";
+function loadScript(src){ return new Promise((ok,no)=>{ const s=document.createElement("script"); s.src=src; s.onload=ok; s.onerror=no; document.head.appendChild(s); }); }
+async function eyeModelLoad(){
+  if(EYE_MODEL.state==="ready") return true; if(EYE_MODEL.state==="fail") return false;
+  if(EYE_MODEL.loading) return EYE_MODEL.loading;
+  return EYE_MODEL.loading=(async()=>{ try{
+      if(window.__eyeMock){ EYE_MODEL.classes=window.__eyeMock.classes; EYE_MODEL.sz=window.__eyeMock.sz; EYE_MODEL.run=window.__eyeMock.run; EYE_MODEL.state="ready"; return true; }
+      const meta=await (await fetch("eye-classes.json",{cache:"no-cache"})).json(); EYE_MODEL.classes=meta.classes; EYE_MODEL.sz=meta.imgsz||832;
+      if(!window.ort){ await loadScript(ORT_CDN+"ort.min.js"); }
+      ort.env.wasm.wasmPaths=ORT_CDN; ort.env.wasm.numThreads=Math.min(4,navigator.hardwareConcurrency||2);
+      const sess=await ort.InferenceSession.create("eye.onnx?v="+encodeURIComponent(meta.v||meta.map50||1),{executionProviders:["wasm"],graphOptimizationLevel:"all"});
+      EYE_MODEL.run=async x=>{ const r=await sess.run({[sess.inputNames[0]]:new ort.Tensor("float32",x,[1,3,EYE_MODEL.sz,EYE_MODEL.sz])}); return r[sess.outputNames[0]].data; };
+      EYE_MODEL.state="ready"; return true;
+    }catch(e){ console.warn("trained eye unavailable",e); EYE_MODEL.state="fail"; return false; } })();
+}
+// boxes from the detector, in picture pixels: [{t,c,box:[x0,y0,x1,y1]}]
+async function eyeDetect(img,W,H,conf=.06,iou=.5){
+  const sz=EYE_MODEL.sz, r=Math.min(sz/W,sz/H), nw=Math.round(W*r), nh=Math.round(H*r), px=(sz-nw)>>1, py=(sz-nh)>>1;
+  const c=document.createElement("canvas"); c.width=c.height=sz; const g=c.getContext("2d",{willReadFrequently:true}); g.fillStyle="rgb(114,114,114)"; g.fillRect(0,0,sz,sz); g.drawImage(img,px,py,nw,nh);
+  const d=g.getImageData(0,0,sz,sz).data, n=sz*sz, x=new Float32Array(3*n); for(let i=0;i<n;i++){ x[i]=d[i*4]/255; x[n+i]=d[i*4+1]/255; x[2*n+i]=d[i*4+2]/255; }
+  const out=await EYE_MODEL.run(x), C=EYE_MODEL.classes.length, A=out.length/(4+C), dets=[];
+  for(let a=0;a<A;a++){ let best=0,bc=0; for(let k=0;k<C;k++){ const s=out[(4+k)*A+a]; if(s>best){ best=s; bc=k; } } if(best<conf) continue;
+    const cx=out[a], cy=out[A+a], w=out[2*A+a], h=out[3*A+a];
+    dets.push({t:EYE_MODEL.classes[bc],c:best,box:[(cx-w/2-px)/r,(cy-h/2-py)/r,(cx+w/2-px)/r,(cy+h/2-py)/r]}); }
+  dets.sort((p,q)=>q.c-p.c); const keep=[];
+  const IoU=(p,q)=>{ const ix=Math.max(0,Math.min(p[2],q[2])-Math.max(p[0],q[0])), iy=Math.max(0,Math.min(p[3],q[3])-Math.max(p[1],q[1])), I=ix*iy; return I/((p[2]-p[0])*(p[3]-p[1])+(q[2]-q[0])*(q[3]-q[1])-I); };
+  for(const q of dets){ if(keep.some(k=>IoU(k.box,q.box)>=iou)) continue; keep.push(q); if(keep.length>=300) break; }
+  return keep;
+}
+const MDL_KEY=new Set(["th","ad","eagle","inf","scat","sweep","cc"]);
+async function eyeModelPass(){
+  if(!SHOT) return; SHOT.mdlState="loading"; rerAdv();
+  if(!await eyeModelLoad()){ SHOT.mdlState="off"; return; }
+  SHOT.mdlState="running"; rerAdv(); await new Promise(r=>setTimeout(r,20));
+  let dets; try{ dets=await eyeDetect(SHOT.img,SHOT.w,SHOT.h); }catch(e){ console.warn(e); SHOT.mdlState="off"; return; }
+  if(!SHOT) return;
+  const D=SHOT.D0, K=SHOT.w/SHOT.px.W, tile=D&&D.ok?2*D.hx*K/44:SHOT.w/60, P=SHOT.px;
+  // every box is a building: its footprint centre sits a little below the middle of the box (tall buildings stick up)
+  SHOT.mdl=dets.map(q=>{ const b=q.box, x=(b[0]+b[2])/2, y=(b[1]+b[3])/2+(b[3]-b[1])*.15, nx=x/SHOT.w, ny=y/SHOT.h;
+    let a=null, bb=null; if(D&&D.ok){ const uu=(nx*P.W-D.mx)/D.hx, vv=(ny*P.H-D.my)/D.hy; a=22*(uu+vv+1); bb=22*(vv-uu+1); }
+    return {t:q.t,c:q.c,x:nx,y:ny,s:Math.max(2,Math.min(5,(b[2]-b[0])/tile)),a,b:bb,box:[b[0]/SHOT.w,b[1]/SHOT.h,b[2]/SHOT.w,b[3]/SHOT.h]}; });
+  // its names become markers where nothing is marked yet (your taps and your examples win)
+  const cnt={}; for(const m of SHOT.marks) cnt[m.t]=(cnt[m.t]||0)+1; let added=0;
+  for(const m of SHOT.mdl.slice().sort((p,q)=>q.c-p.c)){ const T=SHT[m.t]; if(!T) continue; if(m.c<(MDL_KEY.has(m.t)?.3:.2)) continue; if((cnt[m.t]||0)>=T.n) continue;
+    const vx=(m.box[0]+m.box[2])/2, vy=(m.box[1]+m.box[3])/2; if(uiZone(vx,vy)) continue;
+    if(SHOT.marks.some(q=>Math.abs(q.x-vx)*SHOT.w<tile*1.2&&Math.abs(q.y-vy)*SHOT.h<tile*.9)) continue;
+    SHOT.marks.push({t:m.t,x:vx,y:vy,auto:true,mdl:1,sc:Math.round(m.c*100)}); cnt[m.t]=(cnt[m.t]||0)+1; added++; }
+  SHOT.bld=eyeList(SHOT.bld||[]); SHOT.found=(SHOT.found||0)+added; SHOT.mdlN=dets.length; SHOT.mdlState="done";
+}
 /* auto-find: every building you tap is saved on this device as a tiny 16×16 picture, sized to the map.
    On a new screenshot the page slides those pictures over the base and keeps the strongest matches
    (normalised cross-correlation: plain maths, no AI). More bases tapped = better matches. */
@@ -4730,7 +4786,7 @@ function learnConfirmed(){ if(!SHOT) return; let n=0; for(const m of SHOT.marks)
 async function autoFind(){
   const D=SHOT.D0; if(!D||!D.ok) return;
   SHOT.bld=eyeList(findBuildings(SHOT.px,D,1,null));
-  const lib=TPL.concat(typeof TPL_STARTER!=="undefined"?TPL_STARTER:[]); if(!lib.some(q=>!q.neg)){ SHOT.found=0; rerAdv(); return; }
+  const lib=TPL.concat(typeof TPL_STARTER!=="undefined"?TPL_STARTER:[]); if(!lib.some(q=>!q.neg)){ SHOT.found=0; await eyeModelPass(); shotUpdate(); rerAdv(); return; }
   SHOT.finding=true; rerAdv(); await new Promise(r=>setTimeout(r,30));
   const K=SHOT.w/SHOT.px.W, mw=2*D.hx*K, side=mw*.065, sc=TPL_N/side;
   const x0=Math.max(0,(D.mx-D.hx*1.05)*K), y0=Math.max(0,(D.my-D.hy*1.05)*K), x1=Math.min(SHOT.w,(D.mx+D.hx*1.05)*K), y1=Math.min(SHOT.h,(D.my+D.hy*1.05)*K);
@@ -4775,7 +4831,7 @@ async function autoFind(){
     keep.push(h); cnt[h.t]=(cnt[h.t]||0)+1; }
   if(!SHOT){ return; }
   for(const h of keep) SHOT.marks.push({t:h.t,x:(x0+(h.x+TPL_N/2)/sc)/SHOT.w,y:(y0+(h.y+TPL_N/2)/sc)/SHOT.h,auto:true,sc:Math.round(h.s*100)});
-  SHOT.finding=false; SHOT.found=keep.length; shotUpdate(); rerAdv();
+  SHOT.found=keep.length; await eyeModelPass(); SHOT.finding=false; shotUpdate(); rerAdv();
 }
 /* walls: tap a wall piece once; the page takes its colour, finds every pixel of that colour inside the base,
    and counts how many wall layers stand between each edge and the core. Colours are remembered for next time. */
@@ -4842,7 +4898,7 @@ function shotAnalyze(){
       if(ly>=4) traits.shape="boxed"; else if(traits.shape==="boxed"&&ly<=2) traits.shape=fill>.6?"compact":"spread"; }
     else if(tapped.length) notes.push(wm.share>=.25?"That wall colour matches too much of the picture; tap the light top edge of a wall":"Couldn't trace walls from that spot; tap right on the top edge of a wall"); }
   // the eye: every building's place and size (walls taken out first when they're known)
-  const bld=eyeList(D.ok&&D.gb!=null?findBuildings(P,D,1,walls&&walls.M2):[]);
+  const D0=SHOT.D0&&SHOT.D0.ok&&SHOT.D0.gb!=null?SHOT.D0:(D.ok&&D.gb!=null?D:null), bld=eyeList(D0?findBuildings(P,D0,1,walls&&walls.M2):[]);
   if(bld.length) notes.push(`The eye found ${bld.length} buildings on this base`);
   return {D,S,P:P2,traits,notes,fill,ok:D.ok,walls,bld};
 }
@@ -4887,14 +4943,14 @@ function drawShot(){
       g.lineTo(x2-Math.cos(ang)*30*u+Math.cos(ang+1.57)*9*u,y2-Math.sin(ang)*30*u+Math.sin(ang+1.57)*9*u); g.lineTo(x2-Math.cos(ang)*30*u-Math.cos(ang+1.57)*9*u,y2-Math.sin(ang)*30*u-Math.sin(ang+1.57)*9*u); g.fill(); g.restore(); }
     for(const m of an.marks2||[]){ g.save(); g.fillStyle=m.c; g.strokeStyle="#000"; g.lineWidth=2*u; g.beginPath(); g.arc(m.x,m.y,4.5*u,0,Math.PI*2); g.fill(); g.stroke(); g.restore(); }
   }
-  if(SHOT.eye){ const B=(an&&an.bld)||SHOT.bld||[], D=(an&&an.D)||SHOT.D0, K=SHOT.w/SHOT.px.W; if(D&&D.mx!=null){ const pt=(a,b)=>{ const uu=(a-b)/44, vv=(a+b-44)/44; return [(D.mx+D.hx*uu)*K,(D.my+D.hy*vv)*K]; };
+  if(SHOT.eye){ const B=(an&&an.bld)||SHOT.bld||[], D=SHOT.D0&&SHOT.D0.ok?SHOT.D0:(an&&an.D), K=SHOT.w/SHOT.px.W; if(D&&D.mx!=null){ const pt=(a,b)=>{ const uu=(a-b)/44, vv=(a+b-44)/44; return [(D.mx+D.hx*uu)*K,(D.my+D.hy*vv)*K]; };
     g.save(); g.lineWidth=1.3*u; for(const o of B){ const h=o.s/2, Q=[pt(o.a-h,o.b-h),pt(o.a+h,o.b-h),pt(o.a+h,o.b+h),pt(o.a-h,o.b+h)]; g.strokeStyle=o.s>=3.6?"rgba(255,120,120,.9)":o.s>=2.6?"rgba(255,225,90,.85)":"rgba(90,230,255,.85)"; g.beginPath(); Q.forEach((p,i)=>i?g.lineTo(...p):g.moveTo(...p)); g.closePath(); g.stroke(); } g.restore(); } }
   SHOT.marks.forEach(m=>{ const x=m.x*SHOT.w,y=m.y*SHOT.h,c=SHT[m.t].c;
     if(m.t==="sweep"){ const P=an&&an.P.find(q=>q.x===m.x&&q.y===m.y), f=m.f!=null?m.f:P?P.a:-Math.PI/2, D=an?an.D:{hx:1,hy:.6}, dx=Math.cos(f)*D.hx, dy=Math.sin(f)*D.hy, L=Math.hypot(dx,dy)||1;
       g.save(); g.strokeStyle=c; g.lineWidth=3*u; g.beginPath(); g.moveTo(x,y); g.lineTo(x+dx/L*34*u,y+dy/L*34*u); g.stroke(); g.globalAlpha=.18; g.fillStyle=c; g.beginPath(); g.moveTo(x,y);
       const a0=Math.atan2(dy,dx); g.arc(x,y,60*u,a0-.6,a0+.6); g.closePath(); g.fill(); g.restore(); }
     g.save(); g.fillStyle=c; g.strokeStyle=m.auto?"#fff":"#000"; g.lineWidth=2*u; if(m.auto) g.setLineDash([3*u,2*u]);
-    g.beginPath(); g.arc(x,y,6.5*u,0,Math.PI*2); g.fill(); g.stroke(); g.fillStyle="#111"; g.font=`800 ${6*u}px system-ui`; g.textAlign="center"; g.textBaseline="middle";
+    const rr=SHT[m.t].ext?4.8*u:6.5*u; g.beginPath(); g.arc(x,y,rr,0,Math.PI*2); g.fill(); g.stroke(); g.fillStyle="#111"; g.font=`800 ${(SHT[m.t].ext?4.4:6)*u}px system-ui`; g.textAlign="center"; g.textBaseline="middle";
     g.fillText(MK[m.t],x,y+.5*u); g.restore(); });
   if(plan&&an.entry){ const o=dpt(an,an.entry.th,1.22); lbl(g,o[0],o[1]+(Math.sin(an.entry.th)>.3?16:-16)*u,"START",u,"#3ee08f"); }
   for(const m of (plan&&an.marks2)||[]) lbl(g,m.x,m.y+(m.dy||-16)*u,m.l,u,m.c);
@@ -4949,7 +5005,7 @@ document.addEventListener("click",e=>{ const b=e.target.closest("[data-nameas]")
   const at=p.b?{x:p.b.x,y:p.b.y}:{x:p.x,y:p.y};
   if(p.m){ const i=SHOT.marks.indexOf(p.m); if(i>=0){ if(p.m.auto&&!p.m.learned&&k!=="clear") learnTpl(p.m,true); SHOT.marks.splice(i,1); } }
   if(k==="none"){ (SHOT.noB=SHOT.noB||[]).push(at); SHOT.addB=(SHOT.addB||[]).filter(o=>Math.hypot(o.x-at.x,o.y-at.y)>.01); }
-  else if(k!=="clear"){ const m={t:k,x:p.x,y:p.y,named:1}; SHOT.marks.push(m); learnTpl(m); if(!p.b){ const D=(SHOT.an&&SHOT.an.D)||SHOT.D0, P=SHOT.px, uu=(p.x*P.W-D.mx)/D.hx, vv=(p.y*P.H-D.my)/D.hy; (SHOT.addB=SHOT.addB||[]).push({x:p.x,y:p.y,s:3,a:22*(uu+vv+1),b:22*(vv-uu+1),added:1}); } }
+  else if(k!=="clear"){ const m={t:k,x:p.x,y:p.y,named:1}; SHOT.marks.push(m); learnTpl(m); if(!p.b){ const D=SHOT.D0&&SHOT.D0.ok?SHOT.D0:SHOT.an.D, P=SHOT.px, uu=(p.x*P.W-D.mx)/D.hx, vv=(p.y*P.H-D.my)/D.hy; (SHOT.addB=SHOT.addB||[]).push({x:p.x,y:p.y,s:3,a:22*(uu+vv+1),b:22*(vv-uu+1),added:1}); } }
   if(SHOT.bld) SHOT.bld=eyeList(SHOT.bld); shotUpdate(); rerAdv(); },true);
 function rerAdv(){ if(hashRaw()==="attack"){ const y=scrollY; render(); scrollTo(0,y); } }
 function shotBox(){
@@ -4958,7 +5014,7 @@ function shotBox(){
   return `<div class="advshot open">
     <div class="shotbar">${SHOT_T.map(([k,l,n,c])=>`<button type="button" class="shotk" data-shotk="${k}" aria-pressed="${SHOT.mode===k}" style="--c:${c}"><i></i>${l}<small class="mono">${cnt(k)}/${n}</small></button>`).join("")}
       <span class="shotsp"></span>${SHOT.view==="sim"?`<span id="simstate" class="mono simst"></span><button type="button" class="glink" data-sim="pause">Pause</button><button type="button" class="glink" data-sim="speed">1×</button><button type="button" class="shotview on" data-sim="stop">Stop</button>`:""}${an&&SHOT.view!=="sim"?`<button type="button" class="shotview ${SHOT.view==="plan"?"on":""}" data-shotx="view">${SHOT.view==="plan"?"Back to tapping":"Show the plan"}</button>`:""}${(an&&an.bld&&an.bld.length)||(SHOT.bld&&SHOT.bld.length)?`<button type="button" class="glink" data-shotx="eye" aria-pressed="${!!SHOT.eye}">${SHOT.eye?"Hide what the eye sees":"Show what the eye sees"}</button>`:""}<button type="button" class="glink" data-shotx="zoom">${SHOT.zoom?"Zoom out":"Zoom in"}</button><button type="button" class="shotk namek" data-shotx="name" aria-pressed="${SHOT.mode==="name"}">✎ Name buildings</button><button type="button" class="glink" data-shotx="undo">Undo</button>${SHOT.marks.some(m=>m.named)?`<button type="button" class="glink" data-shotx="export">Save labels for tuning</button>`:""}<button type="button" class="glink" data-shotx="close">Remove picture</button></div>
-    ${SHOT.finding?`<p class="note shothint">The eye is looking over the base…</p>`:SHOT.found!=null?`<p class="note shothint">${SHOT.found?`${SHOT.bld&&SHOT.bld.length?`The eye found ${SHOT.bld.length} buildings and recognised ${SHOT.found} of the key ones`:`Recognised ${SHOT.found} building${SHOT.found>1?"s":""}`} (dashed markers). Remove any wrong one (tap it with its kind selected): the page learns from that too.${SHOT.kept||SHOT.fixed?` Learned: ${SHOT.kept||0} kept, ${SHOT.fixed||0} corrected.`:""}`:`${SHOT.bld&&SHOT.bld.length?`The eye found ${SHOT.bld.length} buildings but couldn't name the key ones yet. `:""}Tap them in; the eye learns from every tap. (${TPL.filter(q=>!q.neg).length} examples saved, ${TPL.filter(q=>q.neg).length} "not this")`}</p>`:""}
+    ${SHOT.finding?`<p class="note shothint">${SHOT.mdlState==="loading"?"Loading the trained eye (first time only, a few MB)…":SHOT.mdlState==="running"?"The trained eye is looking over the base…":"The eye is looking over the base…"}</p>`:SHOT.found!=null?`<p class="note shothint">${SHOT.found?`${SHOT.bld&&SHOT.bld.length?`The eye found ${SHOT.bld.length} buildings${SHOT.mdlN?` (${SHOT.mdlN} by the trained eye)`:""} and named ${SHOT.found}`:`Recognised ${SHOT.found} building${SHOT.found>1?"s":""}`} (dashed markers). Remove any wrong one (tap it with its kind selected): the page learns from that too.${SHOT.kept||SHOT.fixed?` Learned: ${SHOT.kept||0} kept, ${SHOT.fixed||0} corrected.`:""}`:`${SHOT.bld&&SHOT.bld.length?`The eye found ${SHOT.bld.length} buildings but couldn't name the key ones yet. `:""}Tap them in; the eye learns from every tap. (${TPL.filter(q=>!q.neg).length} examples saved, ${TPL.filter(q=>q.neg).length} "not this")`}</p>`:""}
     <p class="note shothint">${SHOT.view==="sim"?"Watching the simulated attack. What happens is listed under the picture.":SHOT.mode==="name"?"Tap any building to say what it is: a Cannon, a Mortar, a storage… or that it isn't a building at all. Tap empty ground to add one the eye missed. Every name you give is used in the simulation and teaches the eye.":SHOT.mode==="wall"?"Tap one or two wall pieces (different wall levels have different colours). Found walls show in green; the page remembers the colours for your next screenshots.":SHOT.mode==="sweep"?"Tap an Air Sweeper to place it. Tap it again to turn the way it faces (the shaded cone).":an?(SHOT.view==="plan"?"The plan for the best army below. Tap the picture or a building type to go back to tapping.":"Tap more buildings to sharpen it, then press Show the plan. Tapping a marker of the selected kind removes it."):`Tap the <b>${esc(SHT[SHOT.mode].l)}</b> on the picture. Town Hall plus two more is enough to start.`}<span class="shotmob"> Swipe the picture sideways to see all of it.</span>${an&&!an.ok?" This scenery's ground colour is hard to read, so base shape is left for you to pick.":""}</p>
     <div class="shotwrap"><canvas id="shotcv" data-shotcv></canvas>${SHOT.pend?namePop():""}</div>
     ${SHOT.view==="sim"?`<div id="simarmy" class="simarmy"></div><ol id="simlog" class="simlog live" aria-live="polite"></ol><p class="note simkey">Outlines: every building the simulation uses (coloured: the ones named, red letters: defenses guessed from the Town Hall level — C cannon, A archer tower, M mortar, W wizard tower, X X-Bow, T tesla, B bomb tower). Dark: destroyed. IN·1 single Inferno, IN·5 multi. Stars: traps that went off. Flyers have a shadow.</p>`:""}
@@ -5281,7 +5337,7 @@ const dcount=t=>DCOUNT[Math.max(6,Math.min(12,t))];
 // hidden traps at each Town Hall
 const TCOUNT=t=>({gb:Math.max(1,Math.min(7,t-4)),b:t>=8?6:4,sp:t>=10?8:t>=8?6:4,ab:t>=11?5:t>=7?4:2,sam:t>=11?7:t>=9?4:t>=8?2:0});
 const TRAP={gb:{dmg:700,r:3,c:"#ff8a3d"},b:{dmg:150,r:1.5,c:"#ffb36b"},sp:{r:1.2,spring:10,c:"#d9d9d9"},ab:{dmg:450,r:3,air:1,c:"#ff6bd5"},sam:{dmg:1500,r:0,air:1,c:"#ff4d8d"}};
-const SIMK={troopF:1.3,defF:1,bhp:.52,runs:10};
+const SIMK={troopF:1.55,defF:1,bhp:.36,runs:10};
 const HERO_AB={28000000:"Iron Fist",28000001:"Cloak",28000002:"Eternal Tome",28000004:"Seeking Shield",28000006:"Dark Orb",28000007:"Fire Breath"};
 const isDefB=b=>!b.dead&&b.k!=="th"&&b.k!=="gen"&&b.k!=="cc"&&b.k!=="ccdef"&&(b.dps>0||b.push)&&(!b.hid||b.seen);
 const dist=(p,q)=>Math.hypot(p.x-q.x,p.y-q.y);

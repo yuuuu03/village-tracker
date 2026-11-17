@@ -1,0 +1,1 @@
+{"classes": ["th", "ad", "eagle", "inf", "scat", "sweep", "cc", "cannon", "archer", "mortar", "wiz", "xbow", "bomb", "multi", "rico", "mono", "fire", "gear", "spell", "tesla", "other"], "imgsz": 832, "precision": 0.9084695751106769, "recall": 0.914058242815692, "map50": 0.9283105516302176, "v": "1"}

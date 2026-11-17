@@ -7,8 +7,8 @@ self.addEventListener("activate", (e) => { e.waitUntil(caches.keys().then((ks) =
 self.addEventListener("fetch", (e) => {
   const req = e.request; if (req.method !== "GET") return;
   const url = new URL(req.url);
-  // the Supabase library from the CDN: versioned, so keep it once downloaded
-  if (url.origin === "https://cdn.jsdelivr.net" && url.pathname.includes("@supabase")) {
+  // the Supabase library, the trained eye and its runtime: versioned, so keep them once downloaded
+  if (url.origin === "https://cdn.jsdelivr.net" && (url.pathname.includes("@supabase") || url.pathname.includes("onnxruntime-web@")) || (url.origin === location.origin && url.pathname.endsWith(".onnx"))) {
     e.respondWith(caches.open(LIB).then((c) => c.match(req).then((hit) => hit || fetch(req).then((r) => { if (r.ok) c.put(req, r.clone()); return r; }))));
     return;
   }
