@@ -4978,7 +4978,7 @@ document.addEventListener("click",e=>{
   if(x&&x.dataset.shotx==="undo") SHOT.marks.pop();
   if(x&&x.dataset.shotx==="eye"){ SHOT.eye=!SHOT.eye; }
   if(x&&x.dataset.shotx==="export"){ const c=document.createElement("canvas"); c.width=SHOT.w; c.height=SHOT.h; c.getContext("2d").drawImage(SHOT.img,0,0);
-    const B=(SHOT.an&&SHOT.an.bld)||SHOT.bld||[], out={v:1,w:SHOT.w,h:SHOT.h,opTh:ADV.opTh||null,marks:SHOT.marks.map(m=>({t:m.t,x:+m.x.toFixed(4),y:+m.y.toFixed(4),auto:!!m.auto,named:!!m.named})),added:SHOT.addB||[],removed:SHOT.noB||[],eye:B.map(o=>({x:+o.x.toFixed(4),y:+o.y.toFixed(4),s:+o.s.toFixed(2)})),img:c.toDataURL("image/jpeg",.9)};
+    const B=(SHOT.an&&SHOT.an.bld)||SHOT.bld||[], Dm=(SHOT.an&&SHOT.an.D)||SHOT.D0, out={v:1,w:SHOT.w,h:SHOT.h,tile:Dm?+(2*Dm.hx*(SHOT.w/SHOT.px.W)/44).toFixed(2):null,opTh:ADV.opTh||null,marks:SHOT.marks.map(m=>({t:m.t,x:+m.x.toFixed(4),y:+m.y.toFixed(4),auto:!!m.auto,named:!!m.named})),added:SHOT.addB||[],removed:SHOT.noB||[],eye:B.map(o=>({x:+o.x.toFixed(4),y:+o.y.toFixed(4),s:+o.s.toFixed(2)})),img:c.toDataURL("image/jpeg",.9)};
     const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([JSON.stringify(out)],{type:"application/json"})); a.download=`base-labels-${Date.now()}.json`; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),4000); return; }
   if(x&&x.dataset.shotx==="name"){ SHOT.mode=SHOT.mode==="name"?"th":"name"; SHOT.view="tap"; SHOT.pend=null; if(SHOT.mode==="name") SHOT.eye=true; }
   if(x&&x.dataset.shotx==="view"){ SHOT.view=SHOT.view==="plan"?"tap":"plan"; if(SHOT.view==="plan") learnConfirmed(); }
